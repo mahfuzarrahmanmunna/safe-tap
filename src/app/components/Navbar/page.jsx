@@ -45,7 +45,6 @@ import {
 } from 'lucide-react';
 import { Target } from 'lucide-react';
 import { useTheme } from '@/app/contexts/ThemeContext';
-// import { useTheme } from '../contexts/ThemeContext'; // Updated path
 
 // --- Updated Data for Bangladeshi Water Purification Service ---
 const navigationItems = [
@@ -137,7 +136,7 @@ const ProductModal = ({ isOpen, onClose, theme }) => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className={`fixed inset-0 ${theme === 'dark' ? 'bg-black/70' : 'bg-blue-900/50'} backdrop-blur-sm z-50 flex items-center justify-center p-4`}
+            className={`fixed inset-0 ${theme === 'dark' ? 'bg-black/70' : 'bg-cyan-900/50'} backdrop-blur-sm z-50 flex items-center justify-center p-4`}
           >
             <motion.div
               initial={{ opacity: 0, scale: 0.9, y: 20 }}
@@ -145,9 +144,9 @@ const ProductModal = ({ isOpen, onClose, theme }) => {
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
               transition={{ type: "spring", damping: 25, stiffness: 300 }}
               onClick={(e) => e.stopPropagation()}
-              className={`${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} rounded-2xl shadow-2xl max-w-4xl w-full max-h-[80vh] overflow-y-scroll`}
+              className={`${theme === 'dark' ? 'bg-gray-800/90' : 'bg-white/90'} backdrop-blur-lg rounded-2xl shadow-2xl max-w-4xl w-full max-h-[80vh] overflow-y-auto border ${theme === 'dark' ? 'border-cyan-700/30' : 'border-cyan-200/50'}`}
             >
-              <div className={`bg-gradient-to-r ${theme === 'dark' ? 'from-gray-700 to-gray-600' : 'from-green-700 to-green-600'} text-white p-6 flex justify-between items-center`}>
+              <div className={`bg-gradient-to-r ${theme === 'dark' ? 'from-cyan-700/90 to-cyan-600/90' : 'from-cyan-700 to-cyan-600'} text-white p-6 flex justify-between items-center backdrop-blur-lg`}>
                 <h2 className="text-2xl font-bold">Choose Your Water Purifier</h2>
                 <button
                   onClick={onClose}
@@ -156,12 +155,12 @@ const ProductModal = ({ isOpen, onClose, theme }) => {
                   <X className="w-6 h-6" />
                 </button>
               </div>
-              
+
               <div className="p-6 grid md:grid-cols-2 gap-8">
                 {/* Products Column */}
                 <div>
-                  <h3 className={`text-lg font-semibold ${theme === 'dark' ? 'text-gray-100' : 'text-green-900'} mb-4 flex items-center`}>
-                    <Package className="w-5 h-5 mr-2 text-blue-500" />
+                  <h3 className={`text-lg font-semibold ${theme === 'dark' ? 'text-gray-100' : 'text-cyan-900'} mb-4 flex items-center`}>
+                    <Package className="w-5 h-5 mr-2 text-cyan-500" />
                     Our Smart Purifiers
                   </h3>
                   <div className="space-y-2">
@@ -171,25 +170,25 @@ const ProductModal = ({ isOpen, onClose, theme }) => {
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ duration: 0.3, delay: index * 0.05 }}
-                        className={`p-3 rounded-lg ${theme === 'dark' ? 'hover:bg-gray-700' : 'hover:bg-gradient-to-r hover:from-green-50 hover:to-green-50'} cursor-pointer transition-all duration-200 border-l-2 border-transparent hover:border-blue-500 group`}
+                        className={`p-3 rounded-lg ${theme === 'dark' ? 'hover:bg-gray-700/50' : 'hover:bg-cyan-50/50'} cursor-pointer transition-all duration-200 border-l-2 border-transparent hover:border-cyan-500 group backdrop-blur-sm`}
                       >
                         <div className="flex items-center space-x-3">
-                          <product.icon className="w-5 h-5 text-blue-500 group-hover:text-green-400" />
+                          <product.icon className="w-5 h-5 text-cyan-500 group-hover:text-cyan-600" />
                           <div className="flex-1">
-                            <span className={`font-medium ${theme === 'dark' ? 'text-gray-100 group-hover:text-white' : 'text-blue-700 group-hover:border-blue-900'} block`}>{product.name}</span>
+                            <span className={`font-medium ${theme === 'dark' ? 'text-gray-100 group-hover:text-white' : 'text-cyan-700 group-hover:text-cyan-900'} block`}>{product.name}</span>
                             <span className={`text-xs ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>{product.description}</span>
                           </div>
-                          <ArrowRight className="w-4 h-4 text-green-400 opacity-0 group-hover:opacity-100 transition-opacity" />
+                          <ArrowRight className="w-4 h-4 text-cyan-400 opacity-0 group-hover:opacity-100 transition-opacity" />
                         </div>
                       </motion.div>
                     ))}
                   </div>
                 </div>
-                
+
                 {/* Cities Column */}
                 <div>
-                  <h3 className={`text-lg font-semibold ${theme === 'dark' ? 'text-gray-100' : 'text-green-900'} mb-4 flex items-center`}>
-                    <MapPin className="w-5 h-5 mr-2 text-blue-500" />
+                  <h3 className={`text-lg font-semibold ${theme === 'dark' ? 'text-gray-100' : 'text-cyan-900'} mb-4 flex items-center`}>
+                    <MapPin className="w-5 h-5 mr-2 text-cyan-500" />
                     Select Your City
                   </h3>
                   <div className="grid grid-cols-2 gap-2">
@@ -199,20 +198,20 @@ const ProductModal = ({ isOpen, onClose, theme }) => {
                         initial={{ opacity: 0, x: 20 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ duration: 0.3, delay: index * 0.05 }}
-                        className={`p-3 rounded-lg ${theme === 'dark' ? 'hover:bg-gray-700 border-gray-600' : 'hover:bg-gradient-to-r hover:from-green-50 hover:to-green-50 border-green-200/60'} cursor-pointer transition-all duration-200 border ${theme === 'dark' ? 'border-gray-600' : 'border-green-200/60'} hover:border-blue-500 text-center`}
+                        className={`p-3 rounded-lg ${theme === 'dark' ? 'hover:bg-gray-700/50 border-gray-600/50' : 'hover:bg-cyan-50/50 border-cyan-200/50'} cursor-pointer transition-all duration-200 border ${theme === 'dark' ? 'border-gray-600/50' : 'border-cyan-200/50'} hover:border-cyan-500 text-center backdrop-blur-sm`}
                       >
-                        <span className={`font-medium ${theme === 'dark' ? 'text-gray-100 hover:text-white' : 'text-blue-700 hover:border-blue-900'}`}>{city}</span>
+                        <span className={`font-medium ${theme === 'dark' ? 'text-gray-100 hover:text-white' : 'text-cyan-700 hover:text-cyan-900'}`}>{city}</span>
                       </motion.div>
                     ))}
                   </div>
                 </div>
               </div>
-              
-              <div className={`${theme === 'dark' ? 'bg-gray-700' : 'bg-green-50'} p-4 flex justify-between items-center`}>
-                <p className={`text-sm ${theme === 'dark' ? 'text-gray-200' : 'text-blue-700'}`}>Get pure, healthy water at your fingertips</p>
+
+              <div className={`${theme === 'dark' ? 'bg-gray-700/50' : 'bg-cyan-50/50'} p-4 flex justify-between items-center backdrop-blur-sm border-t ${theme === 'dark' ? 'border-gray-600/50' : 'border-cyan-200/50'}`}>
+                <p className={`text-sm ${theme === 'dark' ? 'text-gray-200' : 'text-cyan-700'}`}>Get pure, healthy water at your fingertips</p>
                 <button
                   onClick={onClose}
-                  className={`px-4 py-2 ${theme === 'dark' ? 'bg-gray-600 hover:bg-gray-500' : 'bg-gradient-to-r from-blue-700 to-blue-600 hover:from-blue-600 hover:to-blue-500'} text-white font-medium rounded-lg transition-colors`}
+                  className={`px-4 py-2 ${theme === 'dark' ? 'bg-cyan-600/80 hover:bg-cyan-500/80' : 'bg-gradient-to-r from-cyan-700 to-cyan-600 hover:from-cyan-600 hover:to-cyan-500'} text-white font-medium rounded-lg transition-all duration-300 backdrop-blur-sm`}
                 >
                   Continue
                 </button>
@@ -231,9 +230,8 @@ const ThemeToggle = ({ theme, toggleTheme }) => {
     <motion.button
       type="button"
       onClick={toggleTheme}
-      className={`relative w-16 h-8 rounded-full p-1 transition-colors duration-500 focus:outline-none cursor-pointer overflow-hidden ${
-        theme === 'dark' ? 'bg-gradient-to-r from-gray-700 to-gray-900' : 'bg-gradient-to-r from-yellow-200 to-yellow-400'
-      }`}
+      className={`relative w-16 h-8 rounded-full p-1 transition-colors duration-500 focus:outline-none cursor-pointer overflow-hidden ${theme === 'dark' ? 'bg-gradient-to-r from-gray-700 to-gray-900' : 'bg-gradient-to-r from-cyan-200 to-cyan-400'
+        }`}
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
       aria-label="Toggle theme"
@@ -243,13 +241,13 @@ const ThemeToggle = ({ theme, toggleTheme }) => {
         className="absolute inset-0 rounded-full"
         initial={false}
         animate={{
-          boxShadow: theme === 'dark' 
-            ? '0 0 20px rgba(99, 102, 241, 0.5)' 
-            : '0 0 20px rgba(251, 191, 36, 0.5)',
+          boxShadow: theme === 'dark'
+            ? '0 0 20px rgba(6, 182, 212, 0.5)'
+            : '0 0 20px rgba(6, 182, 212, 0.5)',
         }}
         transition={{ duration: 0.3 }}
       />
-      
+
       {/* Toggle track with animated dots */}
       <div className="absolute inset-0 flex items-center justify-between px-2 pointer-events-none">
         <AnimatePresence>
@@ -264,7 +262,7 @@ const ThemeToggle = ({ theme, toggleTheme }) => {
               {[...Array(3)].map((_, i) => (
                 <motion.div
                   key={i}
-                  className="w-1 h-1 bg-yellow-600 rounded-full"
+                  className="w-1 h-1 bg-cyan-600 rounded-full"
                   initial={{ opacity: 0, y: 0 }}
                   animate={{ opacity: [0, 1, 0], y: [0, -3, 0] }}
                   transition={{
@@ -278,7 +276,7 @@ const ThemeToggle = ({ theme, toggleTheme }) => {
             </motion.div>
           )}
         </AnimatePresence>
-        
+
         <AnimatePresence>
           {theme === 'dark' && (
             <motion.div
@@ -291,7 +289,7 @@ const ThemeToggle = ({ theme, toggleTheme }) => {
               {[...Array(3)].map((_, i) => (
                 <motion.div
                   key={i}
-                  className="w-1 h-1 bg-indigo-300 rounded-full"
+                  className="w-1 h-1 bg-cyan-300 rounded-full"
                   initial={{ opacity: 0, y: 0 }}
                   animate={{ opacity: [0, 1, 0], y: [0, -3, 0] }}
                   transition={{
@@ -306,14 +304,14 @@ const ThemeToggle = ({ theme, toggleTheme }) => {
           )}
         </AnimatePresence>
       </div>
-      
+
       {/* Toggle button with icon */}
       <motion.div
         className={`absolute top-1 ${theme === 'dark' ? 'right-1' : 'left-1'} w-6 h-6 rounded-full bg-white shadow-lg flex items-center justify-center pointer-events-none`}
         layout
-        transition={{ 
-          type: "spring", 
-          stiffness: 700, 
+        transition={{
+          type: "spring",
+          stiffness: 700,
           damping: 30,
           duration: 0.5
         }}
@@ -327,7 +325,7 @@ const ThemeToggle = ({ theme, toggleTheme }) => {
               exit={{ rotate: 90, opacity: 0 }}
               transition={{ duration: 0.3, ease: "easeInOut" }}
             >
-              <Moon className="w-4 h-4 text-indigo-700" />
+              <Moon className="w-4 h-4 text-cyan-700" />
             </motion.div>
           ) : (
             <motion.div
@@ -337,12 +335,12 @@ const ThemeToggle = ({ theme, toggleTheme }) => {
               exit={{ rotate: -90, opacity: 0 }}
               transition={{ duration: 0.3, ease: "easeInOut" }}
             >
-              <Sun className="w-4 h-4 text-yellow-500" />
+              <Sun className="w-4 h-4 text-cyan-500" />
             </motion.div>
           )}
         </AnimatePresence>
       </motion.div>
-      
+
       {/* Ripple effect on click */}
       <motion.span
         className="absolute inset-0 rounded-full bg-white opacity-0"
@@ -415,7 +413,7 @@ export default function Navbar() {
     setOpenDropdown(openDropdown === itemName ? null : itemName);
     setActiveNavItem(itemName);
   };
-  
+
   const closeMobileMenu = () => {
     setIsMobileMenuOpen(false);
     setOpenDropdown(null);
@@ -424,12 +422,12 @@ export default function Navbar() {
   const handleKeyDown = (e) => {
     if (e.key === 'ArrowDown') {
       e.preventDefault();
-      setSelectedSuggestionIndex(prev => 
+      setSelectedSuggestionIndex(prev =>
         prev < filteredSuggestions.length - 1 ? prev + 1 : 0
       );
     } else if (e.key === 'ArrowUp') {
       e.preventDefault();
-      setSelectedSuggestionIndex(prev => 
+      setSelectedSuggestionIndex(prev =>
         prev > 0 ? prev - 1 : filteredSuggestions.length - 1
       );
     } else if (e.key === 'Enter' && selectedSuggestionIndex >= 0) {
@@ -447,36 +445,36 @@ export default function Navbar() {
         initial={{ y: -50, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.4 }}
-        className={`hidden lg:block ${theme === 'dark' ? 'bg-gradient-to-r from-gray-800 to-gray-700' : 'bg-gradient-to-r from-green-700 to-green-600'} text-white text-sm py-3 shadow-md transition-all duration-500 ${scrolled ? 'opacity-0 h-0 overflow-hidden' : 'opacity-100'}`}
+        className={`hidden lg:block ${theme === 'dark' ? 'bg-gradient-to-r from-gray-800/90 to-gray-700/90' : 'bg-gradient-to-r from-cyan-700/90 to-cyan-600/90'} text-white text-sm py-3 shadow-md transition-all duration-500 backdrop-blur-lg ${scrolled ? 'opacity-0 h-0 overflow-hidden' : 'opacity-100'}`}
       >
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="flex justify-between items-center">
             <div className="flex items-center space-x-6">
-              <a href="tel:+880 1919 222 222" className="flex items-center space-x-2 text-green-100 hover:text-white transition-colors group">
+              <a href="tel:+880 1919 222 222" className="flex items-center space-x-2 text-cyan-100 hover:text-white transition-colors group">
                 <Phone className="w-4 h-4 group-hover:scale-110 transition-transform" />
                 <span>+880 1919 222 222</span>
               </a>
-              <a href="mailto:info@SafeTapbd.com" className="flex items-center space-x-2 text-green-100 hover:text-white transition-colors group">
+              <a href="mailto:info@SafeTapbd.com" className="flex items-center space-x-2 text-cyan-100 hover:text-white transition-colors group">
                 <Mail className="w-4 h-4 group-hover:scale-110 transition-transform" />
                 <span>info@SafeTapbd.com</span>
               </a>
-              <div className="flex items-center space-x-2 text-green-100">
+              <div className="flex items-center space-x-2 text-cyan-100">
                 <MapPin className="w-4 h-4" />
                 <span>Dhaka, Bangladesh</span>
               </div>
             </div>
             <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-2 bg-white/20 px-3 py-1 rounded-full">
+              <div className="flex items-center space-x-2 bg-white/20 px-3 py-1 rounded-full backdrop-blur-sm">
                 <Shield className="w-4 h-4 text-white" />
                 <span className="text-xs text-white font-medium">ISO 9001 : 2015 Certified</span>
               </div>
-              <div className="flex items-center space-x-2 bg-white/20 px-3 py-1 rounded-full">
+              <div className="flex items-center space-x-2 bg-white/20 px-3 py-1 rounded-full backdrop-blur-sm">
                 <Star className="w-4 h-4 text-white" />
                 <span className="text-xs text-white font-medium">50,000+ Happy Customers</span>
               </div>
-              <div className="flex items-center space-x-3 border-l border-green-400 pl-4">
+              <div className="flex items-center space-x-3 border-l border-cyan-400 pl-4">
                 {socialLinks.map((social) => (
-                  <a key={social.label} href={social.href} aria-label={social.label} className="text-green-100 hover:text-white transition-colors hover:scale-110 transform">
+                  <a key={social.label} href={social.href} aria-label={social.label} className="text-cyan-100 hover:text-white transition-colors hover:scale-110 transform">
                     <social.icon className="w-4 h-4" />
                   </a>
                 ))}
@@ -491,22 +489,21 @@ export default function Navbar() {
         initial={{ y: -100, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.5, ease: "easeOut" }}
-        className={`transition-all duration-500 z-50 ${
-          scrolled 
-            ? `fixed top-0 left-0 right-0 ${theme === 'dark' ? 'bg-gray-900/95' : 'bg-white/95'} backdrop-blur-md border-b ${theme === 'dark' ? 'border-gray-700' : 'border-green-200/60'} py-2` 
-            : `relative ${theme === 'dark' ? 'bg-gray-900' : 'bg-white'} border-b ${theme === 'dark' ? 'border-gray-800' : 'border-green-100/50'}`
-        }`}
+        className={`transition-all duration-500 z-50 ${scrolled
+          ? `fixed top-0 left-0 right-0 ${theme === 'dark' ? 'bg-gray-900/95' : 'bg-white/95'} backdrop-blur-lg border-b ${theme === 'dark' ? 'border-gray-700/50' : 'border-cyan-200/50'} py-2`
+          : `relative ${theme === 'dark' ? 'bg-gray-900/90' : 'bg-white/90'} backdrop-blur-sm border-b ${theme === 'dark' ? 'border-gray-800/50' : 'border-cyan-100/50'}`
+          }`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className={`flex justify-between items-center ${scrolled ? 'h-16' : 'h-20 lg:h-24'} transition-all duration-300`}>
             {/* Logo Section - Updated for Bangladesh Water Purification Service */}
             <Link href="/" className="flex items-center space-x-3 group">
-              <div className={`bg-gradient-to-br ${theme === 'dark' ? 'from-gray-700 to-gray-600' : 'from-green-700 to-green-600'} rounded-xl shadow-lg flex items-center justify-center transition-all duration-300 group-hover:shadow-xl ${scrolled ? 'w-10 h-10' : 'w-12 h-12 lg:w-14 lg:h-14'}`}>
+              <div className={`bg-gradient-to-br ${theme === 'dark' ? 'from-cyan-700 to-cyan-600' : 'from-cyan-700 to-cyan-600'} rounded-xl shadow-lg flex items-center justify-center transition-all duration-300 group-hover:shadow-xl ${scrolled ? 'w-10 h-10' : 'w-12 h-12 lg:w-14 lg:h-14'} backdrop-blur-sm`}>
                 <Droplet className={`${scrolled ? 'w-5 h-5' : 'w-7 h-7 lg:w-8 lg:h-8'} text-white group-hover:scale-110 transition-transform`} fill="currentColor" />
               </div>
               <div>
-                <h1 className={`${scrolled ? 'text-lg' : 'text-xl lg:text-2xl'} font-bold bg-gradient-to-r ${theme === 'dark' ? 'from-green-400 to-green-300' : 'from-green-700 to-green-600'} bg-clip-text text-transparent tracking-tight transition-all duration-300 group-hover:from-green-600 group-hover:to-green-500`}>SafeTap BD</h1>
-                <p className={`${scrolled ? 'hidden' : `text-xs ${theme === 'dark' ? 'text-green-400' : 'text-green-600'} font-medium hidden sm:block`}`}>Pure Water, Smart Subscription</p>
+                <h1 className={`${scrolled ? 'text-lg' : 'text-xl lg:text-2xl'} font-bold bg-gradient-to-r ${theme === 'dark' ? 'from-cyan-400 to-cyan-300' : 'from-cyan-700 to-cyan-600'} bg-clip-text text-transparent tracking-tight transition-all duration-300 group-hover:from-cyan-600 group-hover:to-cyan-500`}>SafeTap BD</h1>
+                <p className={`${scrolled ? 'hidden' : `text-xs ${theme === 'dark' ? 'text-cyan-400' : 'text-cyan-600'} font-medium hidden sm:block`}`}>Pure Water, Smart Subscription</p>
               </div>
             </Link>
 
@@ -519,10 +516,10 @@ export default function Navbar() {
                     <button
                       key={item.name}
                       onClick={() => setShowProductModal(true)}
-                      className={`flex items-center space-x-1 ${scrolled ? 'px-3 py-4' : 'px-5 py-6'} font-semibold ${theme === 'dark' ? 'text-gray-200 hover:text-white' : 'text-blue-700 hover:border-blue-900'} transition-colors relative group`}
+                      className={`flex items-center space-x-1 ${scrolled ? 'px-3 py-4' : 'px-5 py-6'} font-semibold ${theme === 'dark' ? 'text-gray-200 hover:text-white' : 'text-cyan-700 hover:text-cyan-900'} transition-colors relative group`}
                     >
                       <span>{item.name}</span>
-                      <span className={`absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r ${theme === 'dark' ? 'from-green-400 to-green-500' : 'from-green-400 to-green-600'} transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left`} />
+                      <span className={`absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r ${theme === 'dark' ? 'from-cyan-400 to-cyan-500' : 'from-cyan-400 to-cyan-600'} transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left`} />
                     </button>
                   );
                 } else if (item.dropdown) {
@@ -532,11 +529,11 @@ export default function Navbar() {
                       <button
                         onClick={() => handleDropdownToggle(item.name)}
                         onMouseEnter={() => setOpenDropdown(item.name)}
-                        className={`flex items-center space-x-1 ${scrolled ? 'px-3 py-4' : 'px-5 py-6'} font-semibold ${theme === 'dark' ? 'text-gray-200 hover:text-white' : 'text-blue-700 hover:border-blue-900'} transition-colors relative group`}
+                        className={`flex items-center space-x-1 ${scrolled ? 'px-3 py-4' : 'px-5 py-6'} font-semibold ${theme === 'dark' ? 'text-gray-200 hover:text-white' : 'text-cyan-700 hover:text-cyan-900'} transition-colors relative group`}
                       >
                         <span>{item.name}</span>
                         <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} />
-                        <span className={`absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r ${theme === 'dark' ? 'from-green-400 to-green-500' : 'from-green-400 to-green-600'} transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left`} />
+                        <span className={`absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r ${theme === 'dark' ? 'from-cyan-400 to-cyan-500' : 'from-cyan-400 to-cyan-600'} transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left`} />
                       </button>
 
                       <AnimatePresence>
@@ -547,22 +544,22 @@ export default function Navbar() {
                             exit={{ opacity: 0, y: 10 }}
                             transition={{ duration: 0.2 }}
                             onMouseLeave={() => setOpenDropdown(null)}
-                            className={`absolute top-full left-0 mt-1 w-72 ${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} rounded-xl shadow-2xl border ${theme === 'dark' ? 'border-gray-700' : 'border-green-200/60'} overflow-hidden`}
+                            className={`absolute top-full left-0 mt-1 w-72 ${theme === 'dark' ? 'bg-gray-800/90' : 'bg-white/90'} backdrop-blur-lg rounded-xl shadow-2xl border ${theme === 'dark' ? 'border-gray-700/50' : 'border-cyan-200/50'} overflow-hidden`}
                           >
-                            <div className={`bg-gradient-to-r ${theme === 'dark' ? 'from-gray-700 to-gray-600' : 'from-green-700 to-green-600'} text-white px-5 py-3`}>
+                            <div className={`bg-gradient-to-r ${theme === 'dark' ? 'from-cyan-700/90 to-cyan-600/90' : 'from-cyan-700 to-cyan-600'} text-white px-5 py-3 backdrop-blur-sm`}>
                               <h3 className="font-bold text-lg">{item.name}</h3>
                             </div>
                             {item.dropdown.map((subItem, index) => (
                               <Link key={subItem.name} href={subItem.href} onClick={() => setOpenDropdown(null)}>
-                                <motion.div 
+                                <motion.div
                                   initial={{ opacity: 0, x: -10 }}
                                   animate={{ opacity: 1, x: 0 }}
                                   transition={{ duration: 0.1, delay: index * 0.05 }}
-                                  className={`px-5 py-3 ${theme === 'dark' ? 'hover:bg-gray-700' : 'hover:bg-gradient-to-r hover:from-green-50 hover:to-green-50'} transition-colors border-l-2 border-transparent hover:border-blue-500 flex items-center space-x-3 group`}
+                                  className={`px-5 py-3 ${theme === 'dark' ? 'hover:bg-gray-700/50' : 'hover:bg-cyan-50/50'} transition-colors border-l-2 border-transparent hover:border-cyan-500 flex items-center space-x-3 group backdrop-blur-sm`}
                                 >
-                                  {subItem.icon && <subItem.icon className="w-4 h-4 text-blue-500 group-hover:text-green-400" />}
-                                  <span className={`font-medium ${theme === 'dark' ? 'text-gray-200 group-hover:text-white' : 'text-blue-700 group-hover:border-blue-900'}`}>{subItem.name}</span>
-                                  <ArrowRight className="w-3 h-3 text-green-400 opacity-0 group-hover:opacity-100 transition-opacity ml-auto" />
+                                  {subItem.icon && <subItem.icon className="w-4 h-4 text-cyan-500 group-hover:text-cyan-600" />}
+                                  <span className={`font-medium ${theme === 'dark' ? 'text-gray-200 group-hover:text-white' : 'text-cyan-700 group-hover:text-cyan-900'}`}>{subItem.name}</span>
+                                  <ArrowRight className="w-3 h-3 text-cyan-400 opacity-0 group-hover:opacity-100 transition-opacity ml-auto" />
                                 </motion.div>
                               </Link>
                             ))}
@@ -574,9 +571,9 @@ export default function Navbar() {
                 }
                 return (
                   <Link key={item.name} href={item.href}>
-                    <div className={`${scrolled ? 'px-3 py-4' : 'px-5 py-6'} font-semibold ${theme === 'dark' ? 'text-gray-200 hover:text-white' : 'text-blue-700 hover:border-blue-900'} transition-colors relative group`}>
+                    <div className={`${scrolled ? 'px-3 py-4' : 'px-5 py-6'} font-semibold ${theme === 'dark' ? 'text-gray-200 hover:text-white' : 'text-cyan-700 hover:text-cyan-900'} transition-colors relative group`}>
                       {item.name}
-                      <span className={`absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r ${theme === 'dark' ? 'from-green-400 to-green-500' : 'from-green-400 to-green-600'} transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left`} />
+                      <span className={`absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r ${theme === 'dark' ? 'from-cyan-400 to-cyan-500' : 'from-cyan-400 to-cyan-600'} transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left`} />
                     </div>
                   </Link>
                 );
@@ -587,11 +584,11 @@ export default function Navbar() {
             <div className="hidden lg:flex items-center space-x-3">
               <motion.button
                 onClick={() => setShowSearch(!showSearch)}
-                className={`p-2 rounded-lg ${theme === 'dark' ? 'text-gray-300 hover:bg-gray-800' : 'text-green-600 hover:bg-green-50'} transition-colors ${scrolled ? 'p-2' : 'p-3'} group`}
+                className={`p-2 rounded-lg ${theme === 'dark' ? 'text-gray-300 hover:bg-gray-800/50' : 'text-cyan-600 hover:bg-cyan-50/50'} transition-colors ${scrolled ? 'p-2' : 'p-3'} group backdrop-blur-sm`}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
-                <Search className="w-5 h-5 group-hover:text-blue-500 transition-colors" />
+                <Search className="w-5 h-5 group-hover:text-cyan-500 transition-colors" />
               </motion.button>
 
               {/* Attractive Theme Toggle Button */}
@@ -601,16 +598,16 @@ export default function Navbar() {
 
               <motion.button
                 onClick={() => setShowQuickContact(!showQuickContact)}
-                className={`p-2 rounded-lg ${theme === 'dark' ? 'text-gray-300 hover:bg-gray-800' : 'text-green-600 hover:bg-green-50'} transition-colors ${scrolled ? 'p-2' : 'p-3'} group`}
+                className={`p-2 rounded-lg ${theme === 'dark' ? 'text-gray-300 hover:bg-gray-800/50' : 'text-cyan-600 hover:bg-cyan-50/50'} transition-colors ${scrolled ? 'p-2' : 'p-3'} group backdrop-blur-sm`}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
-                <HeadphonesIcon className="w-5 h-5 group-hover:text-blue-500 transition-colors" />
+                <HeadphonesIcon className="w-5 h-5 group-hover:text-cyan-500 transition-colors" />
               </motion.button>
 
               <Link href="/get-started">
                 <motion.button
-                  className={`${scrolled ? 'px-4 py-2 text-sm' : 'px-6 py-3'} bg-gradient-to-r ${theme === 'dark' ? 'from-green-600 to-green-500' : 'from-green-700 to-green-600'} text-white font-semibold rounded-lg shadow-md hover:from-green-600 hover:to-green-500 transition-all duration-300 flex items-center space-x-2 group`}
+                  className={`${scrolled ? 'px-4 py-2 text-sm' : 'px-6 py-3'} bg-gradient-to-r ${theme === 'dark' ? 'from-cyan-600 to-cyan-500' : 'from-cyan-700 to-cyan-600'} text-white font-semibold rounded-lg shadow-md hover:from-cyan-600 hover:to-cyan-500 transition-all duration-300 flex items-center space-x-2 group backdrop-blur-sm`}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                 >
@@ -624,7 +621,7 @@ export default function Navbar() {
             {/* Mobile Menu Toggle */}
             <motion.button
               onClick={() => setIsMobileMenuOpen(true)}
-              className={`lg:hidden p-2 rounded-lg ${theme === 'dark' ? 'text-gray-300 hover:bg-gray-800' : 'text-green-600 hover:bg-green-50'} transition-colors`}
+              className={`lg:hidden p-2 rounded-lg ${theme === 'dark' ? 'text-gray-300 hover:bg-gray-800/50' : 'text-cyan-600 hover:bg-cyan-50/50'} transition-colors backdrop-blur-sm`}
               whileTap={{ scale: 0.95 }}
             >
               <Menu className="w-6 h-6" />
@@ -639,7 +636,7 @@ export default function Navbar() {
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: 'auto', opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
-              className={`hidden lg:block border-t ${theme === 'dark' ? 'border-gray-700' : 'border-green-200/60'} overflow-hidden`}
+              className={`hidden lg:block border-t ${theme === 'dark' ? 'border-gray-700/50' : 'border-cyan-200/50'} overflow-hidden backdrop-blur-sm`}
             >
               <div className="max-w-7xl mx-auto px-6 lg:px-8 py-4">
                 <div className="relative max-w-2xl mx-auto">
@@ -650,10 +647,10 @@ export default function Navbar() {
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     onKeyDown={handleKeyDown}
-                    className={`w-full pl-12 pr-4 py-3 rounded-lg border ${theme === 'dark' ? 'bg-gray-800 border-gray-600 focus:border-green-500 focus:ring-green-500/20' : 'border-green-300 focus:border-green-500 focus:ring-green-500/20'} focus:outline-none focus:ring-2`}
+                    className={`w-full pl-12 pr-4 py-3 rounded-lg border ${theme === 'dark' ? 'bg-gray-800/50 border-gray-600/50 focus:border-cyan-500 focus:ring-cyan-500/20' : 'border-cyan-300/50 focus:border-cyan-500 focus:ring-cyan-500/20'} focus:outline-none focus:ring-2 backdrop-blur-sm`}
                     autoFocus
                   />
-                  <Search className={`absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 ${theme === 'dark' ? 'text-gray-400' : 'text-green-400'}`} />
+                  <Search className={`absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 ${theme === 'dark' ? 'text-gray-400' : 'text-cyan-400'}`} />
                   {searchQuery && (
                     <motion.button
                       initial={{ opacity: 0 }}
@@ -665,13 +662,13 @@ export default function Navbar() {
                     </motion.button>
                   )}
                 </div>
-                
+
                 {/* Search Suggestions */}
                 {filteredSuggestions.length > 0 && (
                   <motion.div
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className={`mt-2 max-w-2xl mx-auto ${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} rounded-lg shadow-lg border ${theme === 'dark' ? 'border-gray-700' : 'border-green-200/60'} overflow-hidden`}
+                    className={`mt-2 max-w-2xl mx-auto ${theme === 'dark' ? 'bg-gray-800/90' : 'bg-white/90'} backdrop-blur-lg rounded-lg shadow-lg border ${theme === 'dark' ? 'border-gray-700/50' : 'border-cyan-200/50'} overflow-hidden`}
                   >
                     {filteredSuggestions.map((suggestion, index) => (
                       <div
@@ -680,17 +677,16 @@ export default function Navbar() {
                           setSearchQuery(suggestion);
                           setFilteredSuggestions([]);
                         }}
-                        className={`px-4 py-2 ${theme === 'dark' ? 'hover:bg-gray-700' : 'hover:bg-green-50'} cursor-pointer flex items-center space-x-2 ${
-                          index === selectedSuggestionIndex ? (theme === 'dark' ? 'bg-gray-700' : 'bg-green-50') : ''
-                        }`}
+                        className={`px-4 py-2 ${theme === 'dark' ? 'hover:bg-gray-700/50' : 'hover:bg-cyan-50/50'} cursor-pointer flex items-center space-x-2 backdrop-blur-sm ${index === selectedSuggestionIndex ? (theme === 'dark' ? 'bg-gray-700/50' : 'bg-cyan-50/50') : ''
+                          }`}
                       >
-                        <Search className="w-4 h-4 text-green-400" />
+                        <Search className="w-4 h-4 text-cyan-400" />
                         <span className={theme === 'dark' ? 'text-gray-200' : ''}>{suggestion}</span>
                       </div>
                     ))}
                   </motion.div>
                 )}
-                
+
                 {searchQuery && filteredSuggestions.length === 0 && (
                   <motion.div
                     initial={{ opacity: 0 }}
@@ -712,26 +708,26 @@ export default function Navbar() {
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
-              className={`hidden lg:block border-t ${theme === 'dark' ? 'border-gray-700 bg-gray-800' : 'border-green-200/60 bg-white'}`}
+              className={`hidden lg:block border-t ${theme === 'dark' ? 'border-gray-700/50 bg-gray-800/90' : 'border-cyan-200/50 bg-white/90'} backdrop-blur-lg`}
               ref={quickContactRef}
             >
               <div className="max-w-7xl mx-auto px-6 lg:px-8 py-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-4">
-                    <div className={`p-3 rounded-full ${theme === 'dark' ? 'bg-gray-700' : 'bg-green-100'}`}>
-                      <HeadphonesIcon className={`w-6 h-6 ${theme === 'dark' ? 'text-green-400' : 'text-green-600'}`} />
+                    <div className={`p-3 rounded-full ${theme === 'dark' ? 'bg-gray-700/50' : 'bg-cyan-100/50'} backdrop-blur-sm`}>
+                      <HeadphonesIcon className={`w-6 h-6 ${theme === 'dark' ? 'text-cyan-400' : 'text-cyan-600'}`} />
                     </div>
                     <div>
-                      <h3 className={`font-semibold ${theme === 'dark' ? 'text-gray-100' : 'text-green-900'}`}>Need Help?</h3>
+                      <h3 className={`font-semibold ${theme === 'dark' ? 'text-gray-100' : 'text-cyan-900'}`}>Need Help?</h3>
                       <p className="text-sm text-gray-600">Our water experts are ready to assist you</p>
                     </div>
                   </div>
                   <div className="flex items-center space-x-3">
-                    <a href="tel:+880 1919 222 222" className={`flex items-center space-x-2 ${theme === 'dark' ? 'bg-green-600 hover:bg-green-500' : 'bg-green-700 hover:bg-green-600'} text-white px-4 py-2 rounded-lg transition-colors`}>
+                    <a href="tel:+880 1919 222 222" className={`flex items-center space-x-2 ${theme === 'dark' ? 'bg-cyan-600/80 hover:bg-cyan-500/80' : 'bg-cyan-700 hover:bg-cyan-600'} text-white px-4 py-2 rounded-lg transition-colors backdrop-blur-sm`}>
                       <Phone className="w-4 h-4" />
                       <span>Call Now</span>
                     </a>
-                    <Link href="/contact" className={`flex items-center space-x-2 ${theme === 'dark' ? 'bg-gray-600 hover:bg-gray-500' : 'bg-green-600 hover:bg-green-500'} text-white px-4 py-2 rounded-lg transition-colors`}>
+                    <Link href="/contact" className={`flex items-center space-x-2 ${theme === 'dark' ? 'bg-gray-600/80 hover:bg-gray-500/80' : 'bg-cyan-600 hover:bg-cyan-500'} text-white px-4 py-2 rounded-lg transition-colors backdrop-blur-sm`}>
                       <Mail className="w-4 h-4" />
                       <span>Email Us</span>
                     </Link>
@@ -752,16 +748,16 @@ export default function Navbar() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={closeMobileMenu}
-              className={`fixed inset-0 ${theme === 'dark' ? 'bg-black/70' : 'bg-green-700/20'} backdrop-blur-sm z-40 lg:hidden`}
+              className={`fixed inset-0 ${theme === 'dark' ? 'bg-black/70' : 'bg-cyan-700/20'} backdrop-blur-sm z-40 lg:hidden`}
             />
             <motion.div
               initial={{ x: '100%' }}
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
               transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-              className={`fixed top-0 right-0 bottom-0 w-80 max-w-[85vw] ${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} shadow-2xl z-50 overflow-y-auto lg:hidden`}
+              className={`fixed top-0 right-0 bottom-0 w-80 max-w-[85vw] ${theme === 'dark' ? 'bg-gray-800/95' : 'bg-white/95'} backdrop-blur-lg shadow-2xl z-50 overflow-y-auto lg:hidden border-l ${theme === 'dark' ? 'border-gray-700/50' : 'border-cyan-200/50'}`}
             >
-              <div className={`sticky top-0 bg-gradient-to-r ${theme === 'dark' ? 'from-gray-700 to-gray-600' : 'from-green-700 to-green-600'} text-white p-4 flex justify-between items-center`}>
+              <div className={`sticky top-0 bg-gradient-to-r ${theme === 'dark' ? 'from-cyan-700/90 to-cyan-600/90' : 'from-cyan-700 to-cyan-600'} text-white p-4 flex justify-between items-center backdrop-blur-sm`}>
                 <div className="flex items-center space-x-2">
                   <Droplet className="w-6 h-6 text-white" fill="currentColor" />
                   <span className="font-bold text-lg">SafeTap BD</span>
@@ -782,10 +778,10 @@ export default function Navbar() {
                           setShowProductModal(true);
                           closeMobileMenu();
                         }}
-                        className={`w-full flex items-center justify-between p-4 rounded-lg ${theme === 'dark' ? 'hover:bg-gray-700' : 'hover:bg-gradient-to-r hover:from-green-50 hover:to-green-50'} transition-colors font-semibold ${theme === 'dark' ? 'text-gray-200' : 'text-blue-700'}`}
+                        className={`w-full flex items-center justify-between p-4 rounded-lg ${theme === 'dark' ? 'hover:bg-gray-700/50' : 'hover:bg-cyan-50/50'} transition-colors font-semibold ${theme === 'dark' ? 'text-gray-200' : 'text-cyan-700'} backdrop-blur-sm`}
                       >
                         <div className="flex items-center space-x-2">
-                          {item.icon && <item.icon className="w-5 h-5 text-blue-500" />}
+                          {item.icon && <item.icon className="w-5 h-5 text-cyan-500" />}
                           <span>{item.name}</span>
                         </div>
                         <ArrowRight className="w-5 h-5" />
@@ -796,10 +792,10 @@ export default function Navbar() {
                       <div key={item.name}>
                         <button
                           onClick={() => handleDropdownToggle(item.name)}
-                          className={`w-full flex items-center justify-between p-4 rounded-lg ${theme === 'dark' ? 'hover:bg-gray-700' : 'hover:bg-gradient-to-r hover:from-green-50 hover:to-green-50'} transition-colors font-semibold ${theme === 'dark' ? 'text-gray-200' : 'text-blue-700'}`}
+                          className={`w-full flex items-center justify-between p-4 rounded-lg ${theme === 'dark' ? 'hover:bg-gray-700/50' : 'hover:bg-cyan-50/50'} transition-colors font-semibold ${theme === 'dark' ? 'text-gray-200' : 'text-cyan-700'} backdrop-blur-sm`}
                         >
                           <div className="flex items-center space-x-2">
-                            {item.icon && <item.icon className="w-5 h-5 text-blue-500" />}
+                            {item.icon && <item.icon className="w-5 h-5 text-cyan-500" />}
                             <span>{item.name}</span>
                           </div>
                           <ChevronDown className={`w-5 h-5 transition-transform ${openDropdown === item.name ? 'rotate-180' : ''}`} />
@@ -815,7 +811,7 @@ export default function Navbar() {
                               <div className="pl-4 py-2 space-y-1">
                                 {item.dropdown.map((subItem) => (
                                   <Link key={subItem.name} href={subItem.href} onClick={closeMobileMenu}>
-                                    <div className={`p-3 rounded-lg ${theme === 'dark' ? 'hover:bg-gray-700' : 'hover:bg-gradient-to-r hover:from-green-50 hover:to-green-50'} ${theme === 'dark' ? 'text-gray-300' : 'text-green-600'} hover:border-blue-900 transition-colors flex items-center space-x-2`}>
+                                    <div className={`p-3 rounded-lg ${theme === 'dark' ? 'hover:bg-gray-700/50' : 'hover:bg-cyan-50/50'} ${theme === 'dark' ? 'text-gray-300' : 'text-cyan-600'} hover:text-cyan-900 transition-colors flex items-center space-x-2 backdrop-blur-sm`}>
                                       {subItem.icon && <subItem.icon className="w-4 h-4" />}
                                       <span>{subItem.name}</span>
                                     </div>
@@ -830,36 +826,36 @@ export default function Navbar() {
                   }
                   return (
                     <Link key={item.name} href={item.href} onClick={closeMobileMenu}>
-                      <div className={`p-4 rounded-lg ${theme === 'dark' ? 'hover:bg-gray-700' : 'hover:bg-gradient-to-r hover:from-green-50 hover:to-green-50'} transition-colors font-semibold ${theme === 'dark' ? 'text-gray-200' : 'text-blue-700'} flex items-center space-x-2`}>
-                        {item.icon && <item.icon className="w-5 h-5 text-blue-500" />}
+                      <div className={`p-4 rounded-lg ${theme === 'dark' ? 'hover:bg-gray-700/50' : 'hover:bg-cyan-50/50'} transition-colors font-semibold ${theme === 'dark' ? 'text-gray-200' : 'text-cyan-700'} flex items-center space-x-2 backdrop-blur-sm`}>
+                        {item.icon && <item.icon className="w-5 h-5 text-cyan-500" />}
                         <span>{item.name}</span>
                       </div>
                     </Link>
                   );
                 })}
 
-                <div className={`pt-4 mt-4 space-y-3 border-t ${theme === 'dark' ? 'border-gray-700' : 'border-green-200'}`}>
+                <div className={`pt-4 mt-4 space-y-3 border-t ${theme === 'dark' ? 'border-gray-700/50' : 'border-cyan-200/50'}`}>
                   <Link href="/get-started" onClick={closeMobileMenu}>
-                    <div className={`block w-full text-center py-3 px-6 bg-gradient-to-r ${theme === 'dark' ? 'from-green-600 to-green-500' : 'from-green-700 to-green-600'} text-white font-bold rounded-lg shadow-md hover:from-green-600 hover:to-green-500 transition-all duration-300 flex items-center justify-center space-x-2`}>
+                    <div className={`block w-full text-center py-3 px-6 bg-gradient-to-r ${theme === 'dark' ? 'from-cyan-600 to-cyan-500' : 'from-cyan-700 to-cyan-600'} text-white font-bold rounded-lg shadow-md hover:from-cyan-600 hover:to-cyan-500 transition-all duration-300 flex items-center justify-center space-x-2 backdrop-blur-sm`}>
                       <Droplet className="w-4 h-4" />
                       <span>Get Started</span>
                     </div>
                   </Link>
-                  
+
                   <div className="flex items-center justify-center space-x-4 py-2">
-                    <a href="tel:+880 1919 222 222" className={`flex items-center space-x-1 ${theme === 'dark' ? 'text-gray-300' : 'text-green-600'} hover:text-green-800 transition-colors`}>
+                    <a href="tel:+880 1919 222 222" className={`flex items-center space-x-1 ${theme === 'dark' ? 'text-gray-300' : 'text-cyan-600'} hover:text-cyan-800 transition-colors`}>
                       <Phone className="w-4 h-4" />
                       <span className="text-sm">Call Us</span>
                     </a>
-                    <a href="mailto:info@SafeTapbd.com" className={`flex items-center space-x-1 ${theme === 'dark' ? 'text-gray-300' : 'text-green-600'} hover:text-green-800 transition-colors`}>
+                    <a href="mailto:info@SafeTapbd.com" className={`flex items-center space-x-1 ${theme === 'dark' ? 'text-gray-300' : 'text-cyan-600'} hover:text-cyan-800 transition-colors`}>
                       <Mail className="w-4 h-4" />
                       <span className="text-sm">Email</span>
                     </a>
                   </div>
-                  
+
                   <div className="flex items-center justify-center space-x-3 py-2">
                     {socialLinks.map((social) => (
-                      <a key={social.label} href={social.href} aria-label={social.label} className={`p-2 rounded-full ${theme === 'dark' ? 'bg-gray-700' : 'bg-green-50'} ${theme === 'dark' ? 'text-gray-300' : 'text-green-600'} hover:bg-green-100 transition-colors`}>
+                      <a key={social.label} href={social.href} aria-label={social.label} className={`p-2 rounded-full ${theme === 'dark' ? 'bg-gray-700/50' : 'bg-cyan-50/50'} ${theme === 'dark' ? 'text-gray-300' : 'text-cyan-600'} hover:bg-cyan-100 transition-colors backdrop-blur-sm`}>
                         <social.icon className="w-4 h-4" />
                       </a>
                     ))}
@@ -884,7 +880,7 @@ export default function Navbar() {
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
             onClick={() => setShowQuickContact(!showQuickContact)}
-            className={`fixed bottom-6 right-6 bg-gradient-to-r ${theme === 'dark' ? 'from-green-600 to-green-500' : 'from-green-700 to-green-600'} text-white p-4 rounded-full shadow-lg z-40 lg:hidden`}
+            className={`fixed bottom-6 right-6 bg-gradient-to-r ${theme === 'dark' ? 'from-cyan-600 to-cyan-500' : 'from-cyan-700 to-cyan-600'} text-white p-4 rounded-full shadow-lg z-40 lg:hidden backdrop-blur-sm`}
           >
             <HeadphonesIcon className="w-6 h-6" />
           </motion.button>

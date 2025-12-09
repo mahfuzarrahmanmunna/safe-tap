@@ -63,7 +63,7 @@ const stats = [
 ];
 
 export default function HeroBanner() {
-  const { theme } = useTheme(); // Get the current theme
+  const { theme } = useTheme();
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, amount: 0.3 });
 
