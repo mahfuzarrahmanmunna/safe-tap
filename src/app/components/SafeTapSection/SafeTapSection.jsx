@@ -1,4 +1,4 @@
-// components/DrinkPrimeSection.js
+// components/SafeTapSection.js
 'use client';
 import { motion } from 'framer-motion';
 import { useInView } from 'framer-motion';
@@ -72,7 +72,7 @@ const hiddenCosts = [
     { icon: XCircle, text: 'Maintenance costs' },
 ];
 
-export default function DrinkPrimeSection() {
+export default function SafeTapSection() {
     const { theme } = useTheme();
     const ref = useRef(null);
     const isInView = useInView(ref, { once: true, amount: 0.3 });
@@ -186,7 +186,7 @@ export default function DrinkPrimeSection() {
                             className={`text-lg lg:text-xl max-w-xl ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
                                 }`}
                         >
-                            Buying a water purifier comes with high hidden costs. Recurring AMCs, additional expenses for pre-filters, taste enhancers, and what not! Why commit when you can stay flexible with DrinkPrime?
+                            Buying a water purifier comes with high hidden costs. Recurring AMCs, additional expenses for pre-filters, taste enhancers, and what not! Why commit when you can stay flexible with SafeTap?
                         </motion.p>
 
                         {/* Hidden Costs */}
@@ -264,7 +264,7 @@ export default function DrinkPrimeSection() {
                             <div className="absolute inset-0 bg-gradient-to-br from-cyan-400/20 to-teal-600/20 rounded-2xl blur-xl"></div>
                             <Image
                                 src={'https://i.ibb.co/x85grR08/smartwater-subscription.png'}
-                                alt="DrinkPrime Water Purifier"
+                                alt="SafeTap Water Purifier"
                                 width={500}
                                 height={500}
                                 className={`w-full h-auto rounded-2xl shadow-2xl border relative z-10 ${theme === 'dark' ? 'border-cyan-700/30' : 'border-cyan-200/50'

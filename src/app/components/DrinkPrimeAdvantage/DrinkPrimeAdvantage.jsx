@@ -1,4 +1,4 @@
-// components/DrinkPrimeAdvantage.jsx
+// components/SafeTapAdvantage.jsx
 'use client';
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -61,7 +61,7 @@ const comparisonData = [
         options: [
             { name: 'water can', status: 'negative', description: 'Unfit for drinking' },
             { name: 'other purifier', status: 'neutral', description: 'Under or Over Purified Water' },
-            { name: 'DrinkPrime', status: 'positive', description: 'Pure & healthy drinking water' },
+            { name: 'SafeTap', status: 'positive', description: 'Pure & healthy drinking water' },
         ],
     },
     {
@@ -69,7 +69,7 @@ const comparisonData = [
         options: [
             { name: 'water can', status: 'negative', description: 'Unknown process' },
             { name: 'other purifier', status: 'neutral', description: 'Options Available At High Costs' },
-            { name: 'DrinkPrime', status: 'positive', description: 'RO + UV with Copper or Alkaline filter' },
+            { name: 'SafeTap', status: 'positive', description: 'RO + UV with Copper or Alkaline filter' },
         ],
     },
     {
@@ -77,7 +77,7 @@ const comparisonData = [
         options: [
             { name: 'water can', status: 'negative', description: '₹2 - ₹4/litre' },
             { name: 'other purifier', status: 'negative', description: '₹20,000 to purchase ₹5,000/year to maintain' },
-            { name: 'DrinkPrime', status: 'positive', description: 'Starts at ₹1/litre<br/>FREE maintenance<br/>ZERO upfront cost<br/>Lifetime FREE maintenance' },
+            { name: 'SafeTap', status: 'positive', description: 'Starts at ₹1/litre<br/>FREE maintenance<br/>ZERO upfront cost<br/>Lifetime FREE maintenance' },
         ],
     },
     {
@@ -85,7 +85,7 @@ const comparisonData = [
         options: [
             { name: 'water can', status: 'negative', description: 'Hassle to order, replace, transport' },
             { name: 'other purifier', status: 'neutral', description: 'Manual coordination' },
-            { name: 'DrinkPrime', status: 'positive', description: 'App for easy recharge & service requests<br/>Tech-enabled service' },
+            { name: 'SafeTap', status: 'positive', description: 'App for easy recharge & service requests<br/>Tech-enabled service' },
         ],
     },
     {
@@ -93,12 +93,12 @@ const comparisonData = [
         options: [
             { name: 'water can', status: 'negative', description: 'NA' },
             { name: 'other purifier', status: 'negative', description: 'NA' },
-            { name: 'DrinkPrime', status: 'positive', description: 'One-click tracking of consumption, water quality & filter health<br/>IoT enabled SMART purifiers' },
+            { name: 'SafeTap', status: 'positive', description: 'One-click tracking of consumption, water quality & filter health<br/>IoT enabled SMART purifiers' },
         ],
     },
 ];
 
-export default function DrinkPrimeAdvantage() {
+export default function SafeTapAdvantage() {
     const { theme } = useTheme();
     const ref = useRef(null);
     const isInView = useInView(ref, { once: true, amount: 0.2 });
@@ -155,13 +155,13 @@ export default function DrinkPrimeAdvantage() {
                         ? 'bg-gradient-to-r from-cyan-400 via-cyan-300 to-teal-200'
                         : 'bg-gradient-to-r from-cyan-900 via-cyan-800 to-teal-700'
                         } mb-4`}>
-                        The DrinkPrime Advantage
+                        The SafeTap Advantage
                     </h2>
                     <p className={`text-xl ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'} max-w-3xl mx-auto`}>
                         Next-gen Water Purification at Best Costs
                     </p>
                     <p className={`text-lg ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'} max-w-2xl mx-auto mt-2`}>
-                        Experience smartest water purification solutions with DrinkPrime.
+                        Experience smartest water purification solutions with SafeTap.
                     </p>
                 </motion.div>
 
@@ -196,7 +196,7 @@ export default function DrinkPrimeAdvantage() {
                             <div className={`inline-flex items-center justify-center w-12 h-12 rounded-full ${theme === 'dark' ? 'bg-cyan-900/50' : 'bg-cyan-100'} shadow-md mb-2`}>
                                 <Zap className={`w-6 h-6 ${theme === 'dark' ? 'text-cyan-400' : 'text-cyan-600'}`} />
                             </div>
-                            <h4 className={`font-semibold ${theme === 'dark' ? 'text-cyan-300' : 'text-cyan-700'}`}>DrinkPrime</h4>
+                            <h4 className={`font-semibold ${theme === 'dark' ? 'text-cyan-300' : 'text-cyan-700'}`}>SafeTap</h4>
                         </div>
                     </div>
 
@@ -252,7 +252,7 @@ export default function DrinkPrimeAdvantage() {
                         <div className="flex flex-col sm:flex-row items-center justify-between">
                             <div className="mb-4 sm:mb-0">
                                 <h3 className={`text-lg font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'} mb-1`}>
-                                    Choose Smart with DrinkPrime
+                                    Choose Smart with SafeTap
                                 </h3>
                                 <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
                                     Advanced purification at best prices
