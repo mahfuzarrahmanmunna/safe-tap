@@ -5,12 +5,12 @@ const Footer = () => {
     return (
         <footer className="bg-gray-900 text-white">
             {/* Top Call-to-Action Banner */}
-            <div className="bg-blue-800 py-6">
+            <div className="bg-cyan-600 py-6">
                 <div className="container mx-auto px-4 text-center">
                     <h2 className="text-2xl md:text-3xl font-bold mb-2">Need a Repair or Want to Join Our Team?</h2>
                     <p className="text-blue-100 mb-4">AquaFix connects you to certified technicians for reliable water solutions.</p>
                     <div className="flex flex-col sm:flex-row justify-center gap-4">
-                        <Link href="/book-service" className="px-8 py-3 bg-sky-500 text-blue-900 font-bold rounded-md hover:bg-sky-400 transition-all duration-300 transform hover:scale-105 shadow-lg">
+                        <Link href="/book-service" className="px-8 py-3 bg-cyan-400 text-white font-bold rounded-md hover:bg-sky-400 transition-all duration-300 transform hover:scale-105 shadow-lg">
                             Book a Service Now
                         </Link>
                         <Link href="/become-technician" className="px-8 py-3 bg-transparent border-2 border-white text-white font-bold rounded-md hover:bg-white hover:text-blue-900 transition-all duration-300">

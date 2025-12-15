@@ -30,7 +30,7 @@ export default function HowItWorks() {
       {/* Section Title */}
       <div className="text-center mb-16">
         <h2 className="text-3xl md:text-5xl font-bold">
-          <span className="text-cyan-700">The DrinkPrime App:</span> Behold The Future of Water Purification
+          <span className="text-cyan-700">The DrinkPrime App:</span> Behold The Future of Water <span className='leading-22'>Purification</span>
         </h2>
         <p className="text-lg text-gray-600 mt-4 max-w-3xl mx-auto">
           Track your water consumption, generate your personalised water quality report, and monitor your filter health using our innovative app. Recharging your device and raising service requests has never been easier.
@@ -41,7 +41,7 @@ export default function HowItWorks() {
       <div className="grid lg:grid-cols-2 gap-12 items-center">
         
         {/* LEFT: How It Works Steps */}
-        <div className="bg-white border border-gray-300 rounded-3xl p-8 lg:p-12 shadow-xl">
+        <div className="bg-white border border-gray-300 rounded-3xl mt-6 p-8 lg:p-12 shadow-xl ">
           <h3 className="text-3xl font-bold text-gray-800 mb-10">How it works</h3>
 
           <div className="space-y-10">
@@ -72,7 +72,7 @@ export default function HowItWorks() {
         </div>
 
         {/* RIGHT: Beautiful Phone Slider (HelpDesk Style) */}
-        <div className="relative mt-14 " >
+        <div className="relative -mt-78" >
           <Swiper
             modules={[Navigation, Autoplay]}
             navigation={{
@@ -88,7 +88,7 @@ export default function HowItWorks() {
                 <div className="flex justify-center ">
                   <div className="relative ">
                     {/* Cyan glowing frame */}
-                    <div className="bg-gradient-to-br from-cyan-500 to-cyan-700 rounded-2xl p-3 lg:p-4 shadow-xl">
+                    <div className="bg-gradient-to-br from-cyan-500 to-cyan-700 rounded-2xl p-3 lg:p-4 ">
                       <div className="bg-white rounded-3xl overflow-hidden shadow-xl">
                         <Image
                           src={src}
@@ -120,24 +120,23 @@ export default function HowItWorks() {
           </div>
 
           {/* App Store Badges Below Phone */}
-          <div className="flex justify-center gap-8 mt-2">
-          
-             <Image
-              src="https://i.ibb.co/hb2m9cN/images.png"
-              alt="Get it on Google Play"
-              width={180}
-              height={55}
-              className="hover:scale-105 transition "
-            />
-           
-            <Image
-              src="https://i.ibb.co/YFc8rXh9/available-on-the-app-store-badge-logo-png-seeklogo-288615.png"
-              alt="Download on the App Store"
-              width={180}
-              height={55}
-              className="hover:scale-105 transition"
-            />
-          </div>
+          <div className="flex justify-center items-center ml-12 -mt-6 flex-wrap">
+  <Image
+    src="https://i.ibb.co/hb2m9cN/images.png"
+    alt="Get it on Google Play"
+    width={160}
+    height={48}
+    className="h-[178px] w-[190px] object-contain hover:scale-105 transition-transform duration-300"
+  />
+
+  <Image
+    src="https://i.ibb.co/YFc8rXh9/available-on-the-app-store-badge-logo-png-seeklogo-288615.png"
+    alt="Download on the App Store"
+    width={160}
+    height={48}
+    className="h-[148px] w-[260px] -ml-12 object-contain hover:scale-105 transition-transform duration-300"
+  />
+</div>
         </div>
       </div>
     </div>
