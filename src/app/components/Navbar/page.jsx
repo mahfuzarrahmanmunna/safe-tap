@@ -1,52 +1,18 @@
-// src/app/components/Navbar/page.jsx
 'use client';
-import { useState, useEffect, useRef } from 'react';
+
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import {
-  Menu,
-  X,
-  ChevronDown,
-  Phone,
-  Mail,
-  Droplet,
-  Home,
-  Info,
-  Package,
-  Wrench,
-  Images,
-  FileText,
-  Contact,
-  Search,
-  Facebook,
-  Youtube,
-  Linkedin,
-  Award,
-  Clock,
-  MapPin,
-  Shield,
-  Star,
-  ArrowRight,
-  Sparkles,
-  CheckCircle,
-  Sun,
-  Moon,
-  TrendingUp,
-  HeadphonesIcon,
-  Zap,
-  ArrowUpRight,
-  Smartphone,
-  Filter,
-  CreditCard,
-  Users,
-  TestTube,
-  Activity,
-  BarChart3,
+  Menu, X, ChevronDown, Phone, Mail, Droplet, Home, Info, Package,
+  Wrench, FileText, Contact, Facebook, Youtube, Linkedin,
+  Clock, Filter, Users, TestTube, Sparkles, Sun, Moon
 } from 'lucide-react';
 import { Target } from 'lucide-react';
 import { useTheme } from '@/app/contexts/ThemeContext';
 
-// --- Updated Data for Bangladeshi Water Purification Service ---
+/* ------------------ DATA ------------------ */
+
 const navigationItems = [
   { name: 'Home', href: '/', icon: Home },
   {
@@ -60,12 +26,7 @@ const navigationItems = [
       { name: 'Technology', href: '/about/technology', icon: Sparkles },
     ],
   },
-  {
-    name: 'Products',
-    href: '/products',
-    icon: Package,
-    isModal: true, // Flag to indicate this opens a modal
-  },
+  { name: 'Products', href: '/products', icon: Package },
   {
     name: 'Services',
     href: '/services',
@@ -74,16 +35,16 @@ const navigationItems = [
       { name: 'Installation', href: '/services/installation', icon: Wrench },
       { name: 'Maintenance', href: '/services/maintenance', icon: Clock },
       { name: 'Filter Replacement', href: '/services/filter-replacement', icon: Filter },
-      { name: 'Water Quality Testing', href: '/services/water-testing', icon: TestTube },
+      { name: 'Water Testing', href: '/services/water-testing', icon: TestTube },
     ],
   },
-  { name: 'Contact Us', href: '/contact', icon: Contact },
+  { name: 'Contact', href: '/contact', icon: Contact },
 ];
 
 const socialLinks = [
-  { icon: Facebook, href: '#', label: 'Facebook' },
-  { icon: Youtube, href: '#', label: 'YouTube' },
-  { icon: Linkedin, href: '#', label: 'LinkedIn' },
+  { icon: Facebook, href: '#' },
+  { icon: Youtube, href: '#' },
+  { icon: Linkedin, href: '#' },
 ];
 
 // Bangladesh cities for the modal
@@ -354,42 +315,14 @@ const ThemeToggle = ({ theme, toggleTheme }) => {
 
 export default function Navbar() {
   const { theme, toggleTheme } = useTheme();
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [openDropdown, setOpenDropdown] = useState(null);
   const [scrolled, setScrolled] = useState(false);
-  const [lastScrollY, setLastScrollY] = useState(0);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [showSearch, setShowSearch] = useState(false);
-  const [activeNavItem, setActiveNavItem] = useState('');
-  const [showQuickContact, setShowQuickContact] = useState(false);
-  const [filteredSuggestions, setFilteredSuggestions] = useState([]);
-  const [selectedSuggestionIndex, setSelectedSuggestionIndex] = useState(-1);
-  const [showProductModal, setShowProductModal] = useState(false);
-  const dropdownRefs = useRef({});
-  const searchInputRef = useRef(null);
-  const quickContactRef = useRef(null);
+  const [openDropdown, setOpenDropdown] = useState(null);
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   useEffect(() => {
-    const handleScroll = () => {
-      const currentScrollY = window.scrollY;
-      setScrolled(currentScrollY > 50);
-      setLastScrollY(currentScrollY);
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [lastScrollY]);
-
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (Object.values(dropdownRefs.current).some(ref => ref && !ref.contains(event.target))) {
-        setOpenDropdown(null);
-      }
-      if (quickContactRef.current && !quickContactRef.current.contains(event.target)) {
-        setShowQuickContact(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    const onScroll = () => setScrolled(window.scrollY > 50);
+    window.addEventListener('scroll', onScroll);
+    return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
   useEffect(() => {
@@ -628,6 +561,7 @@ export default function Navbar() {
             </motion.button>
           </div>
         </div>
+      </div>
 
         {/* Search Bar */}
         <AnimatePresence>
@@ -733,23 +667,58 @@ export default function Navbar() {
                     </Link>
                   </div>
                 </div>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </motion.nav>
+              ) : (
+                <Link
+                  key={item.name}
+                  href={item.href}
+                  className="px-4 py-2 font-semibold text-cyan-500 hover:text-cyan-600"
+                >
+                  {item.name}
+                </Link>
+              )
+            )}
+          </div>
 
-      {/* Mobile Menu */}
+          {/* ACTIONS */}
+          <div className="flex items-center gap-3">
+            <button
+              onClick={toggleTheme}
+              className="w-10 h-10 rounded-full bg-cyan-100 dark:bg-gray-700 flex items-center justify-center"
+            >
+              {theme === 'dark' ? <Moon /> : <Sun />}
+            </button>
+
+            <Link href="/get-started" className="hidden lg:flex">
+              <button className="px-6 py-3 rounded-lg bg-gradient-to-r from-cyan-700 to-cyan-600 text-white font-semibold flex items-center gap-2">
+                <Droplet className="w-4 h-4" />
+                Get Started
+              </button>
+            </Link>
+
+            <button
+              onClick={() => setMobileOpen(true)}
+              className="lg:hidden text-cyan-600"
+            >
+              <Menu />
+            </button>
+          </div>
+        </div>
+      </nav>
+
+      {/* MOBILE MENU */}
       <AnimatePresence>
-        {isMobileMenuOpen && (
+        {mobileOpen && (
           <>
             <motion.div
+              onClick={() => setMobileOpen(false)}
+              className="fixed inset-0 bg-black/40 z-40"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={closeMobileMenu}
               className={`fixed inset-0 ${theme === 'dark' ? 'bg-black/70' : 'bg-cyan-700/20'} backdrop-blur-sm z-40 lg:hidden`}
             />
+
             <motion.div
               initial={{ x: '100%' }}
               animate={{ x: 0 }}
