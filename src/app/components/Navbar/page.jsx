@@ -1,12 +1,12 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import {
   Menu, X, ChevronDown, Phone, Mail, Droplet, Home, Info, Package,
   Wrench, FileText, Contact, Facebook, Youtube, Linkedin,
-  Clock, Filter, Users, TestTube, Sparkles, Sun, Moon
+  Clock, Filter, Users, TestTube, Sparkles, Sun, Moon, ArrowRight, MapPin, Shield, Star, Search, Headphones
 } from 'lucide-react';
 import { Target } from 'lucide-react';
 import { useTheme } from '@/app/contexts/ThemeContext';
@@ -26,7 +26,7 @@ const navigationItems = [
       { name: 'Technology', href: '/about/technology', icon: Sparkles },
     ],
   },
-  { name: 'Products', href: '/products', icon: Package },
+  { name: 'Products', href: '/products', icon: Package, isModal: true },
   {
     name: 'Services',
     href: '/services',
@@ -42,9 +42,9 @@ const navigationItems = [
 ];
 
 const socialLinks = [
-  { icon: Facebook, href: '#' },
-  { icon: Youtube, href: '#' },
-  { icon: Linkedin, href: '#' },
+  { icon: Facebook, href: '#', label: 'Facebook' },
+  { icon: Youtube, href: '#', label: 'Youtube' },
+  { icon: Linkedin, href: '#', label: 'Linkedin' },
 ];
 
 // Bangladesh cities for the modal
@@ -318,6 +318,17 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [openDropdown, setOpenDropdown] = useState(null);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [showSearch, setShowSearch] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filteredSuggestions, setFilteredSuggestions] = useState([]);
+  const [selectedSuggestionIndex, setSelectedSuggestionIndex] = useState(-1);
+  const [showQuickContact, setShowQuickContact] = useState(false);
+  const [showProductModal, setShowProductModal] = useState(false);
+  const [activeNavItem, setActiveNavItem] = useState('');
+
+  const searchInputRef = useRef(null);
+  const quickContactRef = useRef(null);
+  const dropdownRefs = useRef({});
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 50);
@@ -348,7 +359,7 @@ export default function Navbar() {
   };
 
   const closeMobileMenu = () => {
-    setIsMobileMenuOpen(false);
+    setMobileOpen(false);
     setOpenDropdown(null);
   };
 
@@ -535,7 +546,7 @@ export default function Navbar() {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
-                <HeadphonesIcon className="w-5 h-5 group-hover:text-cyan-500 transition-colors" />
+                <Headphones className="w-5 h-5 group-hover:text-cyan-500 transition-colors" />
               </motion.button>
 
               <Link href="/get-started">
@@ -553,7 +564,7 @@ export default function Navbar() {
 
             {/* Mobile Menu Toggle */}
             <motion.button
-              onClick={() => setIsMobileMenuOpen(true)}
+              onClick={() => setMobileOpen(true)}
               className={`lg:hidden p-2 rounded-lg ${theme === 'dark' ? 'text-gray-300 hover:bg-gray-800/50' : 'text-cyan-600 hover:bg-cyan-50/50'} transition-colors backdrop-blur-sm`}
               whileTap={{ scale: 0.95 }}
             >
@@ -561,149 +572,116 @@ export default function Navbar() {
             </motion.button>
           </div>
         </div>
-      </div>
+      </motion.nav>
 
-        {/* Search Bar */}
-        <AnimatePresence>
-          {showSearch && (
-            <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: 'auto', opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              className={`hidden lg:block border-t ${theme === 'dark' ? 'border-gray-700/50' : 'border-cyan-200/50'} overflow-hidden backdrop-blur-sm`}
-            >
-              <div className="max-w-7xl mx-auto px-6 lg:px-8 py-4">
-                <div className="relative max-w-2xl mx-auto">
-                  <input
-                    ref={searchInputRef}
-                    type="text"
-                    placeholder="Search for products, plans..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    onKeyDown={handleKeyDown}
-                    className={`w-full pl-12 pr-4 py-3 rounded-lg border ${theme === 'dark' ? 'bg-gray-800/50 border-gray-600/50 focus:border-cyan-500 focus:ring-cyan-500/20' : 'border-cyan-300/50 focus:border-cyan-500 focus:ring-cyan-500/20'} focus:outline-none focus:ring-2 backdrop-blur-sm`}
-                    autoFocus
-                  />
-                  <Search className={`absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 ${theme === 'dark' ? 'text-gray-400' : 'text-cyan-400'}`} />
-                  {searchQuery && (
-                    <motion.button
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      onClick={() => setSearchQuery('')}
-                      className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                    >
-                      <X className="w-5 h-5" />
-                    </motion.button>
-                  )}
-                </div>
-
-                {/* Search Suggestions */}
-                {filteredSuggestions.length > 0 && (
-                  <motion.div
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className={`mt-2 max-w-2xl mx-auto ${theme === 'dark' ? 'bg-gray-800/90' : 'bg-white/90'} backdrop-blur-lg rounded-lg shadow-lg border ${theme === 'dark' ? 'border-gray-700/50' : 'border-cyan-200/50'} overflow-hidden`}
-                  >
-                    {filteredSuggestions.map((suggestion, index) => (
-                      <div
-                        key={index}
-                        onClick={() => {
-                          setSearchQuery(suggestion);
-                          setFilteredSuggestions([]);
-                        }}
-                        className={`px-4 py-2 ${theme === 'dark' ? 'hover:bg-gray-700/50' : 'hover:bg-cyan-50/50'} cursor-pointer flex items-center space-x-2 backdrop-blur-sm ${index === selectedSuggestionIndex ? (theme === 'dark' ? 'bg-gray-700/50' : 'bg-cyan-50/50') : ''
-                          }`}
-                      >
-                        <Search className="w-4 h-4 text-cyan-400" />
-                        <span className={theme === 'dark' ? 'text-gray-200' : ''}>{suggestion}</span>
-                      </div>
-                    ))}
-                  </motion.div>
-                )}
-
-                {searchQuery && filteredSuggestions.length === 0 && (
-                  <motion.div
+      {/* Search Bar */}
+      <AnimatePresence>
+        {showSearch && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            className={`hidden lg:block border-t ${theme === 'dark' ? 'border-gray-700/50' : 'border-cyan-200/50'} overflow-hidden backdrop-blur-sm`}
+          >
+            <div className="max-w-7xl mx-auto px-6 lg:px-8 py-4">
+              <div className="relative max-w-2xl mx-auto">
+                <input
+                  ref={searchInputRef}
+                  type="text"
+                  placeholder="Search for products, plans..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  className={`w-full pl-12 pr-4 py-3 rounded-lg border ${theme === 'dark' ? 'bg-gray-800/50 border-gray-600/50 focus:border-cyan-500 focus:ring-cyan-500/20' : 'border-cyan-300/50 focus:border-cyan-500 focus:ring-cyan-500/20'} focus:outline-none focus:ring-2 backdrop-blur-sm`}
+                  autoFocus
+                />
+                <Search className={`absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 ${theme === 'dark' ? 'text-gray-400' : 'text-cyan-400'}`} />
+                {searchQuery && (
+                  <motion.button
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
-                    className="mt-2 text-center text-sm text-gray-500"
+                    onClick={() => setSearchQuery('')}
+                    className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
                   >
-                    Press <kbd className="px-2 py-1 text-xs bg-gray-100 rounded">Enter</kbd> to search for "{searchQuery}"
-                  </motion.div>
+                    <X className="w-5 h-5" />
+                  </motion.button>
                 )}
               </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
 
-        {/* Quick Contact Form */}
-        <AnimatePresence>
-          {showQuickContact && (
-            <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              className={`hidden lg:block border-t ${theme === 'dark' ? 'border-gray-700/50 bg-gray-800/90' : 'border-cyan-200/50 bg-white/90'} backdrop-blur-lg`}
-              ref={quickContactRef}
-            >
-              <div className="max-w-7xl mx-auto px-6 lg:px-8 py-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-4">
-                    <div className={`p-3 rounded-full ${theme === 'dark' ? 'bg-gray-700/50' : 'bg-cyan-100/50'} backdrop-blur-sm`}>
-                      <HeadphonesIcon className={`w-6 h-6 ${theme === 'dark' ? 'text-cyan-400' : 'text-cyan-600'}`} />
+              {/* Search Suggestions */}
+              {filteredSuggestions.length > 0 && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className={`mt-2 max-w-2xl mx-auto ${theme === 'dark' ? 'bg-gray-800/90' : 'bg-white/90'} backdrop-blur-lg rounded-lg shadow-lg border ${theme === 'dark' ? 'border-gray-700/50' : 'border-cyan-200/50'} overflow-hidden`}
+                >
+                  {filteredSuggestions.map((suggestion, index) => (
+                    <div
+                      key={index}
+                      onClick={() => {
+                        setSearchQuery(suggestion);
+                        setFilteredSuggestions([]);
+                      }}
+                      className={`px-4 py-2 ${theme === 'dark' ? 'hover:bg-gray-700/50' : 'hover:bg-cyan-50/50'} cursor-pointer flex items-center space-x-2 backdrop-blur-sm ${index === selectedSuggestionIndex ? (theme === 'dark' ? 'bg-gray-700/50' : 'bg-cyan-50/50') : ''
+                        }`}
+                    >
+                      <Search className="w-4 h-4 text-cyan-400" />
+                      <span className={theme === 'dark' ? 'text-gray-200' : ''}>{suggestion}</span>
                     </div>
-                    <div>
-                      <h3 className={`font-semibold ${theme === 'dark' ? 'text-gray-100' : 'text-cyan-900'}`}>Need Help?</h3>
-                      <p className="text-sm text-gray-600">Our water experts are ready to assist you</p>
-                    </div>
+                  ))}
+                </motion.div>
+              )}
+
+              {searchQuery && filteredSuggestions.length === 0 && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="mt-2 text-center text-sm text-gray-500"
+                >
+                  Press <kbd className="px-2 py-1 text-xs bg-gray-100 rounded">Enter</kbd> to search for "{searchQuery}"
+                </motion.div>
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Quick Contact Form */}
+      <AnimatePresence>
+        {showQuickContact && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className={`hidden lg:block border-t ${theme === 'dark' ? 'border-gray-700/50 bg-gray-800/90' : 'border-cyan-200/50 bg-white/90'} backdrop-blur-lg`}
+            ref={quickContactRef}
+          >
+            <div className="max-w-7xl mx-auto px-6 lg:px-8 py-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-4">
+                  <div className={`p-3 rounded-full ${theme === 'dark' ? 'bg-gray-700/50' : 'bg-cyan-100/50'} backdrop-blur-sm`}>
+                    <Headphones className={`w-6 h-6 ${theme === 'dark' ? 'text-cyan-400' : 'text-cyan-600'}`} />
                   </div>
-                  <div className="flex items-center space-x-3">
-                    <a href="tel:+880 1919 222 222" className={`flex items-center space-x-2 ${theme === 'dark' ? 'bg-cyan-600/80 hover:bg-cyan-500/80' : 'bg-cyan-700 hover:bg-cyan-600'} text-white px-4 py-2 rounded-lg transition-colors backdrop-blur-sm`}>
-                      <Phone className="w-4 h-4" />
-                      <span>Call Now</span>
-                    </a>
-                    <Link href="/contact" className={`flex items-center space-x-2 ${theme === 'dark' ? 'bg-gray-600/80 hover:bg-gray-500/80' : 'bg-cyan-600 hover:bg-cyan-500'} text-white px-4 py-2 rounded-lg transition-colors backdrop-blur-sm`}>
-                      <Mail className="w-4 h-4" />
-                      <span>Email Us</span>
-                    </Link>
+                  <div>
+                    <h3 className={`font-semibold ${theme === 'dark' ? 'text-gray-100' : 'text-cyan-900'}`}>Need Help?</h3>
+                    <p className="text-sm text-gray-600">Our water experts are ready to assist you</p>
                   </div>
                 </div>
-              ) : (
-                <Link
-                  key={item.name}
-                  href={item.href}
-                  className="px-4 py-2 font-semibold text-cyan-500 hover:text-cyan-600"
-                >
-                  {item.name}
-                </Link>
-              )
-            )}
-          </div>
-
-          {/* ACTIONS */}
-          <div className="flex items-center gap-3">
-            <button
-              onClick={toggleTheme}
-              className="w-10 h-10 rounded-full bg-cyan-100 dark:bg-gray-700 flex items-center justify-center"
-            >
-              {theme === 'dark' ? <Moon /> : <Sun />}
-            </button>
-
-            <Link href="/get-started" className="hidden lg:flex">
-              <button className="px-6 py-3 rounded-lg bg-gradient-to-r from-cyan-700 to-cyan-600 text-white font-semibold flex items-center gap-2">
-                <Droplet className="w-4 h-4" />
-                Get Started
-              </button>
-            </Link>
-
-            <button
-              onClick={() => setMobileOpen(true)}
-              className="lg:hidden text-cyan-600"
-            >
-              <Menu />
-            </button>
-          </div>
-        </div>
-      </nav>
+                <div className="flex items-center space-x-3">
+                  <a href="tel:+880 1919 222 222" className={`flex items-center space-x-2 ${theme === 'dark' ? 'bg-cyan-600/80 hover:bg-cyan-500/80' : 'bg-cyan-700 hover:bg-cyan-600'} text-white px-4 py-2 rounded-lg transition-colors backdrop-blur-sm`}>
+                    <Phone className="w-4 h-4" />
+                    <span>Call Now</span>
+                  </a>
+                  <Link href="/contact" className={`flex items-center space-x-2 ${theme === 'dark' ? 'bg-gray-600/80 hover:bg-gray-500/80' : 'bg-cyan-600 hover:bg-cyan-500'} text-white px-4 py-2 rounded-lg transition-colors backdrop-blur-sm`}>
+                    <Mail className="w-4 h-4" />
+                    <span>Email Us</span>
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* MOBILE MENU */}
       <AnimatePresence>
@@ -851,7 +829,7 @@ export default function Navbar() {
             onClick={() => setShowQuickContact(!showQuickContact)}
             className={`fixed bottom-6 right-6 bg-gradient-to-r ${theme === 'dark' ? 'from-cyan-600 to-cyan-500' : 'from-cyan-700 to-cyan-600'} text-white p-4 rounded-full shadow-lg z-40 lg:hidden backdrop-blur-sm`}
           >
-            <HeadphonesIcon className="w-6 h-6" />
+            <Headphones className="w-6 h-6" />
           </motion.button>
         )}
       </AnimatePresence>
