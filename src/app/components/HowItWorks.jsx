@@ -22,7 +22,7 @@ export default function HowItWorks() {
     "https://cdn.drinkprime.in/production/images/smartwater-subscription/smartwater-subscription.webp",
     "https://cdn.drinkprime.in/production/images/smartwater-subscription/smartwater-subscription.webp",
     "https://cdn.drinkprime.in/production/images/smartwater-subscription/smartwater-subscription.webp",
-    // Add more screenshots here
+    
   ];
 
   return (
@@ -72,7 +72,7 @@ export default function HowItWorks() {
         </div>
 
         {/* RIGHT: Beautiful Phone Slider (HelpDesk Style) */}
-        <div className="relative -mt-78" >
+        <div className="relative -mt-12" >
           <Swiper
             modules={[Navigation, Autoplay]}
             navigation={{
