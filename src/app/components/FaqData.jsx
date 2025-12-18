@@ -143,7 +143,7 @@ function FaqData() {
       </div>
 
       {/* FAQ List/Results */}
-      <div className="bg-white rounded-xl shadow-lg divide-y divide-gray-100">
+      <div className="bg-white rounded-xl p-4 shadow-lg divide-y divide-gray-100">
         {filteredFaqs.length > 0 ? (
           filteredFaqs.map((faq, index) => (
             <AccordionItem

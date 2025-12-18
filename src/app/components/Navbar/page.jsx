@@ -17,7 +17,7 @@ const navigationItems = [
   { name: 'Home', href: '/', icon: Home },
   {
     name: 'About Us',
-    href: '/about',
+    href: '/aboutus',
     icon: Info,
     dropdown: [
       { name: 'Our Story', href: '/about/story', icon: FileText },
