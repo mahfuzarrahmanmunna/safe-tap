@@ -3,8 +3,9 @@ const nextConfig = {
   images: {
     remotePatterns: [
       {
-        protocol: "https",
-        hostname: "cdn.drinkprime.in",
+        protocol: 'https',
+        hostname: "*",
+
       },
       {
         protocol: "https",
@@ -17,6 +18,7 @@ const nextConfig = {
       
     ],
   },
+
 };
 
 export default nextConfig;

@@ -12,7 +12,7 @@ import { PlayCircleIcon, ChevronLeftIcon, ChevronRightIcon } from "@heroicons/re
 
 // --- Data ---
 const testimonialsData = [
-  { name: "Shyamanta Baruah", designation: "IT Professional - Bangalore", quote: "It's just something that you fit and forget. You fit the device, you subscribe to a plan and that's it.", videoTitle: "DRINKPRIME IS TOO GOOD TO BE TRUE" },
+  { name: "Shyamanta Baruah", designation: "IT Professional - Bangalore", quote: "It's just something that you fit and forget. You fit the device, you subscribe to a plan and that's it.", videoTitle: "SafeTap IS TOO GOOD TO BE TRUE" },
   { name: "Varsha", designation: "IT Professional - Bangalore", quote: "We faced throat issues with corporation water, but after switching there are no health issues.", videoTitle: "DRINKING CAUVERY WATER? WATCH THIS!" },
   { name: "Bhanu Prasanna", designation: "Bangalore", quote: "In Bangalore I never felt my drinking water was safe. I started noticing like water flowing in different steps.", videoTitle: "BEST FOR B'LORE WATER!" },
   { name: "Sujit", designation: "Hyderabad", quote: "Quality is super consistent and their service is almost instant.", videoTitle: "WHY I REFER EVERYONE!" },
@@ -50,15 +50,17 @@ export default function CommunitySection() {
   const [isEnd, setIsEnd] = useState(false);
   const swiperRef = useRef(null);
 
-  // Auto slide with reset
+  // Autoplay manually since loop is false
   useEffect(() => {
     const interval = setInterval(() => {
       if (swiperRef.current) {
-        // If swiper reaches end, go back to slide 0, otherwise go to next slide
-        if (swiperRef.current.isEnd) swiperRef.current.slideTo(0);
-        else swiperRef.current.slideNext();
+        if (swiperRef.current.isEnd) {
+          swiperRef.current.slideTo(0);
+        } else {
+          swiperRef.current.slideNext();
+        }
       }
-    }, 3000);
+    }, 2500);
     return () => clearInterval(interval);
   }, []);
 
@@ -73,12 +75,10 @@ export default function CommunitySection() {
             A Thriving Community Of Over{" "}
             <span className="text-cyan-600">1 Million</span>
           </h2>
-          <p className="text-gray-600 mt-6 text-lg">
-            1 in 3 new DrinkPrime users join us via referral. Happy customers
-            understand the impact of pure drinking water.
+          <p className="text-gray-700 mb-6 text-sm">
+            1 in 3 new SafeTap users join us via referral. Happy customers understand the impact of pure drinking water.
           </p>
-          
-         
+
         </div>
 
         {/* SWIPER SECTION (3/4 columns on large screens) */}
@@ -150,16 +150,15 @@ export default function CommunitySection() {
         </div>
       </div>
 
-      {/* FIXED BOTTOM BUTTONS (Removed as they duplicate the buttons in the main content area for the visual style) */}
-      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex gap-4 px-6">
-        <button className="bg-white text-cyan-600 border-2 border-cyan-600 font-bold py-3 px-8 rounded-full hover:bg-cyan-50 shadow-lg transition">
+      {/* Bottom Buttons */}
+      <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50 w-full max-w-7xl px-4 flex justify-center space-x-4 shadow-2xl bg-white  ">
+        <button className="text-cyan-600 border font-bold py-2 px-5 rounded-full hover:bg-cyan-50">
           View Products
         </button>
-        <button className="bg-cyan-600 text-white font-bold py-3 px-8 rounded-full hover:bg-cyan-700 shadow-lg transition">
+        <button className="bg-cyan-600 hover:bg-cyan-700 text-white font-bold py-2 px-5 rounded-full">
           Book Now
         </button>
-      </div> 
-     
+      </div>
     </div>
   );
 }
