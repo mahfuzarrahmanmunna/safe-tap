@@ -9,6 +9,7 @@ import {
   FaCreditCard,
   FaInfinity
 } from 'react-icons/fa';
+import { useTheme } from '@/app/contexts/ThemeContext';
 
 const features = [
   {
@@ -44,18 +45,30 @@ const features = [
 ];
 
 export default function WhyChooseUs() {
+  const { theme } = useTheme(); // 'light' or 'dark'
+
   return (
-    <section className="py-24 px-4 bg-gradient-to-b from-[#f9fff4] to-[#f1fbf8] ">
+    <section className={`py-24 px-4 ${
+      theme === 'dark'
+        ? 'bg-gray-800'
+        : 'bg-gradient-to-b from-[#f9fff4] to-[#f1fbf8]'
+    }`}>
       
       {/* Heading */}
       <motion.h2
         initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
-        className="text-center text-3xl md:text-4xl font-bold text-gray-900"
+        viewport={{ once: true }}
+        className={`text-center text-3xl md:text-4xl font-bold ${
+          theme === 'dark' ? 'text-gray-100' : 'text-gray-900'
+        }`}
       >
         Why you should choose{' '}
-        <span className="text-cyan-600">DrinkPrime</span> Commercial?
+        <span className={theme === 'dark' ? 'text-cyan-400' : 'text-cyan-600'}>
+          DrinkPrime
+        </span>{' '}
+        Commercial?
       </motion.h2>
 
       {/* Cards */}
@@ -65,31 +78,46 @@ export default function WhyChooseUs() {
             key={i}
             initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ delay: i * 0.08 }}
+            transition={{ delay: i * 0.08, duration: 0.6 }}
+            viewport={{ once: true }}
             whileHover={{ y: -8 }}
-            className="
-              bg-white rounded-2xl p-8
+            className={`
+              rounded-2xl p-8
               shadow-md hover:shadow-xl
-              transition relative overflow-hidden
-            "
+              transition-all duration-300 relative overflow-hidden
+              ${theme === 'dark'
+                ? 'bg-gray-800/90 border border-gray-700'
+                : 'bg-white'
+              }
+            `}
           >
-            {/* Lemon Glow */}
-            <div className="absolute -top-10 -right-10 w-32 h-32 bg-cyan-400/20 rounded-full blur-3xl" />
+            {/* Cyan Glow Blob */}
+            <div className={`absolute -top-10 -right-10 w-32 h-32 rounded-full blur-3xl ${
+              theme === 'dark' ? 'bg-cyan-500/30' : 'bg-cyan-400/20'
+            }`} />
 
             {/* Icon */}
-            <div className="
+            <div className={`
               w-14 h-14 rounded-xl
-              bg-gradient-to-br from-lime-400 to-cyan-400
               flex items-center justify-center
               text-white text-xl mb-6
-            ">
+              shadow-lg
+              ${theme === 'dark'
+                ? 'bg-gradient-to-br from-cyan-500 to-emerald-600'
+                : 'bg-gradient-to-br from-lime-400 to-cyan-400'
+              }
+            `}>
               {item.icon}
             </div>
 
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">
+            <h3 className={`text-lg font-semibold mb-2 ${
+              theme === 'dark' ? 'text-gray-100' : 'text-gray-900'
+            }`}>
               {item.title}
             </h3>
-            <p className="text-gray-600 text-sm leading-relaxed">
+            <p className={`text-sm leading-relaxed ${
+              theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
+            }`}>
               {item.desc}
             </p>
           </motion.div>

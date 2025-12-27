@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
+import { useTheme } from '@/app/contexts/ThemeContext';
 
 const drinkPrimePoints = [
   'FREE Delivery & Installation',
@@ -20,71 +21,104 @@ const waterCanPoints = [
 ];
 
 export default function ComparisonSection() {
+  const { theme } = useTheme(); // 'light' or 'dark'
+
   return (
-    <section className="py-24 px-4 bg-gradient-to-b from-cyan-50 to-white">
+    <section className={`py-24 px-4 ${
+      theme === 'dark'
+        ? 'bg-gradient-to-b from-gray-900 to-gray-800'
+        : 'bg-gradient-to-b from-cyan-50 to-white'
+    }`}>
       
       {/* Heading */}
       <motion.h2
         initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
-        className="text-center text-3xl md:text-4xl font-bold text-gray-900"
+        viewport={{ once: true }}
+        className={`text-center text-3xl md:text-4xl font-bold ${
+          theme === 'dark' ? 'text-gray-100' : 'text-gray-900'
+        }`}
       >
         How Is{' '}
-        <span className="text-cyan-700">DrinkPrime Commercial</span>{' '}
+        <span className={theme === 'dark' ? 'text-cyan-400' : 'text-cyan-700'}>
+          DrinkPrime Commercial
+        </span>{' '}
         Better Than Water Cans?
       </motion.h2>
 
       {/* Comparison Cards */}
       <div className="max-w-6xl mx-auto mt-16 grid grid-cols-1 md:grid-cols-2 gap-10">
         
-        {/* DrinkPrime */}
+        {/* DrinkPrime Card */}
         <motion.div
           initial={{ opacity: 0, x: -40 }}
           whileInView={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.6 }}
-          className="
-            bg-white rounded-3xl p-8
-            border border-cyan-200
+          viewport={{ once: true }}
+          className={`
+            rounded-3xl p-8
             shadow-lg relative overflow-hidden
-          "
+            border
+            ${theme === 'dark'
+              ? 'bg-gray-800/90 border-cyan-900/50'
+              : 'bg-white border-cyan-200'
+            }
+          `}
         >
-          {/* Cyan Glow */}
-          <div className="absolute -top-16 -left-16 w-40 h-40 bg-cyan-400/20 rounded-full blur-3xl" />
+          {/* Cyan Glow Blob */}
+          <div className={`absolute -top-16 -left-16 w-40 h-40 rounded-full blur-3xl ${
+            theme === 'dark' ? 'bg-cyan-500/40' : 'bg-cyan-400/20'
+          }`} />
 
-          <h3 className="text-2xl font-semibold text-cyan-600 mb-6">
+          <h3 className={`text-2xl font-semibold mb-6 ${
+            theme === 'dark' ? 'text-cyan-300' : 'text-cyan-600'
+          }`}>
             DrinkPrime Commercial
           </h3>
 
           <ul className="space-y-4">
             {drinkPrimePoints.map((point, i) => (
-              <li key={i} className="flex items-start gap-3 text-gray-700">
-                <FaCheckCircle className="text-cyan-500 mt-1" />
+              <li key={i} className={`flex items-start gap-3 ${
+                theme === 'dark' ? 'text-gray-200' : 'text-gray-700'
+              }`}>
+                <FaCheckCircle className={`mt-1 flex-shrink-0 ${
+                  theme === 'dark' ? 'text-cyan-400' : 'text-cyan-500'
+                }`} />
                 <span>{point}</span>
               </li>
             ))}
           </ul>
         </motion.div>
 
-        {/* Water Can */}
+        {/* Water Can Card */}
         <motion.div
           initial={{ opacity: 0, x: 40 }}
           whileInView={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.6 }}
-          className="
-            bg-gray-50 rounded-3xl p-8
-            border border-gray-200
+          viewport={{ once: true }}
+          className={`
+            rounded-3xl p-8
             shadow-md
-          "
+            border
+            ${theme === 'dark'
+              ? 'bg-gray-800/70 border-gray-700'
+              : 'bg-gray-50 border-gray-200'
+            }
+          `}
         >
-          <h3 className="text-2xl font-semibold text-gray-600 mb-6">
+          <h3 className={`text-2xl font-semibold mb-6 ${
+            theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
+          }`}>
             Water Can
           </h3>
 
           <ul className="space-y-4">
             {waterCanPoints.map((point, i) => (
-              <li key={i} className="flex items-start gap-3 text-gray-600">
-                <FaTimesCircle className="text-red-400 mt-1" />
+              <li key={i} className={`flex items-start gap-3 ${
+                theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
+              }`}>
+                <FaTimesCircle className="mt-1 flex-shrink-0 text-red-400" />
                 <span>{point}</span>
               </li>
             ))}

@@ -63,7 +63,7 @@ const stats = [
 ];
 
 export default function HeroBanner() {
-  const { theme } = useTheme();
+  const { theme } = useTheme(); // Get the current theme
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, amount: 0.3 });
 
@@ -134,7 +134,7 @@ export default function HeroBanner() {
               className={`inline-flex items-center px-4 py-2 rounded-full text-sm font-medium border ${
                 theme === 'dark' 
                   ? 'bg-blue-900/30 text-blue-200 border-blue-800' 
-                  : 'bg-blue-100 text-cyan-800 border-blue-200'
+                  : 'bg-blue-100 text-blue-800 border-blue-200'
               }`}
             >
               <MapPin className="w-4 h-4 mr-2" />
@@ -146,12 +146,12 @@ export default function HeroBanner() {
               className={`text-4xl sm:text-5xl lg:text-6xl font-bold bg-clip-text text-transparent leading-tight ${
                 theme === 'dark' 
                   ? 'bg-gradient-to-r from-blue-400 via-blue-300 to-blue-200' 
-                  : 'bg-gradient-to-r from-cyan-800 via-cyan-800 to-sky-600'
+                  : 'bg-gradient-to-r from-blue-900 via-blue-800 to-sky-600'
               }`}
             >
-              Pure Water ,
+              Pure Water,
               <br />
-              <span >
+              <span className="relative">
                 Pure Life.
                 <svg className="absolute -bottom-2 left-0 w-full" height="8" viewBox="0 0 200 8" fill="none">
                   <motion.path
@@ -208,7 +208,7 @@ export default function HeroBanner() {
                 className={`group relative px-8 py-4 font-bold rounded-lg shadow-xl hover:shadow-2xl transition-all duration-300 flex items-center justify-center space-x-2 overflow-hidden ${
                   theme === 'dark' 
                     ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white' 
-                    : 'bg-gradient-to-r from-cyan-900 to-cyan-800 text-white'
+                    : 'bg-gradient-to-r from-blue-900 to-blue-800 text-white'
                 }`}
               >
                 <span className="relative z-10">Explore Our Products</span>
@@ -216,7 +216,7 @@ export default function HeroBanner() {
                 <div className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 ${
                   theme === 'dark' 
                     ? 'bg-gradient-to-r from-blue-500 to-blue-600' 
-                    : 'bg-gradient-to-r from-sky-600 to-cyan-500'
+                    : 'bg-gradient-to-r from-sky-600 to-blue-700'
                 }`} />
               </motion.button>
               <motion.button
@@ -225,7 +225,7 @@ export default function HeroBanner() {
                 className={`group px-8 py-4 font-bold rounded-lg shadow-xl border-2 flex items-center justify-center space-x-2 transition-all duration-300 ${
                   theme === 'dark' 
                     ? 'bg-gray-800 text-blue-200 border-gray-600 hover:border-blue-500' 
-                    : 'bg-white text-cyan-900 border-blue-200 hover:border-sky-400'
+                    : 'bg-white text-blue-900 border-blue-200 hover:border-sky-400'
                 }`}
               >
                 <Phone className="w-5 h-5" />
