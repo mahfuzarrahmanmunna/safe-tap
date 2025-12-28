@@ -42,7 +42,7 @@ export default function ComparisonSection() {
       >
         How Is{' '}
         <span className={theme === 'dark' ? 'text-cyan-400' : 'text-cyan-700'}>
-          DrinkPrime Commercial
+      SafeTap Commercial
         </span>{' '}
         Better Than Water Cans?
       </motion.h2>
@@ -74,7 +74,7 @@ export default function ComparisonSection() {
           <h3 className={`text-2xl font-semibold mb-6 ${
             theme === 'dark' ? 'text-cyan-300' : 'text-cyan-600'
           }`}>
-            DrinkPrime Commercial
+           SafeTap Commercial
           </h3>
 
           <ul className="space-y-4">

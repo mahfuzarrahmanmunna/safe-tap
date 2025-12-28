@@ -36,7 +36,7 @@ export default function HowItWorks() {
           theme === 'dark' ? 'text-gray-100' : 'text-gray-900'
         }`}>
           <span className={theme === 'dark' ? 'text-cyan-400' : 'text-cyan-700'}>
-            The DrinkPrime App:
+            The SafeTap App:
           </span>{' '}
           Behold The Future of Water <span className='leading-22'>Purification</span>
         </h2>
