@@ -27,7 +27,7 @@ export default function HowItWorks() {
   ];
 
   return (
-    <div className={`max-w-7xl mx-auto px-6 py-16 ${
+    <div className={`max-w-8xl mx-auto px-6 py-16 ${
       theme === 'dark' ? 'bg-gray-900' : 'bg-white'
     }`}>
       {/* Section Title */}
