@@ -7,6 +7,7 @@ import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
 
+
 import { PlayCircleIcon, ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/solid";
 import { useTheme } from "../contexts/ThemeContext";
 
@@ -20,6 +21,7 @@ const testimonialsData = [
 
 // --- Testimonial Card Component ---
 const TestimonialCard = ({ data, theme }) => (
+  
   <div className={`group relative rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-3 overflow-hidden h-full flex flex-col border-b-4 border-cyan-500 ${
     theme === 'dark' ? 'bg-gray-800' : 'bg-white'
   }`}>
@@ -62,7 +64,7 @@ export default function CommunitySection() {
   const [isEnd, setIsEnd] = useState(false);
   const swiperRef = useRef(null);
   const { theme } = useTheme(); // 'light' or 'dark'
-
+const [showActions, setShowActions] = useState(true);
   // Auto slide with reset
   useEffect(() => {
     const interval = setInterval(() => {
@@ -175,19 +177,52 @@ export default function CommunitySection() {
         </div>
       </div>
 
-      {/* FIXED BOTTOM BUTTONS */}
-      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex gap-4 px-6">
-        <button className={`font-bold py-3 px-8 rounded-full shadow-lg transition border-2 ${
+      
+     {/* FIXED BOTTOM BUTTONS */}
+{showActions && (
+  <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex flex-col items-center gap-3 px-6">
+
+    <div className="flex gap-4">
+      <button
+        className={`font-bold py-3 px-8 rounded-full shadow-lg transition border-2 ${
           theme === 'dark'
             ? 'bg-gray-800 text-cyan-400 border-cyan-600 hover:bg-cyan-900/40'
             : 'bg-white text-cyan-600 border-cyan-600 hover:bg-cyan-50'
-        }`}>
-          View Products
-        </button>
-        <button className="bg-cyan-600 text-white font-bold py-3 px-8 rounded-full hover:bg-cyan-700 shadow-lg transition">
-          Book Now
-        </button>
-      </div>
+        }`}
+      >
+        View Products
+      </button>
+
+      <button className="bg-cyan-600 text-white font-bold py-3 px-8 rounded-full hover:bg-cyan-700 shadow-lg transition">
+        Book Now
+      </button>
+    </div>
+
+    {/* CLOSE BUTTON */}
+ <button
+  onClick={() => setShowActions(false)}
+  className={`
+    mt-1 px-6 py-2 rounded-xl
+    backdrop-blur-md bg-white/20
+    border border-white/30
+    shadow-lg
+    text-lg font-semibold
+    transition-all duration-300
+    cursor-pointer
+    hover:scale-105 hover:shadow-xl
+    active:scale-95
+    ${
+      theme === 'dark'
+        ? 'text-gray-200 hover:bg-red-500/20 hover:border-red-400/40'
+        : 'text-gray-700 hover:bg-red-100/60 hover:border-red-300'
+    }
+  `}
+>
+  Close
+</button>
+
+  </div>
+)}
     </div>
   );
 }
