@@ -186,17 +186,19 @@ const ProductModal = ({ isOpen, onClose, theme }) => {
   );
 };
 
-// Theme Toggle Component
-const ThemeToggle = ({ theme, toggleTheme }) => {
+// Theme Toggle Component - Enhanced for mobile
+const ThemeToggle = ({ theme, toggleTheme, size = 'default' }) => {
+  const isSmall = size === 'small';
+  
   return (
     <motion.button
       type="button"
       onClick={toggleTheme}
-      className={`relative w-16 h-8 rounded-full p-1 transition-colors duration-500 focus:outline-none cursor-pointer overflow-hidden ${theme === 'dark' ? 'bg-gradient-to-r from-gray-700 to-gray-900' : 'bg-gradient-to-r from-cyan-200 to-cyan-400'
+      className={`relative ${isSmall ? 'w-12 h-6' : 'w-14 h-7'} rounded-full p-1 transition-colors duration-500 focus:outline-none cursor-pointer overflow-hidden ${theme === 'dark' ? 'bg-gradient-to-r from-gray-700 to-gray-900' : 'bg-gradient-to-r from-cyan-200 to-cyan-400'
         }`}
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
-      aria-label="Toggle theme"
+      aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
     >
       {/* Background glow effect */}
       <motion.div
@@ -224,9 +226,9 @@ const ThemeToggle = ({ theme, toggleTheme }) => {
               {[...Array(3)].map((_, i) => (
                 <motion.div
                   key={i}
-                  className="w-1 h-1 bg-cyan-600 rounded-full"
+                  className={`${isSmall ? 'w-0.5 h-0.5' : 'w-1 h-1'} bg-cyan-600 rounded-full`}
                   initial={{ opacity: 0, y: 0 }}
-                  animate={{ opacity: [0, 1, 0], y: [0, -3, 0] }}
+                  animate={{ opacity: [0, 1, 0], y: [0, -2, 0] }}
                   transition={{
                     duration: 1.5,
                     repeat: Infinity,
@@ -251,9 +253,9 @@ const ThemeToggle = ({ theme, toggleTheme }) => {
               {[...Array(3)].map((_, i) => (
                 <motion.div
                   key={i}
-                  className="w-1 h-1 bg-cyan-300 rounded-full"
+                  className={`${isSmall ? 'w-0.5 h-0.5' : 'w-1 h-1'} bg-cyan-300 rounded-full`}
                   initial={{ opacity: 0, y: 0 }}
-                  animate={{ opacity: [0, 1, 0], y: [0, -3, 0] }}
+                  animate={{ opacity: [0, 1, 0], y: [0, -2, 0] }}
                   transition={{
                     duration: 1.5,
                     repeat: Infinity,
@@ -269,7 +271,7 @@ const ThemeToggle = ({ theme, toggleTheme }) => {
 
       {/* Toggle button with icon */}
       <motion.div
-        className={`absolute top-1 ${theme === 'dark' ? 'right-1' : 'left-1'} w-6 h-6 rounded-full bg-white shadow-lg flex items-center justify-center pointer-events-none`}
+        className={`absolute top-1 ${theme === 'dark' ? 'right-1' : 'left-1'} ${isSmall ? 'w-4 h-4' : 'w-5 h-5'} rounded-full bg-white shadow-lg flex items-center justify-center pointer-events-none`}
         layout
         transition={{
           type: "spring",
@@ -287,7 +289,7 @@ const ThemeToggle = ({ theme, toggleTheme }) => {
               exit={{ rotate: 90, opacity: 0 }}
               transition={{ duration: 0.3, ease: "easeInOut" }}
             >
-              <Moon className="w-4 h-4 text-cyan-700" />
+              <Moon className={`${isSmall ? 'w-3 h-3' : 'w-4 h-4'} text-cyan-700`} />
             </motion.div>
           ) : (
             <motion.div
@@ -297,7 +299,7 @@ const ThemeToggle = ({ theme, toggleTheme }) => {
               exit={{ rotate: -90, opacity: 0 }}
               transition={{ duration: 0.3, ease: "easeInOut" }}
             >
-              <Sun className="w-4 h-4 text-cyan-500" />
+              <Sun className={`${isSmall ? 'w-3 h-3' : 'w-4 h-4'} text-cyan-500`} />
             </motion.div>
           )}
         </AnimatePresence>
@@ -311,6 +313,26 @@ const ThemeToggle = ({ theme, toggleTheme }) => {
         transition={{ duration: 0.6, ease: "easeOut" }}
       />
     </motion.button>
+  );
+};
+
+// Simple Theme Toggle for Mobile Menu (Text-based)
+const MobileThemeToggle = ({ theme, toggleTheme }) => {
+  return (
+    <button
+      onClick={toggleTheme}
+      className={`w-full p-4 rounded-lg ${theme === 'dark' ? 'hover:bg-gray-700/50' : 'hover:bg-cyan-50/50'} transition-colors font-semibold ${theme === 'dark' ? 'text-gray-200' : 'text-cyan-700'} flex items-center justify-between backdrop-blur-sm`}
+    >
+      <div className="flex items-center space-x-2">
+        {theme === 'dark' ? (
+          <Sun className="w-5 h-5 text-cyan-400" />
+        ) : (
+          <Moon className="w-5 h-5 text-cyan-600" />
+        )}
+        <span>Switch to {theme === 'dark' ? 'Light' : 'Dark'} Mode</span>
+      </div>
+      <ThemeToggle theme={theme} toggleTheme={toggleTheme} size="small" />
+    </button>
   );
 };
 
@@ -625,14 +647,21 @@ export default function Navbar() {
               </Link>
             </div>
 
-            {/* Mobile Menu Toggle */}
-            <motion.button
-              onClick={() => setMobileOpen(true)}
-              className={`lg:hidden p-2 rounded-lg ${theme === 'dark' ? 'text-gray-300 hover:bg-gray-800/50' : 'text-cyan-600 hover:bg-cyan-50/50'} transition-colors backdrop-blur-sm`}
-              whileTap={{ scale: 0.95 }}
-            >
-              <Menu className="w-6 h-6" />
-            </motion.button>
+            {/* Mobile Menu Toggle - Now includes theme toggle for mobile */}
+            <div className="flex lg:hidden items-center space-x-2">
+              {/* Mobile Theme Toggle (visible on mobile) */}
+              <div className="md:hidden">
+                <ThemeToggle theme={theme} toggleTheme={toggleTheme} size="small" />
+              </div>
+              
+              <motion.button
+                onClick={() => setMobileOpen(true)}
+                className={`p-2 rounded-lg ${theme === 'dark' ? 'text-gray-300 hover:bg-gray-800/50' : 'text-cyan-600 hover:bg-cyan-50/50'} transition-colors backdrop-blur-sm`}
+                whileTap={{ scale: 0.95 }}
+              >
+                <Menu className="w-6 h-6" />
+              </motion.button>
+            </div>
           </div>
         </div>
       </motion.nav>
@@ -751,7 +780,7 @@ export default function Navbar() {
         {mobileOpen && (
           <>
             <motion.div
-              onClick={() => setMobileOpen(false)}
+              onClick={() => setMobileOpen(true)}
               className="fixed inset-0 bg-black/40 z-40"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -778,6 +807,9 @@ export default function Navbar() {
               </div>
 
               <div className="p-4 space-y-1">
+                {/* Theme Toggle in Mobile Menu */}
+                <MobileThemeToggle theme={theme} toggleTheme={toggleTheme} />
+
                 {navigationItems.map((item) => {
                   if (item.isModal) {
                     // Render Products button that opens modal in mobile menu
@@ -848,9 +880,17 @@ export default function Navbar() {
                   <Link href="/get-started" onClick={closeMobileMenu}>
                     <div className={`block w-full text-center py-3 px-6 bg-gradient-to-r ${theme === 'dark' ? 'from-cyan-600 to-cyan-500' : 'from-cyan-700 to-cyan-600'} text-white font-bold rounded-lg shadow-md hover:from-cyan-600 hover:to-cyan-500 transition-all duration-300 flex items-center justify-center space-x-2 backdrop-blur-sm`}>
                       <Droplet className="w-4 h-4" />
-                      <span>Get Started</span>
+                      <Link href={isCommercial ? '/' : '/commercial'}>
+                  <span className="text-lg">
+                  {isCommercial ? 'For Household' : 'For Business'}
+                </span>
+               </Link>
                     </div>
                   </Link>
+
+
+                   
+                  
 
                   <div className="flex items-center justify-center space-x-4 py-2">
                     <a href="tel:+880 1919 222 222" className={`flex items-center space-x-1 ${theme === 'dark' ? 'text-gray-300' : 'text-cyan-600'} hover:text-cyan-800 transition-colors`}>
