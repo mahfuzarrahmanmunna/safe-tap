@@ -3,7 +3,7 @@
 import { motion, useMotionValue, useTransform, AnimatePresence } from 'framer-motion';
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
-import { ShieldCheck, ArrowRight, Sparkles, Activity } from 'lucide-react';
+import { ShieldCheck, ArrowRight, Sparkles, Activity, Droplets, Settings, Users } from 'lucide-react';
 import { useTheme } from '@/app/contexts/ThemeContext';
 
 const slides = [
@@ -43,7 +43,8 @@ export default function Hero() {
   };
 
   return (
-    <section className={`relative flex items-center justify-center overflow-hidden pt-16 min-h-screen ${
+<div>
+      <section className={`relative flex items-center justify-center overflow-hidden pt-16 min-h-screen ${
       theme === 'dark' ? 'bg-slate-950' : 'bg-white'
     }`}>
       
@@ -134,7 +135,7 @@ export default function Hero() {
               </button>
             </div>
 
-            <div className={`mt-12 flex flex-wrap justify-center lg:justify-start gap-8 pt-10 border-t ${
+            <div className={`mt-10 mb-4 flex flex-wrap justify-center lg:justify-start gap-8 pt-10 border-t ${
               theme === 'dark' ? 'border-gray-800' : 'border-slate-100'
             }`}>
               <div className="flex items-center gap-3">
@@ -311,6 +312,98 @@ export default function Hero() {
           </motion.div>
         </div>
       </div>
+
+
     </section>
+          {/* FEATURE STRIP UNDER HERO */}
+<div className={`w-full relative z-20  transition-all duration-500 ${
+        theme === 'dark' 
+          ? 'bg-slate-900 border-y border-cyan-500/20 shadow-[0_0_30px_rgba(6,182,212,0.1)]' 
+          : 'bg-slate-50 border-y border-slate-200 shadow-sm'
+      }`}>
+        <div className="container mx-auto px-6">
+          <div className="flex flex-col md:flex-row items-center justify-around gap-10 py-4">
+
+            {/* Item 1 */}
+            <div className="group flex items-center gap-5 cursor-pointer">
+              <div className="relative">
+                <div className={`absolute -inset-1 rounded-full blur opacity-20 group-hover:opacity-60 transition duration-500 ${
+                  theme === 'dark' ? 'bg-cyan-500' : 'bg-cyan-400'
+                }`}></div>
+                <div className={`relative w-14 h-14 flex items-center justify-center rounded-full border transition-all duration-300 ${
+                  theme === 'dark' 
+                  ? 'bg-slate-950 border-cyan-500/40 text-cyan-400 group-hover:bg-cyan-600 group-hover:text-white' 
+                  : 'bg-white border-slate-200 text-cyan-600 group-hover:bg-cyan-600 group-hover:text-white group-hover:border-cyan-600'
+                }`}>
+                  <Users size={26} />
+                </div>
+              </div>
+              <div className="flex flex-col">
+                <span className={`text-2xl font-black leading-none tracking-tight ${
+                  theme === 'dark' ? 'bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-white' : 'text-slate-900'
+                }`}>1000+</span>
+                <p className={`text-[11px] font-bold uppercase tracking-[0.15em] mt-1 ${
+                  theme === 'dark' ? 'text-cyan-500/80' : 'text-slate-500'
+                }`}>Businesses Onboarded</p>
+              </div>
+            </div>
+
+            <div className={`hidden md:block h-10 w-px ${theme === 'dark' ? 'bg-gradient-to-b from-transparent via-cyan-500/20 to-transparent' : 'bg-slate-200'}`} />
+
+            {/* Item 2 */}
+            <div className="group flex items-center gap-5 cursor-pointer">
+              <div className="relative">
+                <div className={`absolute -inset-1 rounded-full blur opacity-20 group-hover:opacity-60 transition duration-500 ${
+                  theme === 'dark' ? 'bg-cyan-500' : 'bg-cyan-400'
+                }`}></div>
+                <div className={`relative w-14 h-14 flex items-center justify-center rounded-full border transition-all duration-300 ${
+                  theme === 'dark' 
+                  ? 'bg-slate-950 border-cyan-500/40 text-cyan-400 group-hover:bg-cyan-600 group-hover:text-white' 
+                  : 'bg-white border-slate-200 text-cyan-600 group-hover:bg-cyan-600 group-hover:text-white group-hover:border-cyan-600'
+                }`}>
+                  <Settings size={26} />
+                </div>
+              </div>
+              <div className="flex flex-col">
+                <span className={`text-2xl font-black leading-none tracking-tight ${
+                  theme === 'dark' ? 'bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-white' : 'text-slate-900'
+                }`}>Expert</span>
+                <p className={`text-[11px] font-bold uppercase tracking-[0.15em] mt-1 ${
+                  theme === 'dark' ? 'text-cyan-500/80' : 'text-slate-500'
+                }`}>Technician Fleet</p>
+              </div>
+            </div>
+
+            <div className={`hidden md:block h-10 w-px ${theme === 'dark' ? 'bg-gradient-to-b from-transparent via-cyan-500/20 to-transparent' : 'bg-slate-200'}`} />
+
+            {/* Item 3 */}
+            <div className="group flex items-center gap-5 cursor-pointer">
+              <div className="relative">
+                <div className={`absolute -inset-1 rounded-full blur opacity-20 group-hover:opacity-60 transition duration-500 ${
+                  theme === 'dark' ? 'bg-cyan-500' : 'bg-cyan-400'
+                }`}></div>
+                <div className={`relative w-14 h-14 flex items-center justify-center rounded-full border transition-all duration-300 ${
+                  theme === 'dark' 
+                  ? 'bg-slate-950 border-cyan-500/40 text-cyan-400 group-hover:bg-cyan-600 group-hover:text-white' 
+                  : 'bg-white border-slate-200 text-cyan-600 group-hover:bg-cyan-600 group-hover:text-white group-hover:border-cyan-600'
+                }`}>
+                  <Droplets size={26} />
+                </div>
+              </div>
+              <div className="flex flex-col">
+                <span className={`text-2xl font-black leading-none tracking-tight ${
+                  theme === 'dark' ? 'bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-white' : 'text-slate-900'
+                }`}>Dual</span>
+                <p className={`text-[11px] font-bold uppercase tracking-[0.15em] mt-1 ${
+                  theme === 'dark' ? 'text-cyan-500/80' : 'text-slate-500'
+                }`}>Purification Tech</p>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+</div>
+
   );
 }

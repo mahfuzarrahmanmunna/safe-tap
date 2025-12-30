@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import { Target } from 'lucide-react';
 import { useTheme } from '@/app/contexts/ThemeContext';
+import { usePathname } from 'next/navigation';
 
 /* ------------------ DATA ------------------ */
 
@@ -17,7 +18,7 @@ const navigationItems = [
   { name: 'Home', href: '/', icon: Home },
   {
     name: 'About Us',
-    href: '/aboutus',
+    href: '/pages/about-us',
     icon: Info,
     dropdown: [
       { name: 'Our Story', href: '/about/story', icon: FileText },
@@ -185,17 +186,19 @@ const ProductModal = ({ isOpen, onClose, theme }) => {
   );
 };
 
-// Theme Toggle Component
-const ThemeToggle = ({ theme, toggleTheme }) => {
+// Theme Toggle Component - Enhanced for mobile
+const ThemeToggle = ({ theme, toggleTheme, size = 'default' }) => {
+  const isSmall = size === 'small';
+  
   return (
     <motion.button
       type="button"
       onClick={toggleTheme}
-      className={`relative w-16 h-8 rounded-full p-1 transition-colors duration-500 focus:outline-none cursor-pointer overflow-hidden ${theme === 'dark' ? 'bg-gradient-to-r from-gray-700 to-gray-900' : 'bg-gradient-to-r from-cyan-200 to-cyan-400'
+      className={`relative ${isSmall ? 'w-12 h-6' : 'w-14 h-7'} rounded-full p-1 transition-colors duration-500 focus:outline-none cursor-pointer overflow-hidden ${theme === 'dark' ? 'bg-gradient-to-r from-gray-700 to-gray-900' : 'bg-gradient-to-r from-cyan-200 to-cyan-400'
         }`}
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
-      aria-label="Toggle theme"
+      aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
     >
       {/* Background glow effect */}
       <motion.div
@@ -223,9 +226,9 @@ const ThemeToggle = ({ theme, toggleTheme }) => {
               {[...Array(3)].map((_, i) => (
                 <motion.div
                   key={i}
-                  className="w-1 h-1 bg-cyan-600 rounded-full"
+                  className={`${isSmall ? 'w-0.5 h-0.5' : 'w-1 h-1'} bg-cyan-600 rounded-full`}
                   initial={{ opacity: 0, y: 0 }}
-                  animate={{ opacity: [0, 1, 0], y: [0, -3, 0] }}
+                  animate={{ opacity: [0, 1, 0], y: [0, -2, 0] }}
                   transition={{
                     duration: 1.5,
                     repeat: Infinity,
@@ -250,9 +253,9 @@ const ThemeToggle = ({ theme, toggleTheme }) => {
               {[...Array(3)].map((_, i) => (
                 <motion.div
                   key={i}
-                  className="w-1 h-1 bg-cyan-300 rounded-full"
+                  className={`${isSmall ? 'w-0.5 h-0.5' : 'w-1 h-1'} bg-cyan-300 rounded-full`}
                   initial={{ opacity: 0, y: 0 }}
-                  animate={{ opacity: [0, 1, 0], y: [0, -3, 0] }}
+                  animate={{ opacity: [0, 1, 0], y: [0, -2, 0] }}
                   transition={{
                     duration: 1.5,
                     repeat: Infinity,
@@ -268,7 +271,7 @@ const ThemeToggle = ({ theme, toggleTheme }) => {
 
       {/* Toggle button with icon */}
       <motion.div
-        className={`absolute top-1 ${theme === 'dark' ? 'right-1' : 'left-1'} w-6 h-6 rounded-full bg-white shadow-lg flex items-center justify-center pointer-events-none`}
+        className={`absolute top-1 ${theme === 'dark' ? 'right-1' : 'left-1'} ${isSmall ? 'w-4 h-4' : 'w-5 h-5'} rounded-full bg-white shadow-lg flex items-center justify-center pointer-events-none`}
         layout
         transition={{
           type: "spring",
@@ -286,7 +289,7 @@ const ThemeToggle = ({ theme, toggleTheme }) => {
               exit={{ rotate: 90, opacity: 0 }}
               transition={{ duration: 0.3, ease: "easeInOut" }}
             >
-              <Moon className="w-4 h-4 text-cyan-700" />
+              <Moon className={`${isSmall ? 'w-3 h-3' : 'w-4 h-4'} text-cyan-700`} />
             </motion.div>
           ) : (
             <motion.div
@@ -296,7 +299,7 @@ const ThemeToggle = ({ theme, toggleTheme }) => {
               exit={{ rotate: -90, opacity: 0 }}
               transition={{ duration: 0.3, ease: "easeInOut" }}
             >
-              <Sun className="w-4 h-4 text-cyan-500" />
+              <Sun className={`${isSmall ? 'w-3 h-3' : 'w-4 h-4'} text-cyan-500`} />
             </motion.div>
           )}
         </AnimatePresence>
@@ -313,6 +316,26 @@ const ThemeToggle = ({ theme, toggleTheme }) => {
   );
 };
 
+// Simple Theme Toggle for Mobile Menu (Text-based)
+const MobileThemeToggle = ({ theme, toggleTheme }) => {
+  return (
+    <button
+      onClick={toggleTheme}
+      className={`w-full p-4 rounded-lg ${theme === 'dark' ? 'hover:bg-gray-700/50' : 'hover:bg-cyan-50/50'} transition-colors font-semibold ${theme === 'dark' ? 'text-gray-200' : 'text-cyan-700'} flex items-center justify-between backdrop-blur-sm`}
+    >
+      <div className="flex items-center space-x-2">
+        {theme === 'dark' ? (
+          <Sun className="w-5 h-5 text-cyan-400" />
+        ) : (
+          <Moon className="w-5 h-5 text-cyan-600" />
+        )}
+        <span>Switch to {theme === 'dark' ? 'Light' : 'Dark'} Mode</span>
+      </div>
+      <ThemeToggle theme={theme} toggleTheme={toggleTheme} size="small" />
+    </button>
+  );
+};
+
 export default function Navbar() {
   const { theme, toggleTheme } = useTheme();
   const [scrolled, setScrolled] = useState(false);
@@ -325,11 +348,11 @@ export default function Navbar() {
   const [showQuickContact, setShowQuickContact] = useState(false);
   const [showProductModal, setShowProductModal] = useState(false);
   const [activeNavItem, setActiveNavItem] = useState('');
-
+   const pathname = usePathname();
   const searchInputRef = useRef(null);
   const quickContactRef = useRef(null);
   const dropdownRefs = useRef({});
-
+  const isCommercial = pathname === '/commercial';
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 50);
     window.addEventListener('scroll', onScroll);
@@ -466,53 +489,109 @@ export default function Navbar() {
                       <span className={`absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r ${theme === 'dark' ? 'from-cyan-400 to-cyan-500' : 'from-cyan-400 to-cyan-600'} transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left`} />
                     </button>
                   );
-                } else if (item.dropdown) {
-                  const isOpen = openDropdown === item.name;
-                  return (
-                    <div key={item.name} ref={(el) => (dropdownRefs.current[item.name] = el)} className="relative">
-                      <button
-                        onClick={() => handleDropdownToggle(item.name)}
-                        onMouseEnter={() => setOpenDropdown(item.name)}
-                        className={`flex items-center space-x-1 ${scrolled ? 'px-3 py-4' : 'px-5 py-6'} font-semibold ${theme === 'dark' ? 'text-gray-200 hover:text-white' : 'text-cyan-700 hover:text-cyan-900'} transition-colors relative group`}
-                      >
-                        <span>{item.name}</span>
-                        <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} />
-                        <span className={`absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r ${theme === 'dark' ? 'from-cyan-400 to-cyan-500' : 'from-cyan-400 to-cyan-600'} transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left`} />
-                      </button>
+              } else if (item.dropdown) {
+  const isOpen = openDropdown === item.name;
 
-                      <AnimatePresence>
-                        {isOpen && (
-                          <motion.div
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: 10 }}
-                            transition={{ duration: 0.2 }}
-                            onMouseLeave={() => setOpenDropdown(null)}
-                            className={`absolute top-full left-0 mt-1 w-72 ${theme === 'dark' ? 'bg-gray-800/90' : 'bg-white/90'} backdrop-blur-lg rounded-xl shadow-2xl border ${theme === 'dark' ? 'border-gray-700/50' : 'border-cyan-200/50'} overflow-hidden`}
-                          >
-                            <div className={`bg-gradient-to-r ${theme === 'dark' ? 'from-cyan-700/90 to-cyan-600/90' : 'from-cyan-700 to-cyan-600'} text-white px-5 py-3 backdrop-blur-sm`}>
-                              <h3 className="font-bold text-lg">{item.name}</h3>
-                            </div>
-                            {item.dropdown.map((subItem, index) => (
-                              <Link key={subItem.name} href={subItem.href} onClick={() => setOpenDropdown(null)}>
-                                <motion.div
-                                  initial={{ opacity: 0, x: -10 }}
-                                  animate={{ opacity: 1, x: 0 }}
-                                  transition={{ duration: 0.1, delay: index * 0.05 }}
-                                  className={`px-5 py-3 ${theme === 'dark' ? 'hover:bg-gray-700/50' : 'hover:bg-cyan-50/50'} transition-colors border-l-2 border-transparent hover:border-cyan-500 flex items-center space-x-3 group backdrop-blur-sm`}
-                                >
-                                  {subItem.icon && <subItem.icon className="w-4 h-4 text-cyan-500 group-hover:text-cyan-600" />}
-                                  <span className={`font-medium ${theme === 'dark' ? 'text-gray-200 group-hover:text-white' : 'text-cyan-700 group-hover:text-cyan-900'}`}>{subItem.name}</span>
-                                  <ArrowRight className="w-3 h-3 text-cyan-400 opacity-0 group-hover:opacity-100 transition-opacity ml-auto" />
-                                </motion.div>
-                              </Link>
-                            ))}
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
-                    </div>
-                  );
-                }
+  return (
+    <div
+      key={item.name}
+      ref={(el) => (dropdownRefs.current[item.name] = el)}
+      className="relative flex items-center"
+      onMouseEnter={() => setOpenDropdown(item.name)}
+      onMouseLeave={() => setOpenDropdown(null)}
+    >
+      {/*  MAIN LINK (About Us → /about-us) */}
+      <Link
+        href={item.href}
+        className={`flex items-center ${scrolled ? 'px-3 py-4' : 'px-5 py-6'}
+        font-semibold ${theme === 'dark'
+          ? 'text-gray-200 hover:text-white'
+          : 'text-cyan-700 hover:text-cyan-900'}
+        transition-colors relative group`}
+      >
+        <span>{item.name}</span>
+        <span
+          className={`absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r
+          ${theme === 'dark'
+            ? 'from-cyan-400 to-cyan-500'
+            : 'from-cyan-400 to-cyan-600'}
+          transform scale-x-0 group-hover:scale-x-100
+          transition-transform duration-300 origin-left`}
+        />
+      </Link>
+
+      {/* ⬇️ DROPDOWN TOGGLE ONLY */}
+      <button
+        onClick={(e) => {
+          e.stopPropagation();
+          handleDropdownToggle(item.name);
+        }}
+        className="ml-1 p-1"
+      >
+        <ChevronDown
+          className={`w-4 h-4 transition-transform duration-300
+          ${isOpen ? 'rotate-180' : ''}`}
+        />
+      </button>
+
+      {/* DROPDOWN MENU */}
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 10 }}
+            transition={{ duration: 0.2 }}
+            className={`absolute top-full left-0 mt-1 w-72
+            ${theme === 'dark' ? 'bg-gray-800/90 text-white' : 'bg-white/90'}
+            backdrop-blur-lg rounded-xl shadow-2xl border
+            ${theme === 'dark'
+              ? 'border-gray-700/50'
+              : 'border-cyan-200/50'}
+            overflow-hidden`}
+          >
+            <div
+              className={`bg-gradient-to-r
+              ${theme === 'dark'
+                ? 'from-cyan-700/90 to-cyan-600/90'
+                : 'from-cyan-700 to-cyan-600'}
+              text-white px-5 py-3`}
+            >
+              <h3 className="font-bold text-lg">{item.name}</h3>
+            </div>
+
+            {item.dropdown.map((subItem, index) => (
+              <Link
+                key={subItem.name}
+                href={subItem.href}
+                onClick={() => setOpenDropdown(null)}
+              >
+                <motion.div
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.1, delay: index * 0.05 }}
+                  className={`px-5 py-3
+                  ${theme === 'dark'
+                    ? 'hover:bg-gray-700/50'
+                    : 'hover:bg-cyan-50/50'}
+                  transition-colors border-l-2 border-transparent
+                  hover:border-cyan-500 flex items-center space-x-3 group`}
+                >
+                  {subItem.icon && (
+                    <subItem.icon className="w-4 h-4 text-cyan-500" />
+                  )}
+                  <span className="font-medium">{subItem.name}</span>
+                  <ArrowRight className="w-3 h-3 text-cyan-400 opacity-0 group-hover:opacity-100 ml-auto" />
+                </motion.div>
+              </Link>
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
                 return (
                   <Link key={item.name} href={item.href}>
                     <div className={`${scrolled ? 'px-3 py-4' : 'px-5 py-6'} font-semibold ${theme === 'dark' ? 'text-gray-200 hover:text-white' : 'text-cyan-700 hover:text-cyan-900'} transition-colors relative group`}>
@@ -556,20 +635,33 @@ export default function Navbar() {
                   whileTap={{ scale: 0.98 }}
                 >
                   <Droplet className="w-4 h-4" />
-                  <span>Get Started</span>
+                
+                   <Link href={isCommercial ? '/' : '/commercial'}>
+                  <span className="text-lg">
+                  {isCommercial ? 'For Household' : 'For Business'}
+                </span>
+               </Link>
+                
                   <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </motion.button>
               </Link>
             </div>
 
-            {/* Mobile Menu Toggle */}
-            <motion.button
-              onClick={() => setMobileOpen(true)}
-              className={`lg:hidden p-2 rounded-lg ${theme === 'dark' ? 'text-gray-300 hover:bg-gray-800/50' : 'text-cyan-600 hover:bg-cyan-50/50'} transition-colors backdrop-blur-sm`}
-              whileTap={{ scale: 0.95 }}
-            >
-              <Menu className="w-6 h-6" />
-            </motion.button>
+            {/* Mobile Menu Toggle - Now includes theme toggle for mobile */}
+            <div className="flex lg:hidden items-center space-x-2">
+              {/* Mobile Theme Toggle (visible on mobile) */}
+              <div className="md:hidden">
+                <ThemeToggle theme={theme} toggleTheme={toggleTheme} size="small" />
+              </div>
+              
+              <motion.button
+                onClick={() => setMobileOpen(true)}
+                className={`p-2 rounded-lg ${theme === 'dark' ? 'text-gray-300 hover:bg-gray-800/50' : 'text-cyan-600 hover:bg-cyan-50/50'} transition-colors backdrop-blur-sm`}
+                whileTap={{ scale: 0.95 }}
+              >
+                <Menu className="w-6 h-6" />
+              </motion.button>
+            </div>
           </div>
         </div>
       </motion.nav>
@@ -688,7 +780,7 @@ export default function Navbar() {
         {mobileOpen && (
           <>
             <motion.div
-              onClick={() => setMobileOpen(false)}
+              onClick={() => setMobileOpen(true)}
               className="fixed inset-0 bg-black/40 z-40"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -715,6 +807,9 @@ export default function Navbar() {
               </div>
 
               <div className="p-4 space-y-1">
+                {/* Theme Toggle in Mobile Menu */}
+                <MobileThemeToggle theme={theme} toggleTheme={toggleTheme} />
+
                 {navigationItems.map((item) => {
                   if (item.isModal) {
                     // Render Products button that opens modal in mobile menu
@@ -785,9 +880,17 @@ export default function Navbar() {
                   <Link href="/get-started" onClick={closeMobileMenu}>
                     <div className={`block w-full text-center py-3 px-6 bg-gradient-to-r ${theme === 'dark' ? 'from-cyan-600 to-cyan-500' : 'from-cyan-700 to-cyan-600'} text-white font-bold rounded-lg shadow-md hover:from-cyan-600 hover:to-cyan-500 transition-all duration-300 flex items-center justify-center space-x-2 backdrop-blur-sm`}>
                       <Droplet className="w-4 h-4" />
-                      <span>Get Started</span>
+                      <Link href={isCommercial ? '/' : '/commercial'}>
+                  <span className="text-lg">
+                  {isCommercial ? 'For Household' : 'For Business'}
+                </span>
+               </Link>
                     </div>
                   </Link>
+
+
+                   
+                  
 
                   <div className="flex items-center justify-center space-x-4 py-2">
                     <a href="tel:+880 1919 222 222" className={`flex items-center space-x-1 ${theme === 'dark' ? 'text-gray-300' : 'text-cyan-600'} hover:text-cyan-800 transition-colors`}>

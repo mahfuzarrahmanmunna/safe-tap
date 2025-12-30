@@ -66,7 +66,7 @@ export default function WhyChooseUs() {
       >
         Why you should choose{' '}
         <span className={theme === 'dark' ? 'text-cyan-400' : 'text-cyan-600'}>
-          DrinkPrime
+       SafeTap
         </span>{' '}
         Commercial?
       </motion.h2>
