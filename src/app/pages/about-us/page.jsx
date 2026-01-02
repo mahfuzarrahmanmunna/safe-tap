@@ -38,7 +38,7 @@ export default function AboutUs() {
           <h1 className={`text-5xl md:text-5xl font-extrabold tracking-tight ${
             theme === 'dark' ? 'text-white' : 'text-slate-900'
           }`}>
-            About <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-500 to-blue-400">DrinkPrime</span>
+            About <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-500 to-blue-400">SafeTap</span>
           </h1>
           <p className={`mt-6 text-lg max-w-2xl mx-auto leading-relaxed ${
             theme === 'dark' ? 'text-gray-300' : 'text-slate-600'
@@ -61,8 +61,8 @@ export default function AboutUs() {
               theme === 'dark' ? 'text-gray-300' : 'text-slate-600'
             }`}>
               <p>
-                DrinkPrime’s journey began with a simple yet common struggle faced by two flatmates, 
-                <span className="font-bold text-cyan-500"> Manas Ranjan Hota</span> and <span className="font-bold text-cyan-500">Vijender Reddy Muthyala</span>. 
+                SafeTap journey began with a simple yet common struggle faced by two flatmates, 
+                <span className="font-bold text-cyan-500"> A </span> and <span className="font-bold text-cyan-500">B</span>. 
                 Finding safe water was a daily challenge.
               </p>
               <p className={`italic rounded-r-2xl p-6 border-l-4 border-cyan-500 ${
@@ -86,7 +86,7 @@ export default function AboutUs() {
                 : 'bg-cyan-600 text-white shadow-cyan-200'
             }`}>
               <h3 className="text-4xl font-bold">9+</h3>
-              <p className={theme === 'dark' ? 'text-cyan-200' : 'text-cyan-100'} mt-2>Cities across India</p>
+              <p className={theme === 'dark' ? 'text-cyan-200' : 'text-cyan-100'} mt-2>Cities across Bangladesh</p>
             </div>
             <div className={`p-8 rounded-[2rem] shadow-xl ${
               theme === 'dark'
@@ -104,8 +104,8 @@ export default function AboutUs() {
       <section className={`py-24 px-6 ${theme === 'dark' ? 'bg-gray-800' : 'bg-slate-50'}`}>
         <div className="max-w-7xl mx-auto grid md:grid-cols-3 gap-8">
           {[
-            { title: 'Mission', icon: <Target className={theme === 'dark' ? 'text-cyan-400' : 'text-cyan-600'} />, text: 'Providing every Indian household with safe, high-quality water through innovative solutions.' },
-            { title: 'Vision', icon: <Lightbulb className={theme === 'dark' ? 'text-blue-400' : 'text-blue-600'} />, text: 'To become India’s most preferred smart water purifier brand with zero environmental impact.' },
+            { title: 'Mission', icon: <Target className={theme === 'dark' ? 'text-cyan-400' : 'text-cyan-600'} />, text: 'Providing every Bangladeshi household with safe, high-quality water through innovative solutions.' },
+            { title: 'Vision', icon: <Lightbulb className={theme === 'dark' ? 'text-blue-400' : 'text-blue-600'} />, text: 'To become Bangladeshi most preferred smart water purifier brand with zero environmental impact.' },
             { title: 'Values', icon: <Heart className={theme === 'dark' ? 'text-rose-400' : 'text-rose-500'} />, text: 'Customer-centric innovation, affordability, trust, and sustainability guide us.' },
           ].map((item, i) => (
             <motion.div 
@@ -154,7 +154,7 @@ export default function AboutUs() {
                   theme === 'dark' ? 'text-gray-100' : 'text-slate-900'
                 }`}>{item.title}</h3>
                 <p className={theme === 'dark' ? 'text-gray-300' : 'text-slate-600'} mb-6>{item.desc}</p>
-                <span className={`text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full ${
+                <span className={`text-xs font-bold uppercase tracking-widest px-3 py-1  rounded-full ${
                   theme === 'dark'
                     ? 'text-cyan-300 bg-cyan-900/40'
                     : 'text-cyan-700 bg-cyan-50'
@@ -198,8 +198,8 @@ export default function AboutUs() {
         }`}>Driven by Visionaries</h2>
         <div className="flex flex-wrap justify-center gap-12">
           {[
-            { name: 'Vijender Reddy Muthyala', role: 'CEO & Founder' },
-            { name: 'Manas Ranjan Hota', role: 'CMO & Co-Founder' }
+            { name: 'X', role: 'CEO & Founder' },
+            { name: 'Y', role: 'CMO & Co-Founder' }
           ].map((leader, i) => (
             <div key={i} className="flex flex-col items-center">
               <div className={`w-24 h-24 rounded-full mb-6 flex items-center justify-center ${
@@ -230,7 +230,7 @@ export default function AboutUs() {
             <p className={`mb-10 text-lg max-w-xl mx-auto ${
               theme === 'dark' ? 'text-cyan-200' : 'text-cyan-100'
             }`}>
-              Join 2.5 Lakh households already enjoying DrinkPrime’s hassle-free subscription.
+              Join 2.5 Lakh households already enjoying SafeTap hassle-free subscription.
             </p>
             <motion.button 
               whileHover={{ scale: 1.05 }}

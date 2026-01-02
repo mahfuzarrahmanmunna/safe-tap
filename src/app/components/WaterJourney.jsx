@@ -5,12 +5,12 @@ import { useEffect, useState } from "react";
 import { useTheme } from "@/app/contexts/ThemeContext";
 
 const cities = [
-  { name: "Bengaluru", homes: "12k+ Homes" },
-  { name: "Delhi NCR", homes: "18k+ Homes" },
-  { name: "Mumbai", homes: "15k+ Homes" },
-  { name: "Hyderabad", homes: "10k+ Homes" },
-  { name: "Chennai", homes: "9k+ Homes" },
-  { name: "Kolkata", homes: "7k+ Homes" },
+  { name: "Dhaka", homes: "12k+ Homes" },
+  { name: "Chattogram", homes: "18k+ Homes" },
+  { name: "Khulna", homes: "15k+ Homes" },
+  { name: "Barishal", homes: "10k+ Homes" },
+  { name: "Rangpur", homes: "9k+ Homes" },
+  { name: "Sylhet", homes: "7k+ Homes" },
 ];
 
 export default function WaterJourney() {

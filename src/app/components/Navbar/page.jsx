@@ -10,7 +10,7 @@ import {
 } from 'lucide-react';
 import { Target } from 'lucide-react';
 import { useTheme } from '@/app/contexts/ThemeContext';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 
 /* ------------------ DATA ------------------ */
 
@@ -27,7 +27,10 @@ const navigationItems = [
       { name: 'Technology', href: '/about/technology', icon: Sparkles },
     ],
   },
-  { name: 'Products', href: '/products', icon: Package, isModal: true },
+  { name: 'Products', href: '/products', icon: Package, isModal: true 
+
+    
+  },
   {
     name: 'Services',
     href: '/services',
@@ -39,7 +42,7 @@ const navigationItems = [
       { name: 'Water Testing', href: '/services/water-testing', icon: TestTube },
     ],
   },
-  { name: 'Contact', href: '/contact', icon: Contact },
+  { name: 'Contact', href: '/pages/contact', icon: Contact },
 ];
 
 const socialLinks = [
@@ -67,10 +70,9 @@ const bangladeshCities = [
 const productTypes = [
   { name: 'SafeTap Copper', icon: Droplet, description: 'Infused with copper benefits' },
   { name: 'SafeTap Alkaline', icon: Droplet, description: 'Balanced pH water' },
-  { name: 'SafeTap Mineral', icon: Droplet, description: 'Essential minerals added' },
-  { name: 'SafeTap Vitamin', icon: Droplet, description: 'Vitamin enriched water' },
-  { name: 'SafeTap Plus', icon: Droplet, description: 'Advanced filtration' },
-  { name: 'SafeTap Kids', icon: Droplet, description: 'Specially designed for children' },
+  { name: 'SafeTap RO+', icon: Droplet, description: 'Essential minerals added' },
+  { name: 'SafeTap Under The Sink', icon: Droplet, description: 'Vitamin enriched water' },
+  { name: 'SafeTap UV', icon: Droplet, description: 'Advanced filtration' },
 ];
 
 // Search suggestions for autocomplete
@@ -85,8 +87,14 @@ const searchSuggestions = [
   'Mobile App Features',
 ];
 
+
 // Product Modal Component
 const ProductModal = ({ isOpen, onClose, theme }) => {
+  const router = useRouter()
+  const handleCityClick = (city) => {
+  const slug = city.toLowerCase().replace(/\s+/g, '-');
+  router.push(`/products/${slug}`);
+};
   if (!isOpen) return null;
 
   return (
@@ -157,6 +165,7 @@ const ProductModal = ({ isOpen, onClose, theme }) => {
                     {bangladeshCities.map((city, index) => (
                       <motion.div
                         key={city}
+                       onClick={() => handleCityClick(city)}
                         initial={{ opacity: 0, x: 20 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ duration: 0.3, delay: index * 0.05 }}
@@ -352,6 +361,7 @@ export default function Navbar() {
   const searchInputRef = useRef(null);
   const quickContactRef = useRef(null);
   const dropdownRefs = useRef({});
+  // const router = useRouter()
   const isCommercial = pathname === '/commercial';
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 50);
