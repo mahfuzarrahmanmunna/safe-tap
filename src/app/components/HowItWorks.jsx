@@ -16,8 +16,8 @@ export default function HowItWorks() {
     { icon: <FaCalendarCheck className="text-2xl" />, title: "Book the Perfect Plan for You" },
     { icon: <FaUserCheck className="text-2xl" />, title: "Submit your details" },
     { icon: <FaRupeeSign className="text-2xl" />, title: "Make the Payment" },
-    { icon: <FaTools className="text-2xl" />, title: "Get DrinkPrime Installed in 48 hours!" },
-    { icon: <FaMobileAlt className="text-2xl" />, title: "Connect your device to DrinkPrime app" },
+    { icon: <FaTools className="text-2xl" />, title: "Get SafeTap Installed in 48 hours!" },
+    { icon: <FaMobileAlt className="text-2xl" />, title: "Connect your device to SafeTap app" },
   ];
 
   const phoneSlides = [
@@ -142,7 +142,7 @@ export default function HowItWorks() {
                         ? 'bg-cyan-600 text-white'
                         : 'bg-cyan-700 text-white'
                     }`}>
-                      DrinkPrime App
+                     SafeTap App
                     </div>
                   </div>
                 </div>
