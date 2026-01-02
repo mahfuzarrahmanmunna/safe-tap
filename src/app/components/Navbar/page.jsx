@@ -27,10 +27,7 @@ const navigationItems = [
       { name: 'Technology', href: '/about/technology', icon: Sparkles },
     ],
   },
-  { name: 'Products', href: '/products', icon: Package, isModal: true 
-
-    
-  },
+  { name: 'Products', href: '/products', icon: Package, isModal: true },
   {
     name: 'Services',
     href: '/services',
@@ -87,14 +84,15 @@ const searchSuggestions = [
   'Mobile App Features',
 ];
 
-
 // Product Modal Component
 const ProductModal = ({ isOpen, onClose, theme }) => {
-  const router = useRouter()
+  const router = useRouter();
+  
   const handleCityClick = (city) => {
-  const slug = city.toLowerCase().replace(/\s+/g, '-');
-  router.push(`/products/${slug}`);
-};
+    const slug = city.toLowerCase().replace(/\s+/g, '-');
+    router.push(`/products/${slug}`);
+  };
+  
   if (!isOpen) return null;
 
   return (
@@ -165,7 +163,7 @@ const ProductModal = ({ isOpen, onClose, theme }) => {
                     {bangladeshCities.map((city, index) => (
                       <motion.div
                         key={city}
-                       onClick={() => handleCityClick(city)}
+                        onClick={() => handleCityClick(city)}
                         initial={{ opacity: 0, x: 20 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ duration: 0.3, delay: index * 0.05 }}
@@ -203,8 +201,7 @@ const ThemeToggle = ({ theme, toggleTheme, size = 'default' }) => {
     <motion.button
       type="button"
       onClick={toggleTheme}
-      className={`relative ${isSmall ? 'w-12 h-6' : 'w-14 h-7'} rounded-full p-1 transition-colors duration-500 focus:outline-none cursor-pointer overflow-hidden ${theme === 'dark' ? 'bg-gradient-to-r from-gray-700 to-gray-900' : 'bg-gradient-to-r from-cyan-200 to-cyan-400'
-        }`}
+      className={`relative ${isSmall ? 'w-12 h-6' : 'w-14 h-7'} rounded-full p-1 transition-colors duration-500 focus:outline-none cursor-pointer overflow-hidden ${theme === 'dark' ? 'bg-gradient-to-r from-gray-700 to-gray-900' : 'bg-gradient-to-r from-cyan-200 to-cyan-400'}`}
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
       aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
@@ -357,12 +354,13 @@ export default function Navbar() {
   const [showQuickContact, setShowQuickContact] = useState(false);
   const [showProductModal, setShowProductModal] = useState(false);
   const [activeNavItem, setActiveNavItem] = useState('');
-   const pathname = usePathname();
+  const pathname = usePathname();
   const searchInputRef = useRef(null);
   const quickContactRef = useRef(null);
   const dropdownRefs = useRef({});
-  // const router = useRouter()
+  
   const isCommercial = pathname === '/commercial';
+
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 50);
     window.addEventListener('scroll', onScroll);
@@ -473,7 +471,7 @@ export default function Navbar() {
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className={`flex justify-between items-center ${scrolled ? 'h-16' : 'h-20 lg:h-24'} transition-all duration-300`}>
-            {/* Logo Section - Updated for Bangladesh Water Purification Service */}
+            {/* Logo Section */}
             <Link href="/" className="flex items-center space-x-3 group">
               <div className={`bg-gradient-to-br ${theme === 'dark' ? 'from-cyan-700 to-cyan-600' : 'from-cyan-700 to-cyan-600'} rounded-xl shadow-lg flex items-center justify-center transition-all duration-300 group-hover:shadow-xl ${scrolled ? 'w-10 h-10' : 'w-12 h-12 lg:w-14 lg:h-14'} backdrop-blur-sm`}>
                 <Droplet className={`${scrolled ? 'w-5 h-5' : 'w-7 h-7 lg:w-8 lg:h-8'} text-white group-hover:scale-110 transition-transform`} fill="currentColor" />
@@ -488,7 +486,6 @@ export default function Navbar() {
             <div className="hidden lg:flex items-center space-x-1">
               {navigationItems.map((item) => {
                 if (item.isModal) {
-                  // Render Products button that opens modal
                   return (
                     <button
                       key={item.name}
@@ -499,109 +496,105 @@ export default function Navbar() {
                       <span className={`absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r ${theme === 'dark' ? 'from-cyan-400 to-cyan-500' : 'from-cyan-400 to-cyan-600'} transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left`} />
                     </button>
                   );
-              } else if (item.dropdown) {
-  const isOpen = openDropdown === item.name;
+                } else if (item.dropdown) {
+                  const isOpen = openDropdown === item.name;
 
-  return (
-    <div
-      key={item.name}
-      ref={(el) => (dropdownRefs.current[item.name] = el)}
-      className="relative flex items-center"
-      onMouseEnter={() => setOpenDropdown(item.name)}
-      onMouseLeave={() => setOpenDropdown(null)}
-    >
-      {/*  MAIN LINK (About Us → /about-us) */}
-      <Link
-        href={item.href}
-        className={`flex items-center ${scrolled ? 'px-3 py-4' : 'px-5 py-6'}
-        font-semibold ${theme === 'dark'
-          ? 'text-gray-200 hover:text-white'
-          : 'text-cyan-700 hover:text-cyan-900'}
-        transition-colors relative group`}
-      >
-        <span>{item.name}</span>
-        <span
-          className={`absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r
-          ${theme === 'dark'
-            ? 'from-cyan-400 to-cyan-500'
-            : 'from-cyan-400 to-cyan-600'}
-          transform scale-x-0 group-hover:scale-x-100
-          transition-transform duration-300 origin-left`}
-        />
-      </Link>
+                  return (
+                    <div
+                      key={item.name}
+                      ref={(el) => (dropdownRefs.current[item.name] = el)}
+                      className="relative flex items-center"
+                      onMouseEnter={() => setOpenDropdown(item.name)}
+                      onMouseLeave={() => setOpenDropdown(null)}
+                    >
+                      <Link
+                        href={item.href}
+                        className={`flex items-center ${scrolled ? 'px-3 py-4' : 'px-5 py-6'}
+                        font-semibold ${theme === 'dark'
+                          ? 'text-gray-200 hover:text-white'
+                          : 'text-cyan-700 hover:text-cyan-900'}
+                        transition-colors relative group`}
+                      >
+                        <span>{item.name}</span>
+                        <span
+                          className={`absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r
+                          ${theme === 'dark'
+                            ? 'from-cyan-400 to-cyan-500'
+                            : 'from-cyan-400 to-cyan-600'}
+                          transform scale-x-0 group-hover:scale-x-100
+                          transition-transform duration-300 origin-left`}
+                        />
+                      </Link>
 
-      {/* ⬇️ DROPDOWN TOGGLE ONLY */}
-      <button
-        onClick={(e) => {
-          e.stopPropagation();
-          handleDropdownToggle(item.name);
-        }}
-        className="ml-1 p-1"
-      >
-        <ChevronDown
-          className={`w-4 h-4 transition-transform duration-300
-          ${isOpen ? 'rotate-180' : ''}`}
-        />
-      </button>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDropdownToggle(item.name);
+                        }}
+                        className="ml-1 p-1"
+                      >
+                        <ChevronDown
+                          className={`w-4 h-4 transition-transform duration-300
+                          ${isOpen ? 'rotate-180' : ''}`}
+                        />
+                      </button>
 
-      {/* DROPDOWN MENU */}
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 10 }}
-            transition={{ duration: 0.2 }}
-            className={`absolute top-full left-0 mt-1 w-72
-            ${theme === 'dark' ? 'bg-gray-800/90 text-white' : 'bg-white/90'}
-            backdrop-blur-lg rounded-xl shadow-2xl border
-            ${theme === 'dark'
-              ? 'border-gray-700/50'
-              : 'border-cyan-200/50'}
-            overflow-hidden`}
-          >
-            <div
-              className={`bg-gradient-to-r
-              ${theme === 'dark'
-                ? 'from-cyan-700/90 to-cyan-600/90'
-                : 'from-cyan-700 to-cyan-600'}
-              text-white px-5 py-3`}
-            >
-              <h3 className="font-bold text-lg">{item.name}</h3>
-            </div>
+                      <AnimatePresence>
+                        {isOpen && (
+                          <motion.div
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: 10 }}
+                            transition={{ duration: 0.2 }}
+                            className={`absolute top-full left-0 mt-1 w-72
+                            ${theme === 'dark' ? 'bg-gray-800/90 text-white' : 'bg-white/90'}
+                            backdrop-blur-lg rounded-xl shadow-2xl border
+                            ${theme === 'dark'
+                              ? 'border-gray-700/50'
+                              : 'border-cyan-200/50'}
+                            overflow-hidden`}
+                          >
+                            <div
+                              className={`bg-gradient-to-r
+                              ${theme === 'dark'
+                                ? 'from-cyan-700/90 to-cyan-600/90'
+                                : 'from-cyan-700 to-cyan-600'}
+                              text-white px-5 py-3`}
+                            >
+                              <h3 className="font-bold text-lg">{item.name}</h3>
+                            </div>
 
-            {item.dropdown.map((subItem, index) => (
-              <Link
-                key={subItem.name}
-                href={subItem.href}
-                onClick={() => setOpenDropdown(null)}
-              >
-                <motion.div
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.1, delay: index * 0.05 }}
-                  className={`px-5 py-3
-                  ${theme === 'dark'
-                    ? 'hover:bg-gray-700/50'
-                    : 'hover:bg-cyan-50/50'}
-                  transition-colors border-l-2 border-transparent
-                  hover:border-cyan-500 flex items-center space-x-3 group`}
-                >
-                  {subItem.icon && (
-                    <subItem.icon className="w-4 h-4 text-cyan-500" />
-                  )}
-                  <span className="font-medium">{subItem.name}</span>
-                  <ArrowRight className="w-3 h-3 text-cyan-400 opacity-0 group-hover:opacity-100 ml-auto" />
-                </motion.div>
-              </Link>
-            ))}
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
-  );
-}
-
+                            {item.dropdown.map((subItem, index) => (
+                              <Link
+                                key={subItem.name}
+                                href={subItem.href}
+                                onClick={() => setOpenDropdown(null)}
+                              >
+                                <motion.div
+                                  initial={{ opacity: 0, x: -10 }}
+                                  animate={{ opacity: 1, x: 0 }}
+                                  transition={{ duration: 0.1, delay: index * 0.05 }}
+                                  className={`px-5 py-3
+                                  ${theme === 'dark'
+                                    ? 'hover:bg-gray-700/50'
+                                    : 'hover:bg-cyan-50/50'}
+                                  transition-colors border-l-2 border-transparent
+                                  hover:border-cyan-500 flex items-center space-x-3 group`}
+                                >
+                                  {subItem.icon && (
+                                    <subItem.icon className="w-4 h-4 text-cyan-500" />
+                                  )}
+                                  <span className="font-medium">{subItem.name}</span>
+                                  <ArrowRight className="w-3 h-3 text-cyan-400 opacity-0 group-hover:opacity-100 ml-auto" />
+                                </motion.div>
+                              </Link>
+                            ))}
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
+                  );
+                }
                 return (
                   <Link key={item.name} href={item.href}>
                     <div className={`${scrolled ? 'px-3 py-4' : 'px-5 py-6'} font-semibold ${theme === 'dark' ? 'text-gray-200 hover:text-white' : 'text-cyan-700 hover:text-cyan-900'} transition-colors relative group`}>
@@ -638,28 +631,21 @@ export default function Navbar() {
                 <Headphones className="w-5 h-5 group-hover:text-cyan-500 transition-colors" />
               </motion.button>
 
-              <Link href="/get-started">
+              <Link href={isCommercial ? '/' : '/commercial'}>
                 <motion.button
                   className={`${scrolled ? 'px-4 py-2 text-sm' : 'px-6 py-3'} bg-gradient-to-r ${theme === 'dark' ? 'from-cyan-600 to-cyan-500' : 'from-cyan-700 to-cyan-600'} text-white font-semibold rounded-lg shadow-md hover:from-cyan-600 hover:to-cyan-500 transition-all duration-300 flex items-center space-x-2 group backdrop-blur-sm`}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                 >
                   <Droplet className="w-4 h-4" />
-                
-                   <Link href={isCommercial ? '/' : '/commercial'}>
-                  <span className="text-lg">
-                  {isCommercial ? 'For Household' : 'For Business'}
-                </span>
-               </Link>
-                
+                  <span>{isCommercial ? 'For Household' : 'For Business'}</span>
                   <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </motion.button>
               </Link>
             </div>
 
-            {/* Mobile Menu Toggle - Now includes theme toggle for mobile */}
+            {/* Mobile Menu Toggle */}
             <div className="flex lg:hidden items-center space-x-2">
-              {/* Mobile Theme Toggle (visible on mobile) */}
               <div className="md:hidden">
                 <ThemeToggle theme={theme} toggleTheme={toggleTheme} size="small" />
               </div>
@@ -724,8 +710,7 @@ export default function Navbar() {
                         setSearchQuery(suggestion);
                         setFilteredSuggestions([]);
                       }}
-                      className={`px-4 py-2 ${theme === 'dark' ? 'hover:bg-gray-700/50' : 'hover:bg-cyan-50/50'} cursor-pointer flex items-center space-x-2 backdrop-blur-sm ${index === selectedSuggestionIndex ? (theme === 'dark' ? 'bg-gray-700/50' : 'bg-cyan-50/50') : ''
-                        }`}
+                      className={`px-4 py-2 ${theme === 'dark' ? 'hover:bg-gray-700/50' : 'hover:bg-cyan-50/50'} cursor-pointer flex items-center space-x-2 backdrop-blur-sm ${index === selectedSuggestionIndex ? (theme === 'dark' ? 'bg-gray-700/50' : 'bg-cyan-50/50') : ''}`}
                     >
                       <Search className="w-4 h-4 text-cyan-400" />
                       <span className={theme === 'dark' ? 'text-gray-200' : ''}>{suggestion}</span>
@@ -790,8 +775,6 @@ export default function Navbar() {
         {mobileOpen && (
           <>
             <motion.div
-              onClick={() => setMobileOpen(true)}
-              className="fixed inset-0 bg-black/40 z-40"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -817,12 +800,10 @@ export default function Navbar() {
               </div>
 
               <div className="p-4 space-y-1">
-                {/* Theme Toggle in Mobile Menu */}
                 <MobileThemeToggle theme={theme} toggleTheme={toggleTheme} />
 
                 {navigationItems.map((item) => {
                   if (item.isModal) {
-                    // Render Products button that opens modal in mobile menu
                     return (
                       <button
                         key={item.name}
@@ -887,20 +868,12 @@ export default function Navbar() {
                 })}
 
                 <div className={`pt-4 mt-4 space-y-3 border-t ${theme === 'dark' ? 'border-gray-700/50' : 'border-cyan-200/50'}`}>
-                  <Link href="/get-started" onClick={closeMobileMenu}>
+                  <Link href={isCommercial ? '/' : '/commercial'} onClick={closeMobileMenu}>
                     <div className={`block w-full text-center py-3 px-6 bg-gradient-to-r ${theme === 'dark' ? 'from-cyan-600 to-cyan-500' : 'from-cyan-700 to-cyan-600'} text-white font-bold rounded-lg shadow-md hover:from-cyan-600 hover:to-cyan-500 transition-all duration-300 flex items-center justify-center space-x-2 backdrop-blur-sm`}>
                       <Droplet className="w-4 h-4" />
-                      <Link href={isCommercial ? '/' : '/commercial'}>
-                  <span className="text-lg">
-                  {isCommercial ? 'For Household' : 'For Business'}
-                </span>
-               </Link>
+                      <span>{isCommercial ? 'For Household' : 'For Business'}</span>
                     </div>
                   </Link>
-
-
-                   
-                  
 
                   <div className="flex items-center justify-center space-x-4 py-2">
                     <a href="tel:+880 1919 222 222" className={`flex items-center space-x-1 ${theme === 'dark' ? 'text-gray-300' : 'text-cyan-600'} hover:text-cyan-800 transition-colors`}>
@@ -928,7 +901,7 @@ export default function Navbar() {
       </AnimatePresence>
 
       {/* Spacer for fixed navbar */}
-      <div className={`${scrolled ? '' : ''} transition-all duration-300`} />
+      <div className={`${scrolled ? 'pt-20' : ''} transition-all duration-300`} />
 
       {/* Floating Action Button for Quick Contact */}
       <AnimatePresence>
