@@ -13,6 +13,11 @@ import CityContact from '@/app/components/citypage/CityContact';
 // Import data
 import { citySliders, demoProducts,features , techSpecs } from '@/app/components/citypage/data';
 import ProductDescription from '@/app/components/citypage/ProductDescription';
+import ProductFeature from '@/app/components/citypage/ProductFeature';
+import SmartFeature from '@/app/components/citypage/SmartFeature';
+import TechSpecifications from '@/app/components/citypage/TechSpecifications';
+import AdvancedTech from '@/app/components/citypage/AdvancedTech';
+import PracticalRemover from '@/app/components/citypage/PracticalRemover';
 
 
 export default function CityPage() {
@@ -41,6 +46,15 @@ export default function CityPage() {
         theme={theme}
         techSpecs = {techSpecs }
         ></ProductDescription>
+
+        <ProductFeature></ProductFeature>
+
+        <SmartFeature></SmartFeature>
+
+        <TechSpecifications></TechSpecifications>
+<AdvancedTech></AdvancedTech>
+
+<PracticalRemover></PracticalRemover>
 
         {/* Mobile Stats */}
         <CityStats 
