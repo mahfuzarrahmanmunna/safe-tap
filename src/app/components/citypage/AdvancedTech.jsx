@@ -52,7 +52,7 @@ function AdvancedTech() {
             <div key={index} className="flex flex-col items-center group">
               
               {/* Rounded Image Shape */}
-              <div className={`relative w-32 h-32 md:w-40 md:h-40 rounded-full flex items-center justify-center p-6 mb-6 transition-all duration-500 border-2
+              <div className={`relative w-20 h-20 md:w-30 md:h-30 rounded-full flex items-center justify-center p-6 mb-6 transition-all duration-500 border-2
                 ${isDark 
                   ? 'bg-slate-900/50 border-slate-800 group-hover:border-cyan-500 group-hover:shadow-[0_0_30px_rgba(6,182,212,0.3)]' 
                   : 'bg-cyan-50/30 border-cyan-100 group-hover:border-cyan-400 group-hover:shadow-[0_15px_30px_rgba(6,182,212,0.2)]'

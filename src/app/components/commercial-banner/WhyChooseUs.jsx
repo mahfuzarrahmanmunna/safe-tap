@@ -45,7 +45,7 @@ const features = [
 ];
 
 export default function WhyChooseUs() {
-  const { theme } = useTheme(); // 'light' or 'dark'
+  const { theme } = useTheme(); 
 
   return (
     <section className={`py-24 px-4 ${
