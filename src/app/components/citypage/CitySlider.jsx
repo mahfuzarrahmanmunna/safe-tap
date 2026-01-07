@@ -1,9 +1,9 @@
-// app/components/city-page/CitySlider.jsx
+
 'use client';
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import Image from 'next/image'; // Next.js Image component ব্যবহার করা ভালো
+import Image from 'next/image'; 
 import { 
   MapPin, ChevronRight, ArrowLeft, ArrowRight 
 } from 'lucide-react';
@@ -28,7 +28,7 @@ export default function CitySlider({ slides, cityName, theme }) {
 
   return (
     <div 
-      className="relative md:h-[600px] overflow-hidden min-h-[500px]"
+      className="relative  md:h-[600px] overflow-hidden min-h-[500px]"
       onMouseEnter={() => setAutoPlay(false)}
       onMouseLeave={() => setAutoPlay(true)}
     >
@@ -42,7 +42,7 @@ export default function CitySlider({ slides, cityName, theme }) {
           className="absolute inset-0"
         >
           {/* Background Gradient */}
-          <div className={`absolute inset-0 bg-gradient-to-br ${slides[currentSlide].color} opacity-90 transition-colors duration-1000`} />
+          <div className={`absolute rounded-2xl inset-0 bg-gradient-to-br ${slides[currentSlide].color} opacity-90 transition-colors duration-1000`} />
           
           <div className="relative h-full flex items-center">
             <div className="max-w-7xl mx-auto px-4 w-full">
@@ -91,7 +91,7 @@ export default function CitySlider({ slides, cityName, theme }) {
                   className="hidden md:flex justify-center items-center relative"
                 >
                   <div className="relative w-full h-[400px]">
-                    {/* একটি গ্লো ইফেক্ট ইমেজের পেছনে */}
+                    
                     <div className="absolute inset-0 bg-white/10 blur-3xl rounded-full scale-75" />
                     
                     <Image 

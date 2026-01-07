@@ -4,6 +4,7 @@ import { useTheme } from "@/app/contexts/ThemeContext";
 import { FaStar, FaInfoCircle, FaThLarge } from "react-icons/fa";
 import UsageModal from '../UsageModal';
 import Image from 'next/image';
+import BookingModal from './BookingModal';
 
 const pricingData = {
   "Couple- 200 ltrs/m": { "28 days": 529, "90 days": 499, "360 days": 417, savings: 150 },
@@ -19,7 +20,8 @@ function PricingCard() {
   const [tenure, setTenure] = useState("360 days");
   const [currentPrice, setCurrentPrice] = useState(583);
   const [currentSavings, setCurrentSavings] = useState(249);
-
+  const [isBookingOpen, setIsBookingOpen] = useState(false)
+  
   useEffect(() => {
     const price = pricingData[usage][tenure];
     setCurrentPrice(price);
@@ -57,7 +59,7 @@ function PricingCard() {
 
         <hr className={isDark ? 'border-slate-800' : 'border-cyan-50'} />
 
-        {/* Step 1: Usage Selection - Compact Padding */}
+        {/* Step 1:  */}
         <div className="p-4">
           <div className="flex justify-between items-center mb-3">
             <h3 className={`text-[11px] font-black uppercase tracking-wider ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>1. Usage</h3>
@@ -82,7 +84,7 @@ function PricingCard() {
           </div>
         </div>
 
-        {/* Step 2: Tenure - Compact */}
+        {/* Step 2:  */}
         <div className="px-4 pb-4">
           <h3 className={`text-[11px] font-black uppercase tracking-wider mb-3 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>2. Tenure</h3>
           <div className="flex gap-1.5">
@@ -101,7 +103,7 @@ function PricingCard() {
           </div>
         </div>
 
-        {/* Pricing Area - Height reduced */}
+        {/* Pricing Area */}
         <div className="px-4 pb-4 flex justify-between items-center">
           <div>
             <p className="text-[9px] font-black text-emerald-500 uppercase tracking-tighter mb-1">7-days FREE TRIAL</p>
@@ -118,7 +120,7 @@ function PricingCard() {
         </div>
 
         {/* CTA Button */}
-        <button className="w-full py-4 bg-cyan-600 hover:bg-cyan-700 text-white font-black text-lg transition-all active:scale-95 shadow-inner">
+        <button onClick={() => setIsBookingOpen(true)} className="w-full py-4 bg-cyan-600 hover:bg-cyan-700 text-white font-black text-lg transition-all active:scale-95 shadow-inner">
             Try It Free
         </button>
 
@@ -132,6 +134,13 @@ function PricingCard() {
           if(planType === "Family") setUsage("Family- 500 ltrs/m");
           if(planType === "Unlimited") setUsage("Unlimited- Unltd ltrs/m");
         }}
+      />
+
+      {/* Booking Form Modal */}
+      <BookingModal 
+        isOpen={isBookingOpen}
+        onClose={() => setIsBookingOpen(false)}
+        selectedPlan={`${usage} for ${tenure}`}
       />
     </div>
   );

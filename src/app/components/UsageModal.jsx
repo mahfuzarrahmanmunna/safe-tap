@@ -1,7 +1,8 @@
 "use client";
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom'; // Portal ইম্পোর্ট করা হয়েছে
 import { motion, AnimatePresence } from "framer-motion";
-import { FaTimes, FaUsers, FaCloud, FaInfinity, FaCheckCircle } from "react-icons/fa";
+import { FaTimes, FaUsers, FaCloud, FaInfinity } from "react-icons/fa";
 import { useTheme } from '../contexts/ThemeContext';
 
 const comparisonData = [
@@ -37,40 +38,45 @@ const comparisonData = [
 function UsageModal({ isOpen, onClose, onSelect }) {
   const { theme } = useTheme();
   const isDark = theme === 'dark';
+  const [mounted, setMounted] = useState(false);
 
-  // মোডাল ওপেন হলে বডি স্ক্রল অফ হবে না, কারণ আপনি চাচ্ছেন পেজ যেন স্ক্রল হয়
-  // তবে মোডালের ভেতরে আলাদা স্ক্রল থাকবে। 
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
-  return (
+  if (!mounted) return null;
+
+  // মডাল কন্টেন্ট ভেরিয়েবল
+  const modalContent = (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6">
+        <div className="fixed inset-0 z-[999999] flex items-center justify-center p-4 sm:p-6 pointer-events-none">
           
-          {/* Backdrop */}
+         
           <motion.div 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="absolute inset-0 bg-slate-900/60 backdrop-blur-md"
+            className="absolute inset-0 bg-slate-900/60 backdrop-blur-md pointer-events-auto"
           />
 
-          {/* Modal Content - Max Height set and scrollable */}
+          {/* Modal Content Card */}
           <motion.div 
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.9, opacity: 0 }}
-            className={`relative w-full max-w-3xl max-h-[90vh] overflow-y-auto rounded-[2rem] shadow-2xl border transition-all duration-500 custom-scrollbar
+            className={`relative w-full max-w-3xl max-h-[90vh] overflow-y-auto rounded-[2.5rem] shadow-2xl border transition-all duration-500 custom-scrollbar pointer-events-auto
               ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100'}`}
           >
-            {/* Close Button - Sticky position for easy access while scrolling */}
+   
             <div className="sticky top-0 right-0 p-4 flex justify-end z-20 pointer-events-none">
                 <button 
-                onClick={onClose}
-                className={`p-3 rounded-full pointer-events-auto shadow-lg transition-all
+                  onClick={onClose}
+                  className={`p-3 rounded-full pointer-events-auto shadow-lg transition-all
                     ${isDark ? 'bg-slate-800 text-slate-400 hover:text-white' : 'bg-white text-slate-500 hover:text-slate-900'}`}
                 >
-                <FaTimes size={18} />
+                  <FaTimes size={18} />
                 </button>
             </div>
 
@@ -84,7 +90,7 @@ function UsageModal({ isOpen, onClose, onSelect }) {
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-left">
                 {comparisonData.map((item, idx) => (
                   <div 
                     key={idx} 
@@ -134,7 +140,6 @@ function UsageModal({ isOpen, onClose, onSelect }) {
                   </div>
                 ))}
               </div>
-
             </div>
           </motion.div>
         </div>
@@ -154,6 +159,8 @@ function UsageModal({ isOpen, onClose, onSelect }) {
       `}</style>
     </AnimatePresence>
   );
+
+  return createPortal(modalContent, document.body);
 }
 
 export default UsageModal;
