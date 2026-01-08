@@ -27,12 +27,12 @@ export default function HowItWorks() {
   ];
 
   return (
-    <div className={`max-w-8xl mx-auto px-6 py-16 ${
+    <div className={`max-w-8xl mx-auto px-6 py-12 ${
       theme === 'dark' ? 'bg-gray-900' : 'bg-white'
     }`}>
       {/* Section Title */}
       <div className="text-center mb-16">
-        <h2 className={`text-3xl md:text-5xl font-bold ${
+        <h2 className={`text-3xl md:text-4xl font-bold ${
           theme === 'dark' ? 'text-gray-100' : 'text-gray-900'
         }`}>
           <span className={theme === 'dark' ? 'text-cyan-400' : 'text-cyan-700'}>

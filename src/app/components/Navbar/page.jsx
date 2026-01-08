@@ -11,6 +11,7 @@ import {
 import { Target } from 'lucide-react';
 import { useTheme } from '@/app/contexts/ThemeContext';
 import { usePathname, useRouter } from 'next/navigation';
+import ServiceModal from '../ServiceModal';
 
 /* ------------------ DATA ------------------ */
 
@@ -28,17 +29,7 @@ const navigationItems = [
     ],
   },
   { name: 'Products', href: '/products', icon: Package, isModal: true },
-  {
-    name: 'Services',
-    href: '/services',
-    icon: Wrench,
-    dropdown: [
-      { name: 'Installation', href: '/services/installation', icon: Wrench },
-      { name: 'Maintenance', href: '/services/maintenance', icon: Clock },
-      { name: 'Filter Replacement', href: '/services/filter-replacement', icon: Filter },
-      { name: 'Water Testing', href: '/services/water-testing', icon: TestTube },
-    ],
-  },
+  { name: 'Services', onClick: () => null, icon: Wrench }, // Will be updated dynamically
   { name: 'Contact', href: '/pages/contact', icon: Contact },
 ];
 
@@ -83,11 +74,16 @@ const searchSuggestions = [
   'Water Purifier Plans',
   'Mobile App Features',
 ];
-
+const updatedNavigationItems = navigationItems.map(item => {
+  if (item.name === 'Services') {
+    return { ...item, onClick: () => setIsServiceModalOpen(true) };
+  }
+  return item;
+});
 // Product Modal Component
 const ProductModal = ({ isOpen, onClose, theme }) => {
   const router = useRouter();
-  
+  const [isServiceModalOpen, setIsServiceModalOpen] = useState(false);
   const handleCityClick = (city) => {
     const slug = city.toLowerCase().replace(/\s+/g, '-');
     router.push(`/products/${slug}`);
@@ -353,6 +349,7 @@ export default function Navbar() {
   const [selectedSuggestionIndex, setSelectedSuggestionIndex] = useState(-1);
   const [showQuickContact, setShowQuickContact] = useState(false);
   const [showProductModal, setShowProductModal] = useState(false);
+  const [isServiceModalOpen, setIsServiceModalOpen] = useState(false);
   const [activeNavItem, setActiveNavItem] = useState('');
   const pathname = usePathname();
   const searchInputRef = useRef(null);
@@ -360,6 +357,14 @@ export default function Navbar() {
   const dropdownRefs = useRef({});
   
   const isCommercial = pathname === '/commercial';
+
+  // Update navigationItems to include the correct onClick for Services
+  const updatedNavigationItems = navigationItems.map(item => {
+    if (item.name === 'Services') {
+      return { ...item, onClick: () => setIsServiceModalOpen(true) };
+    }
+    return item;
+  });
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 50);
@@ -484,7 +489,7 @@ export default function Navbar() {
 
             {/* Desktop Navigation */}
             <div className="hidden lg:flex items-center space-x-1">
-              {navigationItems.map((item) => {
+              {updatedNavigationItems.map((item) => {
                 if (item.isModal) {
                   return (
                     <button
@@ -593,6 +598,18 @@ export default function Navbar() {
                         )}
                       </AnimatePresence>
                     </div>
+                  );
+                } else if (item.onClick) {
+                  // Handle Services button with onClick
+                  return (
+                    <button
+                      key={item.name}
+                      onClick={item.onClick}
+                      className={`flex items-center space-x-1 ${scrolled ? 'px-3 py-4' : 'px-5 py-6'} font-semibold ${theme === 'dark' ? 'text-gray-200 hover:text-white' : 'text-cyan-700 hover:text-cyan-900'} transition-colors relative group`}
+                    >
+                      <span>{item.name}</span>
+                      <span className={`absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r ${theme === 'dark' ? 'from-cyan-400 to-cyan-500' : 'from-cyan-400 to-cyan-600'} transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left`} />
+                    </button>
                   );
                 }
                 return (
@@ -802,7 +819,7 @@ export default function Navbar() {
               <div className="p-4 space-y-1">
                 <MobileThemeToggle theme={theme} toggleTheme={toggleTheme} />
 
-                {navigationItems.map((item) => {
+                {updatedNavigationItems.map((item) => {
                   if (item.isModal) {
                     return (
                       <button
@@ -855,6 +872,23 @@ export default function Navbar() {
                           )}
                         </AnimatePresence>
                       </div>
+                    );
+                  } else if (item.onClick) {
+                    return (
+                      <button
+                        key={item.name}
+                        onClick={() => {
+                          item.onClick();
+                          closeMobileMenu();
+                        }}
+                        className={`w-full flex items-center justify-between p-4 rounded-lg ${theme === 'dark' ? 'hover:bg-gray-700/50' : 'hover:bg-cyan-50/50'} transition-colors font-semibold ${theme === 'dark' ? 'text-gray-200' : 'text-cyan-700'} backdrop-blur-sm`}
+                      >
+                        <div className="flex items-center space-x-2">
+                          {item.icon && <item.icon className="w-5 h-5 text-cyan-500" />}
+                          <span>{item.name}</span>
+                        </div>
+                        <ArrowRight className="w-5 h-5" />
+                      </button>
                     );
                   }
                   return (
@@ -922,6 +956,13 @@ export default function Navbar() {
 
       {/* Product Modal */}
       <ProductModal isOpen={showProductModal} onClose={() => setShowProductModal(false)} theme={theme} />
+      
+      {/* Service Modal */}
+      <ServiceModal 
+        isOpen={isServiceModalOpen} 
+        onClose={() => setIsServiceModalOpen(false)} 
+        theme={theme} 
+      />
     </>
   );
 }
