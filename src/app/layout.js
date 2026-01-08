@@ -24,7 +24,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en" data-arp="" className={`${geistSans.variable} ${geistMono.variable}`}>
-      <body className="antialiased flex flex-col min-h-screen bg-neutral-light text-neutral-dark">
+      <body className="antialiased flex flex-col min-h-screen bg-neutral-light text-neutral-dark" cz-shortcut-listen="true">
         <ThemeProvider>
           <Navbar />
 
