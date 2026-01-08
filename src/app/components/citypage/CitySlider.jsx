@@ -1,14 +1,14 @@
-// app/components/city-page/CitySlider.jsx
+
 'use client';
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import Image from 'next/image'; 
 import { 
-  MapPin, ChevronRight, ArrowLeft, ArrowRight, 
-  Check, Users, Star, Droplet 
+  MapPin, ChevronRight, ArrowLeft, ArrowRight 
 } from 'lucide-react';
 
-export default function CitySlider({ slides, cityName, stats, theme }) {
+export default function CitySlider({ slides, cityName, theme }) {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [autoPlay, setAutoPlay] = useState(true);
 
@@ -28,42 +28,43 @@ export default function CitySlider({ slides, cityName, stats, theme }) {
 
   return (
     <div 
-      className="relative  md:h-[600px] overflow-hidden min-h-screen"
+      className="relative  md:h-[600px] overflow-hidden min-h-[500px]"
       onMouseEnter={() => setAutoPlay(false)}
       onMouseLeave={() => setAutoPlay(true)}
     >
       <AnimatePresence mode="wait">
         <motion.div
           key={currentSlide}
-          initial={{ opacity: 0, scale: 1.1 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.9 }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
           transition={{ duration: 0.5 }}
           className="absolute inset-0"
         >
-          {/* Background */}
-          <div className={`absolute inset-0 bg-gradient-to-br ${slides[currentSlide].color} opacity-90`} />
+          {/* Background Gradient */}
+          <div className={`absolute rounded-2xl inset-0 bg-gradient-to-br ${slides[currentSlide].color} opacity-90 transition-colors duration-1000`} />
           
           <div className="relative h-full flex items-center">
             <div className="max-w-7xl mx-auto px-4 w-full">
-              <div className="grid md:grid-cols-2 gap-8 items-center">
-                {/* Text Content */}
+              <div className="grid md:grid-cols-2 gap-12 items-center">
+                
+                {/* Left Side: Text Content */}
                 <motion.div
                   initial={{ x: -50, opacity: 0 }}
                   animate={{ x: 0, opacity: 1 }}
                   transition={{ delay: 0.2 }}
-                  className="text-white"
+                  className="text-white z-10"
                 >
                   <div className="inline-flex items-center px-4 py-2 bg-white/20 rounded-full backdrop-blur-sm mb-6">
                     <MapPin className="w-4 h-4 mr-2" />
                     <span className="text-sm font-medium">{cityName}</span>
                   </div>
                   
-                  <h1 className="text-4xl md:text-5xl font-bold mb-4">
+                  <h1 className="text-4xl md:text-6xl font-black mb-4 leading-tight">
                     {slides[currentSlide].title}
                   </h1>
                   
-                  <div className="text-2xl font-semibold text-white/90 mb-4">
+                  <div className="text-2xl font-bold text-white/90 mb-4">
                     {slides[currentSlide].subtitle}
                   </div>
                   
@@ -72,54 +73,42 @@ export default function CitySlider({ slides, cityName, stats, theme }) {
                   </p>
                   
                   <div className="flex flex-wrap gap-4">
-                    <button className="px-6 py-3 bg-white text-gray-900 font-bold rounded-lg hover:bg-gray-100 transition-colors flex items-center space-x-2">
+                    <button className="px-8 py-4 bg-white text-gray-900 font-bold rounded-xl hover:bg-gray-100 transition-all transform hover:scale-105 flex items-center space-x-2">
                       <span>Book Free Demo</span>
                       <ChevronRight className="w-5 h-5" />
                     </button>
-                    <button className="px-6 py-3 border-2 border-white/30 text-white font-bold rounded-lg hover:bg-white/10 transition-colors">
+                    <button className="px-8 py-4 border-2 border-white/30 text-white font-bold rounded-xl hover:bg-white/10 transition-all">
                       View Plans
                     </button>
                   </div>
                 </motion.div>
                 
-                {/* Stats Card */}
+                {/* Right Side: Image Content (Stats Card এর পরিবর্তে) */}
                 <motion.div
-                  initial={{ x: 50, opacity: 0 }}
-                  animate={{ x: 0, opacity: 1 }}
-                  transition={{ delay: 0.3 }}
-                  className="hidden md:block"
+                  initial={{ x: 100, opacity: 0, scale: 0.8 }}
+                  animate={{ x: 0, opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.3, type: "spring", stiffness: 100 }}
+                  className="hidden md:flex justify-center items-center relative"
                 >
-                  <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 border border-white/20">
-                    <h3 className="text-2xl font-bold text-white mb-6">SafeTap in {cityName}</h3>
+                  <div className="relative w-full h-[400px]">
                     
-                    <div className="space-y-6">
-                      {stats && Object.entries(stats).map(([key, value]) => (
-                        <div key={key} className="flex items-center justify-between">
-                          <div className="flex items-center space-x-3">
-                            {key === 'users' && <Users className="w-5 h-5 text-cyan-300" />}
-                            {key === 'rating' && <Star className="w-5 h-5 text-yellow-400" fill="currentColor" />}
-                            {key === 'installations' && <Droplet className="w-5 h-5 text-green-300" />}
-                            <span className="text-white/80 capitalize">{key}</span>
-                          </div>
-                          <span className="text-2xl font-bold text-white">{value}</span>
-                        </div>
-                      ))}
-                    </div>
+                    <div className="absolute inset-0 bg-white/10 blur-3xl rounded-full scale-75" />
                     
-                    <div className="mt-8 pt-6 border-t border-white/20">
-                      <div className="flex items-center space-x-2 text-white/80">
-                        <Check className="w-5 h-5 text-green-400" />
-                        <span>48-hour installation in {cityName}</span>
-                      </div>
-                    </div>
+                    <Image 
+                      src={slides[currentSlide].image || '/placeholder-purifier.png'} // আপনার স্লাইড অবজেক্টে ইমেজ পাথ থাকতে হবে
+                      alt={slides[currentSlide].title}
+                      fill
+                      className="object-contain drop-shadow-[0_20px_50px_rgba(0,0,0,0.3)]"
+                      priority
+                    />
                   </div>
                 </motion.div>
+
               </div>
             </div>
           </div>
         </motion.div>
       </AnimatePresence>
-      
       {/* Navigation */}
       <button
         onClick={prevSlide}

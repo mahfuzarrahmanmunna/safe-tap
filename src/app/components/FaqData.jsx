@@ -93,7 +93,7 @@ const AccordionItem = ({ question, answer, isOpen, onClick, theme }) => (
   </div>
 );
 
-/* ---------------- MAIN ---------------- */
+
 export default function FaqData() {
   const { theme } = useTheme();
 
@@ -116,7 +116,7 @@ export default function FaqData() {
 
   return (
     <section
-      className={`py-20 transition-colors
+      className={`py-16 transition-colors
         ${
           theme === "dark"
             ? "bg-gray-900"
