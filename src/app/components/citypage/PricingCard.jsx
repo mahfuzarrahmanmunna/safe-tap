@@ -35,7 +35,7 @@ function PricingCard() {
         
         {/* Header - Compact height */}
         <div className={`p-5 bg-gradient-to-br ${isDark ? 'from-cyan-950/20 to-transparent' : 'from-cyan-50/50 to-transparent'}`}>
-          <h2 className="text-xl font-black text-cyan-600 mb-0.5 tracking-tight">DrinkPrime Copper</h2>
+          <h2 className="text-xl font-black text-cyan-600 mb-0.5 tracking-tight">SafeTap Copper</h2>
           <p className={`text-xs font-bold leading-tight mb-3 ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>
             Best RO+UV Copper Water Purifier On Rent
           </p>

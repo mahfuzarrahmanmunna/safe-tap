@@ -21,9 +21,9 @@ export default function HowItWorks() {
   ];
 
   const phoneSlides = [
-    "https://cdn.drinkprime.in/production/images/smartwater-subscription/smartwater-subscription.webp",
-    "https://cdn.drinkprime.in/production/images/smartwater-subscription/smartwater-subscription.webp",
-    "https://cdn.drinkprime.in/production/images/smartwater-subscription/smartwater-subscription.webp",
+    "https://cdn.SafeTap.in/production/images/smartwater-subscription/smartwater-subscription.webp",
+    "https://cdn.SafeTap.in/production/images/smartwater-subscription/smartwater-subscription.webp",
+    "https://cdn.SafeTap.in/production/images/smartwater-subscription/smartwater-subscription.webp",
   ];
 
   return (
@@ -127,7 +127,7 @@ export default function HowItWorks() {
                       }`}>
                         <Image
                           src={src}
-                          alt={`DrinkPrime App Screenshot ${i + 1}`}
+                          alt={`SafeTap App Screenshot ${i + 1}`}
                           width={400}
                           height={600}
                           className="w-full h-auto"

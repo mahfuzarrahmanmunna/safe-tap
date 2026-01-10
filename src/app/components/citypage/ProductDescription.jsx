@@ -25,7 +25,7 @@ export default function ProductDescription({
        <span className='text-cyan-700'> RO+UV Copper Water Purifier</span> Product Description
       </h2>
       <p className={`text-lg leading-relaxed ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-        DrinkPrime Copper is an RO+UV Water Purifier on rent in Bengaluru with the added 
+        SafeTap Copper is an RO+UV Water Purifier on rent in Bengaluru with the added 
         <span >Goodness of Copper</span>. 
         This IoT enabled smart purifier is the best Copper water purifier for your home.
       </p>

@@ -7,7 +7,7 @@ import { FaFillDrip, FaSyncAlt, FaShieldVirus } from "react-icons/fa";
 const products = [
   {
     id: "copper",
-    label: "DrinkPrime Copper",
+    label: "SafeTap Copper",
     icon: <FaFillDrip />,
     color: "#B45309", // Copper color
     tagline: "Immunity Boosted with Active Copper",
@@ -15,7 +15,7 @@ const products = [
   },
   {
     id: "ro_plus",
-    label: "DrinkPrime RO+",
+    label: "SafeTap RO+",
     icon: <FaShieldVirus />,
     color: "#06B6D4", 
     tagline: "Next-Gen Multi-Stage RO+UV Tech",
@@ -23,7 +23,7 @@ const products = [
   },
   {
     id: "alkaline",
-    label: "DrinkPrime Alkaline",
+    label: "SafeTap Alkaline",
     icon: <FaSyncAlt />,
     color: "#8B5CF6", 
     tagline: "Healthy pH Balance & Vital Minerals",

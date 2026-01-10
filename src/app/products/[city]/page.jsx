@@ -9,7 +9,7 @@ import CitySlider from '@/app/components/citypage/CitySlider';
 import CityProducts from '@/app/components/citypage/CityProducts';
 import CityStats from '@/app/components/citypage/CityStats';
 import CityContact from '@/app/components/citypage/CityContact';
-import DrinkPrimeAdvantage from '../../components/DrinkPrimeAdvantage/DrinkPrimeAdvantage'
+// import SafeTapAdvantage from '../../components/SafeTapAdvantage/SafeTapAdvantage'
 // Import data
 import { citySliders, demoProducts,features , techSpecs } from '@/app/components/citypage/data';
 import ProductDescription from '@/app/components/citypage/ProductDescription';
@@ -25,6 +25,7 @@ import HowItWorks from '@/app/components/HowItWorks';
 import TrialBooking from '@/app/components/TrialBooking';
 import GlobalTabs from '@/app/components/GlobalTabs';
 import PricingCard from '@/app/components/citypage/PricingCard';
+import SafeTapAdvantage from '@/app/components/DrinkPrimeAdvantage/DrinkPrimeAdvantage';
 
 
 export default function CityPage() {
@@ -75,7 +76,7 @@ export default function CityPage() {
 
    
         <div className="col-span-12 mt-20 space-y-20">
-          <DrinkPrimeAdvantage />
+          <SafeTapAdvantage />
           <HowItWorks />
           <TrialBooking />
           

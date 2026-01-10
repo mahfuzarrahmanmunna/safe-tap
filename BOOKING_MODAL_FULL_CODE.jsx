@@ -1,4 +1,3 @@
-// components/BookingModal.jsx
 "use client";
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
@@ -6,17 +5,12 @@ import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
 import { FaTimes, FaPhoneAlt, FaUser, FaMapMarkerAlt, FaTicketAlt, FaStickyNote, FaChevronDown } from 'react-icons/fa';
 import { useTheme } from '@/app/contexts/ThemeContext';
-import PhoneVerificationModal from './PhoneVerificationModal';
 import Swal from 'sweetalert2';
 
 function BookingModal({ isOpen, onClose, selectedPlan }) {
   const { theme } = useTheme();
   const isDark = theme === 'dark';
   const [mounted, setMounted] = useState(false);
-  const [showPhoneVerification, setShowPhoneVerification] = useState(false);
-  const [pendingBookingData, setPendingBookingData] = useState(null);
-  const [verifiedUser, setVerifiedUser] = useState(null);
-  const [userAccessToken, setUserAccessToken] = useState('');
 
   // Location data states
   const [divisions, setDivisions] = useState([]);
@@ -43,10 +37,8 @@ function BookingModal({ isOpen, onClose, selectedPlan }) {
   useEffect(() => {
     setMounted(true);
     // Fetch divisions when component mounts
-    if (isOpen) {
-      fetchDivisions();
-    }
-  }, [isOpen]);
+    fetchDivisions();
+  }, []);
 
   // Fetch all divisions
   const fetchDivisions = async () => {
@@ -150,70 +142,10 @@ function BookingModal({ isOpen, onClose, selectedPlan }) {
 
   if (!mounted) return null;
 
-  // Handle phone verification success - user created with role 'customer' by backend
-  const handlePhoneVerificationSuccess = async (verificationData) => {
-    setVerifiedUser(verificationData.user);
-    setUserAccessToken(verificationData.access);
-
-    // Complete the booking with verified user information
-    const bookingData = {
-      user_id: verificationData.user.id,
-      phone: verificationData.user.phone,
-      name: pendingBookingData.name,
-      division: pendingBookingData.division,
-      district: pendingBookingData.district,
-      thana: pendingBookingData.thana,
-      addressDetails: pendingBookingData.addressDetails,
-      referral: pendingBookingData.referral,
-      notes: pendingBookingData.notes,
-      plan: selectedPlan,
-      role: verificationData.user.role // User role will be 'customer'
-    };
-
-    console.log('Free Trial Booking Completed:', bookingData);
-
-    // Hide phone verification modal
-    setShowPhoneVerification(false);
-
-    // Show success message
-    Swal.fire({
-      title: 'Free Trial Booked Successfully!',
-      text: `Your free trial for ${selectedPlan} plan has been confirmed. A verification confirmation will be sent to ${verificationData.user.phone}.`,
-      icon: 'success',
-      confirmButtonColor: '#0891b2',
-      confirmButtonText: 'Close'
-    });
-
-    // Reset and close modal after success
-    setTimeout(() => {
-      handleCloseModal();
-    }, 2500);
-  };
-
-  // Handle close modal - reset all states
-  const handleCloseModal = () => {
-    setShowPhoneVerification(false);
-    setVerifiedUser(null);
-    setUserAccessToken('');
-    setPendingBookingData(null);
-    setFormData({
-      name: '',
-      phone: '',
-      referral: '',
-      division: '',
-      district: '',
-      thana: '',
-      addressDetails: '',
-      notes: ''
-    });
-    setErrors({});
-    onClose();
-  };
-
   const validate = () => {
     let newErrors = {};
     if (!formData.name.trim()) newErrors.name = "Name is required";
-    if (!/^\d{10,11}$/.test(formData.phone)) newErrors.phone = "Please enter a valid phone number (10-11 digits)";
+    if (!/^\d{10,11}$/.test(formData.phone)) newErrors.phone = "Please enter a valid number";
     if (!formData.division) newErrors.division = "Select a division";
     if (!formData.district) newErrors.district = "Select a district";
     if (!formData.thana) newErrors.thana = "Select a thana";
@@ -224,58 +156,47 @@ function BookingModal({ isOpen, onClose, selectedPlan }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
-    if (!validate()) {
-      return;
+    if (validate()) {
+      console.log("Form Data Submitted:", formData);
+      Swal.fire({
+        title: "Booking Successful",
+        text: "We have received your request!",
+        icon: "success",
+        confirmButtonColor: "#0891b2",
+      });
+      onClose();
     }
-
-    // Store pending booking data
-    setPendingBookingData({
-      name: formData.name,
-      phone: formData.phone,
-      division: formData.division,
-      district: formData.district,
-      thana: formData.thana,
-      addressDetails: formData.addressDetails,
-      referral: formData.referral,
-      notes: formData.notes
-    });
-
-    // Show phone verification modal
-    setShowPhoneVerification(true);
   };
 
   const modalContent = (
     <AnimatePresence>
       {isOpen && (
-        <>
-          {/* Booking Form Modal */}
-          <div className="fixed inset-0 z-10 flex items-center justify-center p-4 pointer-events-none">
-            <motion.div
-              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              onClick={handleCloseModal}
-              className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm pointer-events-auto"
-            />
+        <div className="fixed inset-0 z-999999 flex items-center justify-center p-4 pointer-events-none">
+          <motion.div
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            onClick={onClose}
+            className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm pointer-events-auto"
+          />
 
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0, y: 20 }}
-              animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 0.9, opacity: 0, y: 20 }}
-              className={`relative w-full max-w-lg rounded-[2.5rem] shadow-2xl overflow-hidden transition-colors duration-300 h-[90vh] overflow-y-auto no-scrollbar pointer-events-auto
-                ${isDark ? 'bg-slate-900 border border-slate-800 text-white' : 'bg-white border border-cyan-50 text-slate-900'}`}
-            >
-              {/* Header */}
-              <div className={`sticky top-0 z-20 p-6 flex justify-between items-center border-b border-slate-100 dark:border-slate-800 ${isDark ? 'bg-slate-900' : 'bg-white'}`}>
-                <div>
-                  <h2 className="text-xl font-black text-cyan-600 tracking-tight">Start 7-Day Trial</h2>
-                  <p className={`text-[9px] font-bold uppercase tracking-[0.2em] ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
-                    Plan: <span className="text-cyan-500">{selectedPlan}</span>
-                  </p>
-                </div>
-                <button onClick={handleCloseModal} className={`p-2 rounded-full ${isDark ? 'bg-slate-800 text-slate-400' : 'bg-slate-100 text-slate-500'}`}>
-                  <FaTimes size={14} />
-                </button>
+          <motion.div
+            initial={{ scale: 0.9, opacity: 0, y: 20 }}
+            animate={{ scale: 1, opacity: 1, y: 0 }}
+            exit={{ scale: 0.9, opacity: 0, y: 20 }}
+            className={`relative w-full max-w-lg rounded-[2.5rem] shadow-2xl overflow-hidden transition-colors duration-300 h-[90vh] overflow-y-auto no-scrollbar pointer-events-auto
+              ${isDark ? 'bg-slate-900 border border-slate-800 text-white' : 'bg-white border border-cyan-50 text-slate-900'}`}
+          >
+            {/* Header */}
+            <div className={`sticky top-0 z-20 p-6 flex justify-between items-center border-b border-slate-100 dark:border-slate-800 ${isDark ? 'bg-slate-900' : 'bg-white'}`}>
+              <div>
+                <h2 className="text-xl font-black text-cyan-600 tracking-tight">Start 7-Day Trial</h2>
+                <p className={`text-[9px] font-bold uppercase tracking-[0.2em] ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+                  Plan: <span className="text-cyan-500">{selectedPlan}</span>
+                </p>
               </div>
+              <button onClick={onClose} className={`p-2 rounded-full ${isDark ? 'bg-slate-800 text-slate-400' : 'bg-slate-100 text-slate-500'}`}>
+                <FaTimes size={14} />
+              </button>
+            </div>
 
             <div className="p-8 space-y-6">
               {/* Map Section */}
@@ -316,14 +237,10 @@ function BookingModal({ isOpen, onClose, selectedPlan }) {
                   <input
                     type="tel"
                     name="phone"
-                    placeholder="Phone Number (10-11 digits)"
+                    placeholder="Phone Number"
                     className={`w-full pl-12 pr-4 py-4 rounded-2xl border-2 outline-none transition-all text-sm font-medium ${isDark ? 'bg-slate-800/50 text-white border-transparent' : 'bg-slate-50 text-slate-900 border-slate-100'} focus:border-cyan-500`}
                     value={formData.phone}
-                    onChange={(e) => {
-                      const value = e.target.value.replace(/\D/g, '');
-                      setFormData(prev => ({ ...prev, phone: value }));
-                    }}
-                    maxLength={11}
+                    onChange={handleFormInputChange}
                   />
                   {errors.phone && <p className="text-[10px] font-bold text-red-500 mt-1 ml-3">{errors.phone}</p>}
                 </div>
@@ -429,19 +346,8 @@ function BookingModal({ isOpen, onClose, selectedPlan }) {
                 </button>
               </form>
             </div>
-            </motion.div>
-          </div>
-
-          {/* Phone Verification Modal - Shows when "Confirm Free Trial" button is clicked */}
-          {showPhoneVerification && (
-            <PhoneVerificationModal
-              isOpen={showPhoneVerification}
-              onClose={() => setShowPhoneVerification(false)}
-              onVerificationSuccess={handlePhoneVerificationSuccess}
-              initialPhone={pendingBookingData?.phone || ''}
-            />
-          )}
-        </>
+          </motion.div>
+        </div>
       )}
     </AnimatePresence>
   );
