@@ -136,7 +136,7 @@ export default function HowItWorks() {
             >
               {phoneSlides.map((slide, i) => (
                 <SwiperSlide key={i}>
-                  <div className="relative mx-auto `max-w-105`aspect-[4/5] bg-cyan-600 rounded-[3rem] p-8 flex flex-col text-white shadow-2xl overflow-hidden">
+                  <div className="relative mx-auto max-w-[420px] aspect-[4/5] bg-cyan-600 rounded-[3rem] p-8 flex flex-col text-white shadow-2xl overflow-hidden">
                     <div className="mb-8">
                       <h4 className="text-3xl font-bold mb-2">{slide.title}</h4>
                       <p className="text-xl opacity-90">{slide.subtitle}</p>
