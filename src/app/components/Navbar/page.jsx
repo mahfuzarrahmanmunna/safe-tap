@@ -6,7 +6,8 @@ import Link from 'next/link';
 import {
   Menu, X, ChevronDown, Phone, Mail, Droplet, Home, Info, Package,
   Wrench, FileText, Contact, Facebook, Youtube, Linkedin,
-  Clock, Filter, Users, TestTube, Sparkles, Sun, Moon, ArrowRight, MapPin, Shield, Star, Search, Headphones
+  Clock, Filter, Users, TestTube, Sparkles, Sun, Moon, ArrowRight, 
+  MapPin, Shield, Star, Search, Headphones
 } from 'lucide-react';
 import { Target } from 'lucide-react';
 import { useTheme } from '@/app/contexts/ThemeContext';
@@ -14,7 +15,6 @@ import { usePathname, useRouter } from 'next/navigation';
 import ServiceModal from '../ServiceModal';
 
 /* ------------------ DATA ------------------ */
-
 const navigationItems = [
   { name: 'Home', href: '/', icon: Home },
   {
@@ -29,10 +29,11 @@ const navigationItems = [
     ],
   },
   { name: 'Products', href: '/products', icon: Package, isModal: true },
-  { name: 'Services', onClick: () => null, icon: Wrench }, // Will be updated dynamically
+  { name: 'Services', onClick: () => null, icon: Wrench }, 
+  { name: 'Blog', href: 'pages/blogs', icon: FileText }, 
   { name: 'Contact', href: '/pages/contact', icon: Contact },
-];
 
+];
 const socialLinks = [
   { icon: Facebook, href: '#', label: 'Facebook' },
   { icon: Youtube, href: '#', label: 'Youtube' },

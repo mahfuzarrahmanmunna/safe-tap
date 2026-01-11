@@ -1,4 +1,4 @@
-// app/components/city-page/ProductDescription.jsx
+
 'use client';
 
 

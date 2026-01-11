@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom'; 
 import { motion, AnimatePresence } from 'framer-motion';
-// FaStickyNote আইকনটি ইম্পোর্ট করা হয়েছে
+
 import { FaTimes, FaPhoneAlt, FaUser, FaMapMarkerAlt, FaTicketAlt, FaStickyNote } from 'react-icons/fa';
 import { useTheme } from '@/app/contexts/ThemeContext';
 import Swal from 'sweetalert2';
@@ -22,7 +22,7 @@ function BookingModal({ isOpen, onClose, selectedPlan }) {
     phone: '', 
     referral: '', 
     city: '',
-    notes: '' // নতুন নোটস ফিল্ড
+    notes: ''
   });
   const [errors, setErrors] = useState({});
 
@@ -59,19 +59,25 @@ function BookingModal({ isOpen, onClose, selectedPlan }) {
     <AnimatePresence>
       {isOpen && (
         <div className="fixed inset-0 z-[999999] flex items-center justify-center p-4 pointer-events-none">
-          <motion.div 
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            onClick={onClose} 
-            className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm pointer-events-auto" 
-          />
+   <motion.div 
+  initial={{ scale: 0.9, opacity: 0, y: 20 }}
+  animate={{ scale: 1, opacity: 1, y: 0 }}
+  exit={{ scale: 0.9, opacity: 0, y: 20 }}
 
-          <motion.div 
-            initial={{ scale: 0.9, opacity: 0, y: 20 }}
-            animate={{ scale: 1, opacity: 1, y: 0 }}
-            exit={{ scale: 0.9, opacity: 0, y: 20 }}
-            className={`relative w-full max-w-lg rounded-[2.5rem] shadow-2xl overflow-hidden transition-colors duration-300 h-[90vh] overflow-y-auto no-scrollbar pointer-events-auto
-              ${isDark ? 'bg-slate-900 border border-slate-800 text-white' : 'bg-white border border-cyan-50 text-slate-900'}`}
-          >
+  className={`relative w-full max-w-lg rounded-[2.5rem] shadow-2xl transition-colors duration-300 h-[90vh] overflow-y-auto pointer-events-auto
+    scrollbar-hide md:scrollbar-default
+    ${isDark ? 'bg-slate-900 border border-slate-800 text-white' : 'bg-white border border-cyan-50 text-slate-900'}`}
+  style={{
+    msOverflowStyle: 'none',  
+    scrollbarWidth: 'none',   
+  }}
+>
+ 
+  <style jsx>{`
+    div::-webkit-scrollbar {
+      display: none;
+    }
+  `}</style>
             {/* Header */}
             <div className={`sticky top-0 z-20 p-6 flex justify-between items-center border-b border-slate-100 dark:border-slate-800 ${isDark ? 'bg-slate-900' : 'bg-white'}`}>
               <div>
@@ -146,7 +152,7 @@ function BookingModal({ isOpen, onClose, selectedPlan }) {
                   />
                 </div>
 
-                {/* Notes Field (New) */}
+                {/* Notes Field  */}
                 <div className="relative">
                   <FaStickyNote className="absolute left-4 top-5 text-cyan-500" />
                   <textarea 
