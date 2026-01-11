@@ -3,8 +3,8 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import axios from 'axios';
-import { FaTimes, FaPhoneAlt, FaUser, FaMapMarkerAlt, FaTicketAlt, FaStickyNote, FaChevronDown } from 'react-icons/fa';
+
+import { FaTimes, FaPhoneAlt, FaUser, FaMapMarkerAlt, FaTicketAlt, FaStickyNote } from 'react-icons/fa';
 import { useTheme } from '@/app/contexts/ThemeContext';
 import PhoneVerificationModal from './PhoneVerificationModal';
 import Swal from 'sweetalert2';
@@ -29,13 +29,10 @@ function BookingModal({ isOpen, onClose, selectedPlan }) {
   const [mapSrc, setMapSrc] = useState('https://www.google.com/maps?q=Bangladesh&output=embed');
 
   const [formData, setFormData] = useState({
-    name: '',
-    phone: '',
-    referral: '',
-    division: '',
-    district: '',
-    thana: '',
-    addressDetails: '',
+    name: '', 
+    phone: '', 
+    referral: '', 
+    city: '',
     notes: ''
   });
   const [errors, setErrors] = useState({});
@@ -248,33 +245,33 @@ function BookingModal({ isOpen, onClose, selectedPlan }) {
   const modalContent = (
     <AnimatePresence>
       {isOpen && (
-        <>
-          {/* Booking Form Modal */}
-          <div className="fixed inset-0 z-10 flex items-center justify-center p-4 pointer-events-none">
-            <motion.div
-              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              onClick={handleCloseModal}
-              className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm pointer-events-auto"
-            />
+        <div className="fixed inset-0 z-[999999] flex items-center justify-center p-4 pointer-events-none">
+   <motion.div 
+  initial={{ scale: 0.9, opacity: 0, y: 20 }}
+  animate={{ scale: 1, opacity: 1, y: 0 }}
+  exit={{ scale: 0.9, opacity: 0, y: 20 }}
 
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0, y: 20 }}
-              animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 0.9, opacity: 0, y: 20 }}
-              className={`relative w-full max-w-lg rounded-[2.5rem] shadow-2xl overflow-hidden transition-colors duration-300 h-[90vh] overflow-y-auto no-scrollbar pointer-events-auto
-                ${isDark ? 'bg-slate-900 border border-slate-800 text-white' : 'bg-white border border-cyan-50 text-slate-900'}`}
-            >
-              {/* Header */}
-              <div className={`sticky top-0 z-20 p-6 flex justify-between items-center border-b border-slate-100 dark:border-slate-800 ${isDark ? 'bg-slate-900' : 'bg-white'}`}>
-                <div>
-                  <h2 className="text-xl font-black text-cyan-600 tracking-tight">Start 7-Day Trial</h2>
-                  <p className={`text-[9px] font-bold uppercase tracking-[0.2em] ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
-                    Plan: <span className="text-cyan-500">{selectedPlan}</span>
-                  </p>
-                </div>
-                <button onClick={handleCloseModal} className={`p-2 rounded-full ${isDark ? 'bg-slate-800 text-slate-400' : 'bg-slate-100 text-slate-500'}`}>
-                  <FaTimes size={14} />
-                </button>
+  className={`relative w-full max-w-lg rounded-[2.5rem] shadow-2xl transition-colors duration-300 h-[90vh] overflow-y-auto pointer-events-auto
+    scrollbar-hide md:scrollbar-default
+    ${isDark ? 'bg-slate-900 border border-slate-800 text-white' : 'bg-white border border-cyan-50 text-slate-900'}`}
+  style={{
+    msOverflowStyle: 'none',  
+    scrollbarWidth: 'none',   
+  }}
+>
+ 
+  <style jsx>{`
+    div::-webkit-scrollbar {
+      display: none;
+    }
+  `}</style>
+            {/* Header */}
+            <div className={`sticky top-0 z-20 p-6 flex justify-between items-center border-b border-slate-100 dark:border-slate-800 ${isDark ? 'bg-slate-900' : 'bg-white'}`}>
+              <div>
+                <h2 className="text-xl font-black text-cyan-600 tracking-tight">Start 7-Day Trial</h2>
+                <p className={`text-[9px] font-bold uppercase tracking-[0.2em] ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+                  Plan: <span className="text-cyan-500">{selectedPlan}</span>
+                </p>
               </div>
 
             <div className="p-8 space-y-6">
@@ -411,7 +408,7 @@ function BookingModal({ isOpen, onClose, selectedPlan }) {
                   />
                 </div>
 
-                {/* Notes Field */}
+                {/* Notes Field  */}
                 <div className="relative">
                   <FaStickyNote className="absolute left-4 top-5 text-cyan-500" />
                   <textarea

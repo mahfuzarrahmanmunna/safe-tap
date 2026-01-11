@@ -99,50 +99,17 @@ const comparisonData = [
     },
 ];
 
-export default function SafeTapAdvantage() {
+export default function SafeTapAdvantage({ title }) { 
     const { theme } = useTheme();
     const ref = useRef(null);
     const isInView = useInView(ref, { once: true, amount: 0.2 });
-    const [activeTab, setActiveTab] = useState('all');
+    
+
+    const displayTitle = title || "The SafeTap Advantage";
 
     return (
         <section ref={ref} className="relative overflow-hidden py-16 lg:py-24">
-            {/* Background with Gradient */}
-            <div className={`absolute inset-0 ${theme === 'dark'
-                ? 'bg-gradient-to-br from-gray-900 via-cyan-900/20 to-teal-900'
-                : 'bg-gradient-to-br from-cyan-50 via-white to-teal-50'
-                }`}></div>
-
-            {/* Animated Background Pattern */}
-            <div className={`absolute inset-0 ${theme === 'dark' ? 'opacity-5' : 'opacity-10'
-                }`}>
-                <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
-                    <defs>
-                        <pattern id="water-pattern" x="0" y="0" width="100" height="100" patternUnits="userSpaceOnUse">
-                            <path d="M0,50 Q25,30 50,50 T100,50" stroke="#06b6d4" strokeWidth="2" fill="none" />
-                        </pattern>
-                    </defs>
-                    <rect width="100%" height="100%" fill="url(#water-pattern)" />
-                </svg>
-            </div>
-
-            {/* Animated Background Shapes */}
-            <motion.div
-                className={`absolute top-10 left-10 w-72 h-72 rounded-full mix-blend-multiply filter blur-xl ${theme === 'dark'
-                    ? 'bg-cyan-800 opacity-20'
-                    : 'bg-cyan-200 opacity-30'
-                    }`}
-                animate={{ y: [0, -30, 0] }}
-                transition={{ duration: 6, repeat: Infinity, repeatType: 'reverse' }}
-            />
-            <motion.div
-                className={`absolute top-40 right-10 w-72 h-72 rounded-full mix-blend-multiply filter blur-xl ${theme === 'dark'
-                    ? 'bg-teal-800 opacity-20'
-                    : 'bg-teal-300 opacity-30'
-                    }`}
-                animate={{ y: [0, 30, 0] }}
-                transition={{ duration: 7, repeat: Infinity, repeatType: 'reverse' }}
-            />
+            
 
             <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 {/* Section Header */}
@@ -152,12 +119,22 @@ export default function SafeTapAdvantage() {
                     transition={{ duration: 0.5 }}
                     className="text-center mb-12"
                 >
-                    <h2 className={`text-3xl sm:text-4xl lg:text-5xl font-bold bg-clip-text text-transparent ${theme === 'dark'
-                        ? 'bg-gradient-to-r from-cyan-400 via-cyan-300 to-teal-200'
-                        : 'bg-gradient-to-r from-cyan-900 via-cyan-800 to-teal-700'
-                        } mb-4`}>
-                        The SafeTap Advantage
-                    </h2>
+              
+                    <AnimatePresence mode="wait">
+                        <motion.h2 
+                            key={displayTitle} 
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -10 }}
+                            className={`text-3xl sm:text-4xl lg:text-5xl font-bold bg-clip-text text-transparent ${theme === 'dark'
+                                ? 'bg-gradient-to-r from-cyan-400 via-cyan-300 to-teal-200'
+                                : 'bg-gradient-to-r from-cyan-900 via-cyan-800 to-teal-700'
+                                } mb-4`}
+                        >
+                            {displayTitle}
+                        </motion.h2>
+                    </AnimatePresence>
+
                     <p className={`text-xl ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'} max-w-3xl mx-auto`}>
                         Next-gen Water Purification at Best Costs
                     </p>

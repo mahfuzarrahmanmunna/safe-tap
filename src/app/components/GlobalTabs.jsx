@@ -1,61 +1,54 @@
 "use client";
-import React, { useState } from 'react';
+import React from 'react';
 import { motion, AnimatePresence } from "framer-motion";
 import { useTheme } from "@/app/contexts/ThemeContext";
 import { FaFillDrip, FaSyncAlt, FaShieldVirus } from "react-icons/fa";
 
-const products = [
+export const products = [
   {
     id: "copper",
     label: "SafeTap Copper",
     icon: <FaFillDrip />,
-    color: "#B45309", // Copper color
+    color: "#B45309",
     tagline: "Immunity Boosted with Active Copper",
-    gradient: "from-[#B45309] to-[#78350F]"
   },
   {
     id: "ro_plus",
     label: "SafeTap RO+",
     icon: <FaShieldVirus />,
-    color: "#06B6D4", 
+    color: "#06B6D4",
     tagline: "Next-Gen Multi-Stage RO+UV Tech",
-    gradient: "from-slate-50 to-slate-100" // Light mode non-active feel
   },
   {
     id: "alkaline",
     label: "SafeTap Alkaline",
     icon: <FaSyncAlt />,
-    color: "#8B5CF6", 
+    color: "#8B5CF6",
     tagline: "Healthy pH Balance & Vital Minerals",
-    gradient: "from-slate-50 to-slate-100"
   }
 ];
 
-function GlobalTabs() {
+function GlobalTabs({ active, setActive }) {
   const { theme } = useTheme();
   const isDark = theme === 'dark';
-  const [active, setActive] = useState(products[0].id);
-
-  const currentProduct = products.find(p => p.id === active);
+  const currentProduct = products.find(p => p.id === active) || products[0];
 
   return (
     <div className="w-full flex flex-col items-center py-10">
       <div className="relative">
-  
         <motion.div 
           animate={{ backgroundColor: currentProduct.color }}
           className="absolute inset-0 blur-[100px] opacity-10 transition-all duration-1000"
         />
 
-        {/* Tab Container */}
-        <nav className="relative flex items-center gap-2">
+        <nav className="relative flex flex-wrap justify-center items-center gap-4">
           {products.map((item) => {
             const isActive = active === item.id;
             return (
               <div key={item.id} className="relative flex flex-col items-center">
                 <button
                   onClick={() => setActive(item.id)}
-                  className={`relative flex items-center justify-center px-8 py-4 rounded-xl border transition-all duration-500 min-w-[200px]
+                  className={`relative flex items-center justify-center px-8 py-4 rounded-xl border transition-all duration-500 min-w-[180px] md:min-w-[200px]
                     ${isActive 
                       ? 'text-white border-transparent shadow-xl' 
                       : isDark 
@@ -70,7 +63,6 @@ function GlobalTabs() {
                   </span>
                 </button>
 
-           
                 <AnimatePresence>
                   {isActive && (
                     <motion.div
@@ -89,8 +81,7 @@ function GlobalTabs() {
         </nav>
       </div>
 
-      {/* Content Display */}
-      <div className="mt-12 overflow-hidden h-20 text-center">
+      <div className="mt-12 h-24 text-center">
         <AnimatePresence mode="wait">
           <motion.div
             key={active}
@@ -107,20 +98,6 @@ function GlobalTabs() {
             </p>
           </motion.div>
         </AnimatePresence>
-      </div>
-
-      {/* Pagination Dots */}
-      <div className="mt-6 flex gap-2">
-        {products.map(p => (
-          <motion.div 
-            key={p.id}
-            animate={{ 
-              width: active === p.id ? 32 : 8,
-              backgroundColor: active === p.id ? currentProduct.color : (isDark ? "#334155" : "#E2E8F0")
-            }}
-            className="h-2 rounded-full transition-colors duration-500"
-          />
-        ))}
       </div>
     </div>
   );
