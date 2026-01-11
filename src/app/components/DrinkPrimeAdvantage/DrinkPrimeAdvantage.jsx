@@ -28,6 +28,7 @@ import {
     ThumbsDown,
     DollarSign,
 } from 'lucide-react';
+import Link from 'next/link';
 
 // Animation variants
 const containerVariants = {

@@ -27,24 +27,32 @@ export const citySliders = {
         id: 2,
         title: 'Copper Infused Water',
         subtitle: 'Natural Copper Benefits',
-        image: 'https://i.ibb.co.com/v6B21T50/2-copper-product-production.webp',
+        description: 'Enhances digestion and improves immunity with copper-infused water',
+        image: '/images/dhaka-slide-2.jpg',
         color: 'from-amber-600 to-orange-700'
       },
       {
         id: 3,
         title: 'Smart IoT Features',
         subtitle: 'WiFi Connected Monitoring',
-        image: 'https://i.ibb.co.com/v6vh8HGy/Multistage-Purification-production.webp',
+        description: 'Real-time water quality tracking through mobile app',
+        image: '/images/dhaka-slide-3.jpg',
         color: 'from-emerald-600 to-green-700'
       },
       {
         id: 4,
         title: '5-Stage Filtration',
         subtitle: 'Advanced Purification System',
-        image: 'https://i.ibb.co.com/PG3mTSHg/Powerful-In-line-UV-production.webp',
+        description: 'Complete removal of impurities with 5-stage filtration process',
+        image: '/images/dhaka-slide-4.jpg',
         color: 'from-purple-600 to-indigo-700'
       }
-    ]
+    ],
+    stats: {
+      users: '8,000+',
+      rating: '4.8',
+      installations: '25,000+'
+    }
   },
   chattogram: {
     name: 'Chattogram',
@@ -53,21 +61,53 @@ export const citySliders = {
         id: 1,
         title: 'Industrial Grade Filtration',
         subtitle: 'For Port City Water',
-        image: 'https://i.ibb.co.com/Jwnf2wQs/1-lg-copper-alive-product-production.webp',
+        description: 'Specialized filtration for Chattogram\'s unique water conditions',
+        image: '/images/chattogram-slide-1.jpg',
         color: 'from-blue-600 to-cyan-700'
       },
       {
         id: 2,
         title: 'High Capacity Purification',
         subtitle: '20 LPH Output',
-        image: 'https://i.ibb.co.com/v6B21T50/2-copper-product-production.webp',
+        description: 'Large capacity purification for industrial and residential use',
+        image: '/images/chattogram-slide-2.jpg',
         color: 'from-teal-600 to-emerald-700'
+      },
+      {
+        id: 3,
+        title: 'Salt Water Protection',
+        subtitle: 'Coastal Area Special',
+        description: 'Extra protection against salt and mineral content in water',
+        image: '/images/chattogram-slide-3.jpg',
+        color: 'from-sky-600 to-blue-700'
       }
-    ]
+    ],
+    stats: {
+      users: '5,000+',
+      rating: '4.7',
+      installations: '15,000+'
+    }
+  },
+
+  khulna: {
+    name: 'Khulna',
+    slides: [
+      {
+        id: 1,
+        title: 'Agricultural Area Special',
+        subtitle: 'Pesticide Removal',
+        description: 'Advanced filtration for agricultural area water conditions',
+        image: '/images/khulna-slide-1.jpg',
+        color: 'from-green-600 to-emerald-700'
+      }
+    ],
+    stats: {
+      users: '3,000+',
+      rating: '4.6',
+      installations: '10,000+'
+    }
   }
 };
-  
-
 
 //  products data
 export const demoProducts = {
@@ -107,34 +147,7 @@ export const demoProducts = {
   ]
 };
 
-
-//  export const features = [
-//   {
-//     icon: Wrench, 
-//     title: 'Lifetime Free Maintenance',
-//     description: 'Free maintenance and filter replacement for life',
-//     color: 'text-green-500'
-//   },
-//   {
-//     icon: Calendar, 
-//     title: '7 Days Risk-Free Trial',
-//     description: 'Try for 7 days, cancel anytime if not satisfied',
-//     color: 'text-blue-500'
-//   },
-//   {
-//     icon: Clock,
-//     title: '48-hour Installation',
-//     description: 'Quick installation within 48 hours of booking',
-//     color: 'text-amber-500'
-//   },
-//   {
-//     icon: Package, 
-//     title: 'Plans starting ₹417/month',
-//     description: 'Affordable subscription plans with no upfront cost',
-//     color: 'text-purple-500'
-//   }
-// ];
-
+// RO+UV Copper Water Purifier Product Description 
 export const techSpecs = [
   {
     icon: Shield, 
