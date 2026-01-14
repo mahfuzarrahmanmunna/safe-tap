@@ -76,9 +76,9 @@ const comparisonData = [
     {
         category: 'AFFORDABLE Prices',
         options: [
-            { name: 'water can', status: 'negative', description: '₹2 - ₹4/litre' },
-            { name: 'other purifier', status: 'negative', description: '₹20,000 to purchase ₹5,000/year to maintain' },
-            { name: 'SafeTap', status: 'positive', description: 'Starts at ₹1/litre<br/>FREE maintenance<br/>ZERO upfront cost<br/>Lifetime FREE maintenance' },
+            { name: 'water can', status: 'negative', description: '৳2 - ৳4/litre' },
+            { name: 'other purifier', status: 'negative', description: '৳20,000 to purchase ৳5,000/year to maintain' },
+            { name: 'SafeTap', status: 'positive', description: 'Starts at ৳1/litre<br/>FREE maintenance<br/>ZERO upfront cost<br/>Lifetime FREE maintenance' },
         ],
     },
     {
@@ -331,7 +331,7 @@ export default function SafeTapAdvantage() {
                             Cost Effective
                         </h3>
                         <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                            Zero upfront cost with affordable monthly plans starting at ₹1/litre
+                            Zero upfront cost with affordable monthly plans starting at ৳1/litre
                         </p>
                     </motion.div>
                 </motion.div>

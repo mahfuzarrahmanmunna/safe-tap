@@ -28,7 +28,7 @@ export const citySliders = {
         title: 'Copper Infused Water',
         subtitle: 'Natural Copper Benefits',
         description: 'Enhances digestion and improves immunity with copper-infused water',
-        image: '/images/dhaka-slide-2.jpg',
+        image: 'https://i.ibb.co.com/gMXpXPCH/types-of-web-development-services.jpg2',
         color: 'from-amber-600 to-orange-700'
       },
       {
@@ -36,7 +36,7 @@ export const citySliders = {
         title: 'Smart IoT Features',
         subtitle: 'WiFi Connected Monitoring',
         description: 'Real-time water quality tracking through mobile app',
-        image: '/images/dhaka-slide-3.jpg',
+        image: 'https://i.ibb.co.com/gMXpXPCH/types-of-web-development-services.jpg3',
         color: 'from-emerald-600 to-green-700'
       },
       {
@@ -44,7 +44,7 @@ export const citySliders = {
         title: '5-Stage Filtration',
         subtitle: 'Advanced Purification System',
         description: 'Complete removal of impurities with 5-stage filtration process',
-        image: '/images/dhaka-slide-4.jpg',
+        image: 'https://i.ibb.co.com/gMXpXPCH/types-of-web-development-services.jpg4.jpg',
         color: 'from-purple-600 to-indigo-700'
       }
     ],

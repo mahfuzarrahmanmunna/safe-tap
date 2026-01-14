@@ -1,35 +1,36 @@
-// components/BookingModal.jsx
 "use client";
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
-import { FaTimes, FaPhoneAlt, FaUser, FaMapMarkerAlt, FaTicketAlt, FaStickyNote, FaChevronDown } from 'react-icons/fa';
+import { FaTimes, FaUser, FaMapMarkerAlt, FaTicketAlt, FaStickyNote, FaChevronDown, FaCheckCircle, FaPhoneAlt, FaQrcode, FaDownload } from 'react-icons/fa';
 import { useTheme } from '@/app/contexts/ThemeContext';
-import PhoneVerificationModal from './PhoneVerificationModal';
 import Swal from 'sweetalert2';
 
-function BookingModal({ isOpen, onClose, selectedPlan }) {
+function BookingModal({ isOpen, onClose, selectedPlan, onRegistrationSuccess }) {
   const { theme } = useTheme();
   const isDark = theme === 'dark';
   const [mounted, setMounted] = useState(false);
-  const [showPhoneVerification, setShowPhoneVerification] = useState(false);
-  const [pendingBookingData, setPendingBookingData] = useState(null);
-  const [verifiedUser, setVerifiedUser] = useState(null);
-  const [userAccessToken, setUserAccessToken] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState({});
+  const [bookingSuccess, setBookingSuccess] = useState(false);
+  const [qrCode, setQrCode] = useState('');
+  const [userId, setUserId] = useState(null);
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
 
   // Location data states
   const [divisions, setDivisions] = useState([]);
   const [districts, setDistricts] = useState([]);
   const [thanas, setThanas] = useState([]);
-  const [loading, setLoading] = useState(false);
   const [locationError, setLocationError] = useState('');
 
-  // State for the map source URL to ensure it updates correctly
+  // State for the map source URL
   const [mapSrc, setMapSrc] = useState('https://www.google.com/maps?q=Bangladesh&output=embed');
 
   const [formData, setFormData] = useState({
     name: '',
+    email: '',
     phone: '',
     referral: '',
     division: '',
@@ -38,7 +39,9 @@ function BookingModal({ isOpen, onClose, selectedPlan }) {
     addressDetails: '',
     notes: ''
   });
-  const [errors, setErrors] = useState({});
+
+  // API base URL
+  const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000';
 
   useEffect(() => {
     setMounted(true);
@@ -52,7 +55,7 @@ function BookingModal({ isOpen, onClose, selectedPlan }) {
   const fetchDivisions = async () => {
     try {
       setLoading(true);
-      const response = await axios.get('http://127.0.0.1:8000/api/divisions/');
+      const response = await axios.get(`http://127.0.0.1:8000/api/divisions/`);
       setDivisions(response.data);
     } catch (err) {
       setLocationError('Failed to fetch divisions. Please try again later.');
@@ -61,21 +64,18 @@ function BookingModal({ isOpen, onClose, selectedPlan }) {
     }
   };
 
-  // Effect to update the map source whenever location data changes
+  // Update the map source whenever location data changes
   useEffect(() => {
-    // Find the names of the selected locations from their respective arrays
     const thanaName = thanas.find(t => t.id == formData.thana)?.name;
     const districtName = districts.find(d => d.id == formData.district)?.name;
     const divisionName = divisions.find(d => d.id == formData.division)?.name;
 
-    // Prioritize the most specific location for the map query
     const locationQuery = thanaName || districtName || divisionName || "Bangladesh";
     const newMapSrc = `https://www.google.com/maps?q=${encodeURIComponent(locationQuery)}&output=embed`;
     setMapSrc(newMapSrc);
+  }, [formData.thana, formData.district, formData.division, thanas, districts, divisions]);
 
-  }, [formData.thana, formData.district, formData.division, thanas, districts, divisions]); // Dependencies ensure it updates when data or selection changes
-
-  // Generic handler for text inputs and textareas
+  // Handler for form inputs
   const handleFormInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({
@@ -84,11 +84,10 @@ function BookingModal({ isOpen, onClose, selectedPlan }) {
     }));
   };
 
-  // Handler for when a division is selected
+  // Handler for division selection
   const handleDivisionSelect = async (e) => {
     const divisionId = e.target.value;
 
-    // Reset dependent states and form data
     setDistricts([]);
     setThanas([]);
     setFormData(prev => ({
@@ -98,7 +97,6 @@ function BookingModal({ isOpen, onClose, selectedPlan }) {
       thana: ''
     }));
 
-    // Fetch districts if a division is selected
     if (divisionId) {
       try {
         setLoading(true);
@@ -112,11 +110,10 @@ function BookingModal({ isOpen, onClose, selectedPlan }) {
     }
   };
 
-  // Handler for when a district is selected
+  // Handler for district selection
   const handleDistrictSelect = async (e) => {
     const districtId = e.target.value;
 
-    // Reset dependent state and form data
     setThanas([]);
     setFormData(prev => ({
       ...prev,
@@ -124,7 +121,6 @@ function BookingModal({ isOpen, onClose, selectedPlan }) {
       thana: ''
     }));
 
-    // Fetch thanas if a district is selected
     if (districtId) {
       try {
         setLoading(true);
@@ -138,7 +134,7 @@ function BookingModal({ isOpen, onClose, selectedPlan }) {
     }
   };
 
-  // Handler for when a thana is selected
+  // Handler for thana selection
   const handleThanaSelect = (e) => {
     const thanaId = e.target.value;
     setFormData(prev => ({
@@ -147,57 +143,194 @@ function BookingModal({ isOpen, onClose, selectedPlan }) {
     }));
   };
 
+  // Download QR Code automatically
+  const downloadQRCode = (qrCodeData, userName) => {
+    if (!qrCodeData) return;
+    
+    const link = document.createElement('a');
+    link.href = `data:image/png;base64,${qrCodeData}`;
+    link.download = `${userName || 'user'}-safetap-qr.png`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
 
   if (!mounted) return null;
 
-  // Handle phone verification success - user created with role 'customer' by backend
-  const handlePhoneVerificationSuccess = async (verificationData) => {
-    setVerifiedUser(verificationData.user);
-    setUserAccessToken(verificationData.access);
+  // Handle form submission
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-    // Complete the booking with verified user information
-    const bookingData = {
-      user_id: verificationData.user.id,
-      phone: verificationData.user.phone,
-      name: pendingBookingData.name,
-      division: pendingBookingData.division,
-      district: pendingBookingData.district,
-      thana: pendingBookingData.thana,
-      addressDetails: pendingBookingData.addressDetails,
-      referral: pendingBookingData.referral,
-      notes: pendingBookingData.notes,
-      plan: selectedPlan,
-      role: verificationData.user.role // User role will be 'customer'
-    };
+    if (!validate()) {
+      return;
+    }
 
-    console.log('Free Trial Booking Completed:', bookingData);
+    setLoading(true);
+    setErrors({});
 
-    // Hide phone verification modal
-    setShowPhoneVerification(false);
+    try {
+      // Create user and booking
+      const response = await axios.post(`http://127.0.0.1:8000/api/auth/register/`, {
+        username: formData.email, // Using email as username
+        email: formData.email,
+        password: 'tempPassword123', // You might want to generate a random password
+        first_name: formData.name.split(' ')[0],
+        last_name: formData.name.split(' ').slice(1).join(' '),
+        phone: formData.phone,
+        division: formData.division,
+        district: formData.district,
+        thana: formData.thana,
+        addressDetails: formData.addressDetails,
+        referral: formData.referral,
+        notes: formData.notes,
+        plan: selectedPlan
+      });
 
-    // Show success message
-    Swal.fire({
-      title: 'Free Trial Booked Successfully!',
-      text: `Your free trial for ${selectedPlan} plan has been confirmed. A verification confirmation will be sent to ${verificationData.user.phone}.`,
-      icon: 'success',
-      confirmButtonColor: '#0891b2',
-      confirmButtonText: 'Close'
-    });
+      console.log('Registration response:', response.data); // Debug log
+      
+      // Set user info
+      setUserId(response.data.user_id);
+      setEmail(response.data.email);
+      setPhone(response.data.phone);
+      
+      // Set QR code if available
+      if (response.data.qr_code) {
+        setQrCode(response.data.qr_code);
+        // Auto-download QR code
+        downloadQRCode(response.data.qr_code, formData.name);
+      }
+      
+      setBookingSuccess(true);
+      
+      // Show success modal
+      showSuccessModal(response.data);
+      
+      // Call the parent callback to show phone verification
+      if (onRegistrationSuccess) {
+        console.log('Calling onRegistrationSuccess with data:', {
+          user_id: response.data.user_id,
+          phone: response.data.phone,
+          sms_sent: response.data.sms_sent,
+          qr_code: response.data.qr_code
+        });
+        onRegistrationSuccess({
+          user_id: response.data.user_id,
+          phone: response.data.phone,
+          sms_sent: response.data.sms_sent,
+          qr_code: response.data.qr_code
+        });
+      }
 
-    // Reset and close modal after success
-    setTimeout(() => {
-      handleCloseModal();
-    }, 2500);
+    } catch (error) {
+      console.error('Error creating booking:', error);
+      
+      let errorMsg = "Failed to create booking";
+      let errorDetails = "";
+      
+      if (error.response) {
+        console.log('Error response data:', error.response.data);
+        console.log('Error response status:', error.response.status);
+        
+        if (error.response.data && error.response.data.error) {
+          errorMsg = error.response.data.error;
+        } else if (error.response.data && error.response.data.detail) {
+          errorMsg = error.response.data.detail;
+        } else {
+          errorMsg = `Server error (${error.response.status})`;
+        }
+        
+        if (error.response.data && error.response.data.details) {
+          errorDetails = error.response.data.details;
+        }
+      } else if (error.request) {
+        console.log('Error request:', error.request);
+        errorMsg = "Network error. Please check your connection.";
+      } else {
+        console.log('Error message:', error.message);
+        errorMsg = error.message || errorMsg;
+      }
+      
+      const errorHtml = errorDetails ? 
+        `<p><strong>Error:</strong> ${errorMsg}</p><p><strong>Details:</strong> ${errorDetails}</p>` :
+        `<p>${errorMsg}</p>`;
+      
+      Swal.fire({
+        title: "Error",
+        html: errorHtml,
+        icon: "error",
+        confirmButtonColor: "#0891b2",
+        width: errorDetails ? 600 : 400
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
-  // Handle close modal - reset all states
+  // Show success modal
+  const showSuccessModal = (responseData) => {
+    const qrCodeHtml = qrCode ? 
+      `<div class="my-4 p-4 bg-white rounded-lg inline-block">
+        <img src="data:image/png;base64,${qrCode}" alt="Service QR Code" style="width: 200px; height: 200px;">
+      </div>
+      <p class="text-sm text-green-600 mt-2">✓ QR Code downloaded automatically</p>` : 
+      `<p class="text-sm text-gray-600">QR code will be available after email verification</p>`;
+    
+    const smsStatusHtml = responseData.sms_sent ? 
+      `<p class="text-sm text-green-600 mt-2">✓ Verification code sent to ${responseData.phone}</p>` :
+      responseData.phone ? 
+      `<p class="text-sm text-orange-600 mt-2">⚠ Failed to send SMS verification code</p>` : '';
+    
+    Swal.fire({
+      title: 'Registration Successful!',
+      html: `
+        <div>
+          <p>Your trial for <strong>${selectedPlan}</strong> has been confirmed!</p>
+          <p>A verification email has been sent to <strong>${formData.email}</strong></p>
+          ${qrCodeHtml}
+          ${smsStatusHtml}
+          ${responseData.phone ? '<p class="text-sm text-blue-600 mt-2">📱 Please check your phone for the verification code</p>' : ''}
+        </div>
+      `,
+      icon: 'success',
+      confirmButtonColor: '#0891b2',
+      confirmButtonText: 'Close',
+      willClose: () => {
+        handleCloseModal();
+      }
+    });
+  };
+
+  // Validate form
+  const validate = () => {
+    let newErrors = {};
+    if (!formData.name.trim()) newErrors.name = "Name is required";
+    if (!formData.email.trim()) newErrors.email = "Email is required";
+    else if (!/^\S+@\S+\.\S+$/.test(formData.email)) newErrors.email = "Please enter a valid email";
+    if (!formData.phone.trim()) newErrors.phone = "Phone number is required";
+    else if (!/^\d{10,11}$/.test(formData.phone)) newErrors.phone = "Please enter a valid phone number (10-11 digits)";
+    if (!formData.division) newErrors.division = "Select a division";
+    if (!formData.district) newErrors.district = "Select a district";
+    if (!formData.thana) newErrors.thana = "Select a thana";
+    if (!formData.addressDetails.trim()) newErrors.addressDetails = "Address details are required";
+    
+    console.log("Form validation errors:", newErrors);
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  // Handle close modal
   const handleCloseModal = () => {
-    setShowPhoneVerification(false);
-    setVerifiedUser(null);
-    setUserAccessToken('');
-    setPendingBookingData(null);
+    if (bookingSuccess) {
+      setBookingSuccess(false);
+      setQrCode('');
+      setUserId(null);
+      setEmail('');
+      setPhone('');
+    }
     setFormData({
       name: '',
+      email: '',
       phone: '',
       referral: '',
       division: '',
@@ -210,77 +343,39 @@ function BookingModal({ isOpen, onClose, selectedPlan }) {
     onClose();
   };
 
-  const validate = () => {
-    let newErrors = {};
-    if (!formData.name.trim()) newErrors.name = "Name is required";
-    if (!/^\d{10,11}$/.test(formData.phone)) newErrors.phone = "Please enter a valid phone number (10-11 digits)";
-    if (!formData.division) newErrors.division = "Select a division";
-    if (!formData.district) newErrors.district = "Select a district";
-    if (!formData.thana) newErrors.thana = "Select a thana";
-    if (!formData.addressDetails.trim()) newErrors.addressDetails = "Address details are required";
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    if (!validate()) {
-      return;
-    }
-
-    // Store pending booking data
-    setPendingBookingData({
-      name: formData.name,
-      phone: formData.phone,
-      division: formData.division,
-      district: formData.district,
-      thana: formData.thana,
-      addressDetails: formData.addressDetails,
-      referral: formData.referral,
-      notes: formData.notes
-    });
-
-    // Show phone verification modal
-    setShowPhoneVerification(true);
-  };
-
   const modalContent = (
     <AnimatePresence>
       {isOpen && (
-        <>
-          {/* Booking Form Modal */}
-          <div className="fixed inset-0 z-10 flex items-center justify-center p-4 pointer-events-none">
-            <motion.div
-              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              onClick={handleCloseModal}
-              className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm pointer-events-auto"
-            />
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none">
+          <motion.div
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            onClick={handleCloseModal}
+            className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm pointer-events-auto"
+          />
 
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0, y: 20 }}
-              animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 0.9, opacity: 0, y: 20 }}
-              className={`relative w-full max-w-lg rounded-[2.5rem] shadow-2xl overflow-hidden transition-colors duration-300 h-[90vh] overflow-y-auto no-scrollbar pointer-events-auto
-                ${isDark ? 'bg-slate-900 border border-slate-800 text-white' : 'bg-white border border-cyan-50 text-slate-900'}`}
-            >
-              {/* Header */}
-              <div className={`sticky top-0 z-20 p-6 flex justify-between items-center border-b border-slate-100 dark:border-slate-800 ${isDark ? 'bg-slate-900' : 'bg-white'}`}>
-                <div>
-                  <h2 className="text-xl font-black text-cyan-600 tracking-tight">Start 7-Day Trial</h2>
-                  <p className={`text-[9px] font-bold uppercase tracking-[0.2em] ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
-                    Plan: <span className="text-cyan-500">{selectedPlan}</span>
-                  </p>
-                </div>
-                <button onClick={handleCloseModal} className={`p-2 rounded-full ${isDark ? 'bg-slate-800 text-slate-400' : 'bg-slate-100 text-slate-500'}`}>
-                  <FaTimes size={14} />
-                </button>
+          <motion.div
+            initial={{ scale: 0.9, opacity: 0, y: 20 }}
+            animate={{ scale: 1, opacity: 1, y: 0 }}
+            exit={{ scale: 0.9, opacity: 0, y: 20 }}
+            className={`relative w-full max-w-lg rounded-[2.5rem] shadow-2xl overflow-hidden transition-colors duration-300 h-[90vh] overflow-y-auto no-scrollbar pointer-events-auto
+              ${isDark ? 'bg-slate-900 border border-slate-800 text-white' : 'bg-white border border-cyan-50 text-slate-900'}`}
+          >
+            {/* Header */}
+            <div className={`sticky top-0 z-20 p-6 flex justify-between items-center border-b border-slate-100 dark:border-slate-800 ${isDark ? 'bg-slate-900' : 'bg-white'}`}>
+              <div>
+                <h2 className="text-xl font-black text-cyan-600 tracking-tight">Start 7-Day Trial</h2>
+                <p className={`text-[9px] font-bold uppercase tracking-[0.2em] ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+                  Plan: <span className="text-cyan-500">{selectedPlan}</span>
+                </p>
               </div>
+              <button onClick={handleCloseModal} className={`p-2 rounded-full ${isDark ? 'bg-slate-800 text-slate-400' : 'bg-slate-100 text-slate-500'}`}>
+                <FaTimes size={14} />
+              </button>
+            </div>
 
             <div className="p-8 space-y-6">
               {/* Map Section */}
               <div className="w-full h-48 rounded-3xl overflow-hidden shadow-inner border-2 border-cyan-500/20 relative bg-slate-100">
-                {/* The 'key' prop forces the iframe to remount and reload when the source URL changes */}
                 <iframe
                   key={mapSrc}
                   width="100%"
@@ -308,6 +403,20 @@ function BookingModal({ isOpen, onClose, selectedPlan }) {
                     onChange={handleFormInputChange}
                   />
                   {errors.name && <p className="text-[10px] font-bold text-red-500 mt-1 ml-3">{errors.name}</p>}
+                </div>
+
+                {/* Email */}
+                <div className="relative">
+                  <FaUser className="absolute left-4 top-1/2 -translate-y-1/2 text-cyan-500" />
+                  <input
+                    type="email"
+                    name="email"
+                    placeholder="Email Address"
+                    className={`w-full pl-12 pr-4 py-4 rounded-2xl border-2 outline-none transition-all text-sm font-medium ${isDark ? 'bg-slate-800/50 text-white border-transparent' : 'bg-slate-50 text-slate-900 border-slate-100'} focus:border-cyan-500`}
+                    value={formData.email}
+                    onChange={handleFormInputChange}
+                  />
+                  {errors.email && <p className="text-[10px] font-bold text-red-500 mt-1 ml-3">{errors.email}</p>}
                 </div>
 
                 {/* Phone */}
@@ -424,24 +533,24 @@ function BookingModal({ isOpen, onClose, selectedPlan }) {
                   />
                 </div>
 
-                <button type="submit" className="w-full py-4 bg-cyan-600 hover:bg-cyan-700 text-white font-black text-lg rounded-2xl shadow-lg transition-all active:scale-95 shadow-cyan-600/20">
-                  Confirm Free Trial
+                <button 
+                  type="submit" 
+                  className="w-full py-4 bg-cyan-600 hover:bg-cyan-700 disabled:bg-cyan-400 text-white font-black text-lg rounded-2xl shadow-lg transition-all active:scale-95 shadow-cyan-600/20 flex items-center justify-center gap-2"
+                  disabled={loading}
+                >
+                  {loading ? (
+                    <>
+                      <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      Processing...
+                    </>
+                  ) : (
+                    'Start 7-Day Trial'
+                  )}
                 </button>
               </form>
             </div>
-            </motion.div>
-          </div>
-
-          {/* Phone Verification Modal - Shows when "Confirm Free Trial" button is clicked */}
-          {showPhoneVerification && (
-            <PhoneVerificationModal
-              isOpen={showPhoneVerification}
-              onClose={() => setShowPhoneVerification(false)}
-              onVerificationSuccess={handlePhoneVerificationSuccess}
-              initialPhone={pendingBookingData?.phone || ''}
-            />
-          )}
-        </>
+          </motion.div>
+        </div>
       )}
     </AnimatePresence>
   );

@@ -1,4 +1,3 @@
-// components/PhoneVerificationModal.jsx
 "use client";
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
@@ -22,15 +21,44 @@ function PhoneVerificationModal({ isOpen, onClose, onVerificationSuccess, initia
   const [resendTimer, setResendTimer] = useState(0);
   const [userData, setUserData] = useState(null);
 
-  // API base URL - change this to match your Django server
+  // API base URL
   const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000';
+
+  // Configure axios defaults
+  useEffect(() => {
+    // Create a new axios instance with custom configuration
+    const apiClient = axios.create({
+      baseURL: API_BASE_URL,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      withCredentials: true,
+    });
+    
+    // Add a request interceptor to include credentials
+    apiClient.interceptors.request.use(config => {
+      config.withCredentials = true;
+      return config;
+    });
+    
+    // Store the client in a ref to avoid recreating it
+    if (!window.apiClient) {
+      window.apiClient = apiClient;
+    }
+  }, [API_BASE_URL]);
 
   useEffect(() => {
     if (isOpen) {
       setMounted(true);
+      console.log('PhoneVerificationModal mounted with isOpen:', isOpen);
+      // If phone is provided, skip to step 2 (enter code)
+      if (initialPhone) {
+        setPhone(initialPhone);
+        setStep(2);
+      }
     }
     return () => setMounted(false);
-  }, [isOpen]);
+  }, [isOpen, initialPhone]);
 
   useEffect(() => {
     let interval;
@@ -42,7 +70,8 @@ function PhoneVerificationModal({ isOpen, onClose, onVerificationSuccess, initia
     return () => clearInterval(interval);
   }, [resendTimer]);
 
-  if (!mounted) return null;
+  // Always render the modal when isOpen is true, regardless of mounted state
+  if (!isOpen) return null;
 
   // Validate phone number
   const validatePhone = () => {
@@ -68,19 +97,6 @@ function PhoneVerificationModal({ isOpen, onClose, onVerificationSuccess, initia
     return Object.keys(newErrors).length === 0;
   };
 
-  // Test API connection
-  const testApiConnection = async () => {
-    try {
-      console.log('Testing API connection to:', API_BASE_URL);
-      const response = await axios.get(`${API_BASE_URL}/api/`);
-      console.log('API connection successful:', response.data);
-      return true;
-    } catch (error) {
-      console.error('API connection failed:', error);
-      return false;
-    }
-  };
-
   // Send verification code
   const sendVerificationCode = async (isResend = false) => {
     if (!validatePhone()) return;
@@ -89,24 +105,11 @@ function PhoneVerificationModal({ isOpen, onClose, onVerificationSuccess, initia
     setErrors({});
 
     try {
-      // First test if API is reachable
-      const isApiReachable = await testApiConnection();
-      if (!isApiReachable) {
-        throw new Error('Unable to connect to the server. Please check your connection.');
-      }
-
-      console.log('Sending verification code to:', `${API_BASE_URL}/api/auth/send-code/`);
+      console.log('Sending verification code to:', `${API_BASE_URL}/api/auth/phone/send-code/`);
       
-      // Explicitly specify POST method to prevent any default GET requests
-      const response = await axios({
-        method: 'post',
-        url: `${API_BASE_URL}/api/auth/send-code/`,
-        data: {
-          phone: phone
-        },
-        headers: {
-          'Content-Type': 'application/json',
-        }
+      // Use the stored apiClient with the correct endpoint
+      const response = await window.apiClient.post('/api/auth/phone/send-code/', {
+        phone: phone
       });
 
       console.log('Response received:', response.data);
@@ -142,16 +145,12 @@ function PhoneVerificationModal({ isOpen, onClose, onVerificationSuccess, initia
       let errorMsg = "Failed to send verification code";
       
       if (error.response) {
-        // The request was made and the server responded with a status code
-        // that falls out of the range of 2xx
         console.log('Error response:', error.response);
         errorMsg = error.response.data?.detail || error.response.data?.error || `Server error (${error.response.status})`;
       } else if (error.request) {
-        // The request was made but no response was received
         console.log('No response received:', error.request);
         errorMsg = "Network error. Please check your connection.";
       } else {
-        // Something happened in setting up the request that triggered an Error
         console.log('Request setup error:', error.message);
         errorMsg = error.message || errorMsg;
       }
@@ -175,19 +174,12 @@ function PhoneVerificationModal({ isOpen, onClose, onVerificationSuccess, initia
     setErrors({});
 
     try {
-      console.log('Verifying code with:', `${API_BASE_URL}/api/auth/verify-code/`);
+      console.log('Verifying code with:', `${API_BASE_URL}/api/auth/phone/verify/`);
       
-      // Explicitly specify POST method
-      const response = await axios({
-        method: 'post',
-        url: `${API_BASE_URL}/api/auth/verify-code/`,
-        data: {
-          phone: phone,
-          code: verificationCode
-        },
-        headers: {
-          'Content-Type': 'application/json',
-        }
+      // Use the stored apiClient
+      const response = await window.apiClient.post('/api/auth/phone/verify/', {
+        phone: phone,
+        code: verificationCode
       });
 
       console.log('Verification response:', response.data);
@@ -263,7 +255,7 @@ function PhoneVerificationModal({ isOpen, onClose, onVerificationSuccess, initia
   const modalContent = (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 opacity-100 z-50 flex items-center justify-center p-4 min-h-screen">
+        <div className="fixed inset-0 z-[999999] flex items-center justify-center p-4 min-h-screen">
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -276,7 +268,7 @@ function PhoneVerificationModal({ isOpen, onClose, onVerificationSuccess, initia
             initial={{ scale: 0.9, opacity: 0, y: 20 }}
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.9, opacity: 0, y: 20 }}
-            className={`relative w-full max-w-md rounded-[2.5rem] shadow-2xl overflow-hidden transition-colors duration-300 pointer-events-auto z-50
+            className={`relative w-full max-w-md rounded-[2.5rem] shadow-2xl overflow-hidden transition-colors duration-300 pointer-events-auto
               ${isDark ? 'bg-slate-900 border border-slate-800 text-white' : 'bg-white border border-cyan-50 text-slate-900'}`}
           >
             {/* Header */}
@@ -453,7 +445,12 @@ function PhoneVerificationModal({ isOpen, onClose, onVerificationSuccess, initia
     </AnimatePresence>
   );
 
-  return createPortal(modalContent, document.body);
+  // Always use createPortal if window is available
+  if (typeof window !== 'undefined') {
+    return createPortal(modalContent, document.body);
+  }
+  
+  return null;
 }
 
 export default PhoneVerificationModal;

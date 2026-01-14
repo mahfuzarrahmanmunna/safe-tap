@@ -1,8 +1,9 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTheme } from "@/app/contexts/ThemeContext";
 import { FaCity, FaShieldAlt, FaArrowRight } from "react-icons/fa";
 import BookingModal from './citypage/BookingModal';
+import PhoneVerificationModal from './citypage/PhoneVerificationModal';
 
 const cities = [
   "Dhaka", "Chattogram", "Sylhet", "Rajshahi", "Khulna", 
@@ -14,19 +15,45 @@ function TrialBooking() {
   const isDark = theme === 'dark';
   const [selectedCity, setSelectedCity] = useState("");
   
- 
+  // State for modals
   const [isModalOpen, setIsModalOpen] = useState(false);
-
+  const [showPhoneVerification, setShowPhoneVerification] = useState(false);
+  const [registrationData, setRegistrationData] = useState(null);
   
   const googleMapUrl = `https://maps.google.com/maps?q=${encodeURIComponent(selectedCity || "Bangladesh")}&t=&z=13&ie=UTF8&iwloc=&output=embed`;
 
- 
+  // Debug log to track modal state
+  useEffect(() => {
+    console.log('Phone verification modal state:', showPhoneVerification);
+  }, [showPhoneVerification]);
+
   const handleBooking = () => {
     if (!selectedCity) {
       alert("Please select a city first!");
       return;
     }
     setIsModalOpen(true);
+  };
+
+  // Handle registration success from BookingModal
+  const handleRegistrationSuccess = (data) => {
+    console.log('Registration successful, showing phone verification modal:', data);
+    setRegistrationData(data);
+    
+    // Close booking modal first
+    setIsModalOpen(false);
+    
+    // Use setTimeout to ensure the booking modal is fully closed before opening the phone verification modal
+    setTimeout(() => {
+      console.log('Setting showPhoneVerification to true');
+      setShowPhoneVerification(true);
+    }, 300);
+  };
+
+  const handlePhoneVerificationSuccess = (userData) => {
+    console.log('Phone verification successful:', userData);
+    setShowPhoneVerification(false);
+    // You can redirect or show a success message here
   };
 
   return (
@@ -90,7 +117,6 @@ function TrialBooking() {
                   </div>
                 </div>
 
-             
                 <button 
                   onClick={handleBooking}
                   className="w-full h-16 bg-cyan-500 hover:bg-cyan-600 text-white font-black rounded-2xl shadow-xl shadow-cyan-500/40 transition-all transform hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-3 group"
@@ -107,8 +133,30 @@ function TrialBooking() {
       <BookingModal
         isOpen={isModalOpen} 
         onClose={() => setIsModalOpen(false)} 
-        selectedPlan={`Trial in ${selectedCity}`} 
+        selectedPlan={`Trial in ${selectedCity}`}
+        onRegistrationSuccess={handleRegistrationSuccess}
       />
+
+      {/* Phone Verification Modal */}
+      <PhoneVerificationModal
+        isOpen={showPhoneVerification}
+        onClose={() => setShowPhoneVerification(false)}
+        onVerificationSuccess={handlePhoneVerificationSuccess}
+        initialPhone={registrationData?.phone || ''}
+      />
+
+      {/* Temporary debug button - remove in production */}
+      <button 
+        onClick={() => {
+          console.log('Manually triggering phone verification modal');
+          setRegistrationData({ phone: '1234567890' });
+          setShowPhoneVerification(true);
+        }}
+        className="fixed bottom-4 right-4 px-4 py-2 bg-purple-600 text-white rounded-lg z-50"
+      >
+        Test Phone Modal
+      </button>
+
     </section>
   );
 }

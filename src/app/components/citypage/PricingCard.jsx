@@ -108,14 +108,14 @@ function PricingCard() {
           <div>
             <p className="text-[9px] font-black text-emerald-500 uppercase tracking-tighter mb-1">7-days FREE TRIAL</p>
             <div className="flex items-baseline gap-1">
-               <span className={`text-3xl font-black ${isDark ? 'text-white' : 'text-slate-900'}`}>₹{currentPrice}</span>
+               <span className={`text-3xl font-black ${isDark ? 'text-white' : 'text-slate-900'}`}>৳{currentPrice}</span>
                <span className="text-slate-400 font-bold text-[10px]">/mo</span>
             </div>
           </div>
           
           <div className="bg-lime-50 px-3 py-2 rounded-xl border border-lime-100 text-right">
              <p className="text-[8px] font-bold text-lime-600 uppercase">Save</p>
-             <p className="text-xs font-black text-lime-700">₹{currentSavings}</p>
+             <p className="text-xs font-black text-lime-700">৳{currentSavings}</p>
           </div>
         </div>
 

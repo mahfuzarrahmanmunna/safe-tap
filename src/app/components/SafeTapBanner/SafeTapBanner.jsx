@@ -348,7 +348,7 @@ export default function SafeTapBanner() {
                                 ? 'bg-cyan-900/70 border-cyan-700/50 text-cyan-100'
                                 : 'bg-white/70 border-cyan-200/50 text-cyan-800'
                                 }`}>
-                                <span className="text-sm font-semibold">Starting at ₹299/month</span>
+                                <span className="text-sm font-semibold">Starting at ৳299/month</span>
                             </div>
                         </motion.div>
 

@@ -113,7 +113,7 @@ function UsageModal({ isOpen, onClose, onSelect }) {
                     <div className="w-full space-y-3 mb-6 text-xs font-semibold">
                       <div className={`flex justify-between border-b pb-2 ${isDark ? 'border-slate-700/50' : 'border-slate-200/50'}`}>
                         <span className="text-slate-500">Price /mo</span>
-                        <span className={isDark ? 'text-slate-200' : 'text-slate-800'}>₹{item.price}</span>
+                        <span className={isDark ? 'text-slate-200' : 'text-slate-800'}>৳{item.price}</span>
                       </div>
                       <div className={`flex justify-between border-b pb-2 ${isDark ? 'border-slate-700/50' : 'border-slate-200/50'}`}>
                         <span className="text-slate-500">Water Cans</span>

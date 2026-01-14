@@ -471,7 +471,7 @@ export default function SafeTapProducts() {
                                 {/* Security Deposit */}
                                 <div className={`p-4 rounded-lg ${theme === 'dark' ? 'bg-gray-700/30' : 'bg-cyan-50/50'}`}>
                                     <p className={`text-center ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
-                                        Security deposit of ₹{selectedProduct.securityDeposit} will be 100% refundable
+                                        Security deposit of ৳{selectedProduct.securityDeposit} will be 100% refundable
                                     </p>
                                 </div>
 
@@ -530,7 +530,7 @@ export default function SafeTapProducts() {
                                                         {tenure.name}
                                                     </div>
                                                     <div className={`text-lg font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                                                        ₹{tenure.price}/month
+                                                        ৳{tenure.price}/month
                                                     </div>
                                                     {tenure.discount > 0 && (
                                                         <div className="flex flex-col items-center mt-2">
@@ -538,7 +538,7 @@ export default function SafeTapProducts() {
                                                                 {tenure.discount}% discount
                                                             </span>
                                                             <span className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                                                                Savings of ₹{tenure.savings}
+                                                                Savings of ৳{tenure.savings}
                                                             </span>
                                                         </div>
                                                     )}
