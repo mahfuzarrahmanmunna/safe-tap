@@ -6,7 +6,7 @@ import Link from 'next/link';
 import {
   Menu, X, ChevronDown, Phone, Mail, Droplet, Home, Info, Package,
   Wrench, FileText, Contact, Facebook, Youtube, Linkedin,
-  Clock, Filter, Users, TestTube, Sparkles, Sun, Moon, ArrowRight, MapPin, Shield, Star, Search, Headphones
+  Clock, Filter, Users, TestTube, Sparkles, Sun, Moon, ArrowRight, MapPin, Shield, Star, Search, Headphones, User, LogOut
 } from 'lucide-react';
 import { Target } from 'lucide-react';
 import { useTheme } from '@/app/contexts/ThemeContext';
@@ -74,12 +74,7 @@ const searchSuggestions = [
   'Water Purifier Plans',
   'Mobile App Features',
 ];
-const updatedNavigationItems = navigationItems.map(item => {
-  if (item.name === 'Services') {
-    return { ...item, onClick: () => setIsServiceModalOpen(true) };
-  }
-  return item;
-});
+
 // Product Modal Component
 const ProductModal = ({ isOpen, onClose, theme }) => {
   const router = useRouter();
@@ -338,6 +333,80 @@ const MobileThemeToggle = ({ theme, toggleTheme }) => {
   );
 };
 
+// User Dropdown Component
+const UserDropdown = ({ theme, userName, onLogout }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef(null);
+  const router = useRouter();
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+  const handleLogout = () => {
+    onLogout();
+    setIsOpen(false);
+  };
+
+  const navigateToDashboard = () => {
+    router.push('/dashboard');
+    setIsOpen(false);
+  };
+
+  return (
+    <div className="relative" ref={dropdownRef}>
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className={`flex items-center space-x-2 ${theme === 'dark' ? 'text-gray-200 hover:text-white' : 'text-cyan-700 hover:text-cyan-900'} transition-colors p-2 rounded-lg ${theme === 'dark' ? 'hover:bg-gray-800/50' : 'hover:bg-cyan-50/50'} backdrop-blur-sm`}
+      >
+        <div className={`w-8 h-8 rounded-full bg-gradient-to-r ${theme === 'dark' ? 'from-cyan-600 to-cyan-500' : 'from-cyan-700 to-cyan-600'} flex items-center justify-center text-white font-semibold`}>
+          {userName ? userName.charAt(0).toUpperCase() : 'U'}
+        </div>
+        <ChevronDown className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+      </button>
+
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 10 }}
+            transition={{ duration: 0.2 }}
+            className={`absolute right-0 mt-2 w-48 ${theme === 'dark' ? 'bg-gray-800/90' : 'bg-white/90'} backdrop-blur-lg rounded-xl shadow-2xl border ${theme === 'dark' ? 'border-gray-700/50' : 'border-cyan-200/50'} overflow-hidden z-50`}
+          >
+            <div className={`p-3 border-b ${theme === 'dark' ? 'border-gray-700/50' : 'border-cyan-200/50'}`}>
+              <p className={`text-sm font-medium ${theme === 'dark' ? 'text-gray-200' : 'text-cyan-900'}`}>Welcome, {userName}</p>
+            </div>
+            <button
+              onClick={navigateToDashboard}
+              className={`w-full text-left px-4 py-3 flex items-center space-x-3 ${theme === 'dark' ? 'hover:bg-gray-700/50' : 'hover:bg-cyan-50/50'} transition-colors`}
+            >
+              <User className="w-4 h-4 text-cyan-500" />
+              <span className={theme === 'dark' ? 'text-gray-200' : 'text-cyan-900'}>Dashboard</span>
+            </button>
+            <button
+              onClick={handleLogout}
+              className={`w-full text-left px-4 py-3 flex items-center space-x-3 ${theme === 'dark' ? 'hover:bg-gray-700/50' : 'hover:bg-cyan-50/50'} transition-colors`}
+            >
+              <LogOut className="w-4 h-4 text-red-500" />
+              <span className={theme === 'dark' ? 'text-gray-200' : 'text-cyan-900'}>Logout</span>
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+};
+
 export default function Navbar() {
   const { theme, toggleTheme } = useTheme();
   const [scrolled, setScrolled] = useState(false);
@@ -351,12 +420,46 @@ export default function Navbar() {
   const [showProductModal, setShowProductModal] = useState(false);
   const [isServiceModalOpen, setIsServiceModalOpen] = useState(false);
   const [activeNavItem, setActiveNavItem] = useState('');
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userName, setUserName] = useState('');
   const pathname = usePathname();
   const searchInputRef = useRef(null);
   const quickContactRef = useRef(null);
   const dropdownRefs = useRef({});
   
   const isCommercial = pathname === '/commercial';
+
+  // Check if user is logged in on component mount
+  useEffect(() => {
+    const checkAuthStatus = () => {
+      // Check for token in localStorage
+      const token = localStorage.getItem('access_token');
+      const user = localStorage.getItem('user');
+      
+      if (token && user) {
+        try {
+          const userData = JSON.parse(user);
+          setIsLoggedIn(true);
+          setUserName(userData.first_name || userData.username || 'User');
+        } catch (error) {
+          console.error('Error parsing user data:', error);
+          setIsLoggedIn(false);
+        }
+      } else {
+        setIsLoggedIn(false);
+      }
+    };
+
+    checkAuthStatus();
+    
+    // Listen for storage changes (in case user logs in/out in another tab)
+    const handleStorageChange = () => {
+      checkAuthStatus();
+    };
+    
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, []);
 
   // Update navigationItems to include the correct onClick for Services
   const updatedNavigationItems = navigationItems.map(item => {
@@ -418,6 +521,20 @@ export default function Navbar() {
     }
   };
 
+  const handleLogout = () => {
+    // Clear localStorage
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('refresh_token');
+    localStorage.removeItem('user');
+    
+    // Update state
+    setIsLoggedIn(false);
+    setUserName('');
+    
+    // Redirect to home page
+    window.location.href = '/';
+  };
+
   return (
     <>
       {/* Top Contact Bar - Updated for Bangladesh Water Purification Service */}
@@ -474,7 +591,7 @@ export default function Navbar() {
           : `relative ${theme === 'dark' ? 'bg-gray-900/90' : 'bg-white/90'} backdrop-blur-sm border-b ${theme === 'dark' ? 'border-gray-800/50' : 'border-cyan-100/50'}`
           }`}
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className={`flex justify-between items-center ${scrolled ? 'h-16' : 'h-20 lg:h-24'} transition-all duration-300`}>
             {/* Logo Section */}
             <Link href="/" className="flex items-center space-x-3 group">
@@ -482,7 +599,7 @@ export default function Navbar() {
                 <Droplet className={`${scrolled ? 'w-5 h-5' : 'w-7 h-7 lg:w-8 lg:h-8'} text-white group-hover:scale-110 transition-transform`} fill="currentColor" />
               </div>
               <div>
-                <h1 className={`${scrolled ? 'text-lg' : 'text-xl lg:text-2xl'} font-bold bg-gradient-to-r ${theme === 'dark' ? 'from-cyan-400 to-cyan-300' : 'from-cyan-700 to-cyan-600'} bg-clip-text text-transparent tracking-tight transition-all duration-300 group-hover:from-cyan-600 group-hover:to-cyan-500`}>SafeTap BD</h1>
+                <h1 className={`${scrolled ? 'text-lg' : 'text-xl lg:text-2xl'} font-bold bg-gradient-to-r ${theme === 'dark' ? 'from-cyan-400 to-cyan-300' : 'from-cyan-700 to-cyan-600'} bg-clip-text text-transparent tracking-tight transition-all duration-300 group-hover:from-cyan-600 group-hover:to-cyan-500`}>SafeTap</h1>
                 <p className={`${scrolled ? 'hidden' : `text-xs ${theme === 'dark' ? 'text-cyan-400' : 'text-cyan-600'} font-medium hidden sm:block`}`}>Pure Water, Smart Subscription</p>
               </div>
             </Link>
@@ -648,9 +765,29 @@ export default function Navbar() {
                 <Headphones className="w-5 h-5 group-hover:text-cyan-500 transition-colors" />
               </motion.button>
 
+              {/* User Dropdown or Login Button */}
+              {isLoggedIn ? (
+                <UserDropdown 
+                  theme={theme} 
+                  userName={userName} 
+                  onLogout={handleLogout} 
+                />
+              ) : (
+                <Link href="/login">
+                  <motion.button
+                    className={`${scrolled ? 'px-4 py-2 text-sm' : 'px-6 py-3'} cursor-pointer bg-gradient-to-r ${theme === 'dark' ? 'from-cyan-600 to-cyan-500' : 'from-cyan-700 to-cyan-600'} text-white font-semibold rounded-lg shadow-md hover:from-cyan-600 hover:to-cyan-500 transition-all duration-300 flex items-center space-x-2 group backdrop-blur-sm`}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    <User className="w-4 h-4" />
+                    <span>Login</span>
+                  </motion.button>
+                </Link>
+              )}
+
               <Link href={isCommercial ? '/' : '/commercial'}>
                 <motion.button
-                  className={`${scrolled ? 'px-4 py-2 text-sm' : 'px-6 py-3'} bg-gradient-to-r ${theme === 'dark' ? 'from-cyan-600 to-cyan-500' : 'from-cyan-700 to-cyan-600'} text-white font-semibold rounded-lg shadow-md hover:from-cyan-600 hover:to-cyan-500 transition-all duration-300 flex items-center space-x-2 group backdrop-blur-sm`}
+                  className={`${scrolled ? 'px-4 py-2 text-sm' : 'px-6 py-3'} cursor-pointer bg-gradient-to-r ${theme === 'dark' ? 'from-cyan-600 to-cyan-500' : 'from-cyan-700 to-cyan-600'} text-white font-semibold rounded-lg shadow-md hover:from-cyan-600 hover:to-cyan-500 transition-all duration-300 flex items-center space-x-2 group backdrop-blur-sm`}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                 >
@@ -818,6 +955,42 @@ export default function Navbar() {
 
               <div className="p-4 space-y-1">
                 <MobileThemeToggle theme={theme} toggleTheme={toggleTheme} />
+
+                {/* User Section in Mobile Menu */}
+                {isLoggedIn ? (
+                  <div className={`p-4 rounded-lg ${theme === 'dark' ? 'bg-gray-700/50' : 'bg-cyan-50/50'} backdrop-blur-sm`}>
+                    <div className="flex items-center space-x-3 mb-4">
+                      <div className={`w-10 h-10 rounded-full bg-gradient-to-r ${theme === 'dark' ? 'from-cyan-600 to-cyan-500' : 'from-cyan-700 to-cyan-600'} flex items-center justify-center text-white font-semibold`}>
+                        {userName ? userName.charAt(0).toUpperCase() : 'U'}
+                      </div>
+                      <div>
+                        <p className={`font-medium ${theme === 'dark' ? 'text-gray-100' : 'text-cyan-900'}`}>Welcome, {userName}</p>
+                      </div>
+                    </div>
+                    <Link href="/dashboard" onClick={closeMobileMenu} className={`w-full flex items-center space-x-2 p-3 rounded-lg ${theme === 'dark' ? 'hover:bg-gray-700/50' : 'hover:bg-cyan-50/50'} transition-colors`}>
+                      <User className="w-4 h-4 text-cyan-500" />
+                      <span className={theme === 'dark' ? 'text-gray-200' : 'text-cyan-900'}>Dashboard</span>
+                    </Link>
+                    <button
+                      onClick={() => {
+                        handleLogout();
+                        closeMobileMenu();
+                      }}
+                      className={`w-full flex items-center space-x-2 p-3 rounded-lg ${theme === 'dark' ? 'hover:bg-gray-700/50' : 'hover:bg-cyan-50/50'} transition-colors`}
+                    >
+                      <LogOut className="w-4 h-4 text-red-500" />
+                      <span className={theme === 'dark' ? 'text-gray-200' : 'text-cyan-900'}>Logout</span>
+                    </button>
+                  </div>
+                ) : (
+                  <Link href="/login" onClick={closeMobileMenu} className={`w-full flex items-center justify-between p-4 rounded-lg ${theme === 'dark' ? 'hover:bg-gray-700/50' : 'hover:bg-cyan-50/50'} transition-colors font-semibold ${theme === 'dark' ? 'text-gray-200' : 'text-cyan-700'} backdrop-blur-sm`}>
+                    <div className="flex items-center space-x-2">
+                      <User className="w-5 h-5 text-cyan-500" />
+                      <span>Login</span>
+                    </div>
+                    <ArrowRight className="w-5 h-5" />
+                  </Link>
+                )}
 
                 {updatedNavigationItems.map((item) => {
                   if (item.isModal) {

@@ -116,7 +116,7 @@ export default function SafeTapSection() {
                 transition={{ duration: 7, repeat: Infinity, repeatType: 'reverse' }}
             />
 
-            <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="relative max-w-8xl mx-auto px-4 sm:px-6 lg:px-8">
                 {/* Stats Section */}
                 {/* <motion.div
                     variants={containerVariants}

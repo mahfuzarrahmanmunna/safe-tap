@@ -119,7 +119,7 @@ export default function HeroBanner() {
         transition={{ duration: 8, repeat: Infinity, repeatType: 'reverse' }}
       />
 
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24">
+      <div className="relative max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           {/* Text Content */}
           <motion.div

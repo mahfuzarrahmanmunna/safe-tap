@@ -3,6 +3,7 @@ import "./globals.css";
 import Navbar from "./components/Navbar/page";
 import Footer from "./components/Footer/page";
 import { ThemeProvider } from "./contexts/ThemeContext";
+import { AuthProvider } from "./contexts/AuthContext";
 // import Navbar from "./components/Navbar"; // Import the Navbar component
 // import Footer from "./components/Footer/page";
 
@@ -25,7 +26,9 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" data-arp="" className={`${geistSans.variable} ${geistMono.variable}`}>
       <body className="antialiased flex flex-col min-h-screen bg-neutral-light text-neutral-dark" cz-shortcut-listen="true">
-        <ThemeProvider>
+        <AuthProvider>
+
+          <ThemeProvider>
           <Navbar />
 
           <main className="flex-grow">
@@ -36,6 +39,7 @@ export default function RootLayout({ children }) {
 
           <Footer />
         </ThemeProvider>
+        </AuthProvider>
       </body>
     </html>
   );

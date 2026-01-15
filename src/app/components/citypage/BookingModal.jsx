@@ -3,12 +3,14 @@ import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
-import { FaTimes, FaUser, FaMapMarkerAlt, FaTicketAlt, FaStickyNote, FaChevronDown, FaCheckCircle, FaPhoneAlt, FaQrcode, FaDownload } from 'react-icons/fa';
+import { FaTimes, FaUser, FaMapMarkerAlt, FaTicketAlt, FaStickyNote, FaChevronDown, FaCheckCircle, FaPhoneAlt, FaQrcode, FaDownload, FaIdCard, FaExclamationTriangle } from 'react-icons/fa';
 import { useTheme } from '@/app/contexts/ThemeContext';
 import Swal from 'sweetalert2';
+import { useRouter } from 'next/navigation';
 
 function BookingModal({ isOpen, onClose, selectedPlan, onRegistrationSuccess }) {
   const { theme } = useTheme();
+  const router = useRouter();
   const isDark = theme === 'dark';
   const [mounted, setMounted] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -18,6 +20,8 @@ function BookingModal({ isOpen, onClose, selectedPlan, onRegistrationSuccess }) 
   const [userId, setUserId] = useState(null);
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userName, setUserName] = useState('');
 
   // Location data states
   const [divisions, setDivisions] = useState([]);
@@ -29,9 +33,10 @@ function BookingModal({ isOpen, onClose, selectedPlan, onRegistrationSuccess }) 
   const [mapSrc, setMapSrc] = useState('https://www.google.com/maps?q=Bangladesh&output=embed');
 
   const [formData, setFormData] = useState({
-    name: '',
+    fullName: '',
     email: '',
     phone: '',
+    nid: '',
     referral: '',
     division: '',
     district: '',
@@ -45,11 +50,41 @@ function BookingModal({ isOpen, onClose, selectedPlan, onRegistrationSuccess }) 
 
   useEffect(() => {
     setMounted(true);
+    // Check if user is logged in
+    checkAuthStatus();
     // Fetch divisions when component mounts
     if (isOpen) {
       fetchDivisions();
     }
   }, [isOpen]);
+
+  // Check if user is logged in
+  const checkAuthStatus = () => {
+    const token = localStorage.getItem('access_token');
+    const user = localStorage.getItem('user');
+    
+    if (token && user) {
+      try {
+        const userData = JSON.parse(user);
+        setIsLoggedIn(true);
+        setUserName(userData.first_name || userData.username || 'User');
+        // Pre-fill form with user data
+        setFormData(prev => ({
+          ...prev,
+          fullName: userData.first_name && userData.last_name 
+            ? `${userData.first_name} ${userData.last_name}` 
+            : userData.username || '',
+          email: userData.email || '',
+          phone: userData.phone || ''
+        }));
+      } catch (error) {
+        console.error('Error parsing user data:', error);
+        setIsLoggedIn(false);
+      }
+    } else {
+      setIsLoggedIn(false);
+    }
+  };
 
   // Fetch all divisions
   const fetchDivisions = async () => {
@@ -161,149 +196,61 @@ function BookingModal({ isOpen, onClose, selectedPlan, onRegistrationSuccess }) 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Check if user is already logged in
+    if (isLoggedIn) {
+      // Show a message and proceed with subscription directly
+      Swal.fire({
+        title: 'Already Logged In',
+        text: `You are already logged in as ${userName}. Proceeding with your subscription...`,
+        icon: 'info',
+        confirmButtonColor: '#0891b2',
+        confirmButtonText: 'Continue',
+        showCancelButton: true,
+        cancelButtonText: 'Cancel'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          // Save location data and proceed to subscription/checkout
+          const subscriptionData = {
+            ...formData,
+            selectedPlan,
+            returnPath: window.location.pathname,
+            fromBookingModal: true,
+            skipRegistration: true // Flag to skip registration
+          };
+          
+          // Save to localStorage for checkout page
+          localStorage.setItem('subscriptionData', JSON.stringify(subscriptionData));
+          
+          // Redirect to subscription/checkout page instead of register
+          router.push('/subscription');
+        }
+      });
+      return;
+    }
+
     if (!validate()) {
       return;
     }
 
-    setLoading(true);
-    setErrors({});
-
-    try {
-      // Create user and booking
-      const response = await axios.post(`http://127.0.0.1:8000/api/auth/register/`, {
-        username: formData.email, // Using email as username
-        email: formData.email,
-        password: 'tempPassword123', // You might want to generate a random password
-        first_name: formData.name.split(' ')[0],
-        last_name: formData.name.split(' ').slice(1).join(' '),
-        phone: formData.phone,
-        division: formData.division,
-        district: formData.district,
-        thana: formData.thana,
-        addressDetails: formData.addressDetails,
-        referral: formData.referral,
-        notes: formData.notes,
-        plan: selectedPlan
-      });
-
-      console.log('Registration response:', response.data); // Debug log
-      
-      // Set user info
-      setUserId(response.data.user_id);
-      setEmail(response.data.email);
-      setPhone(response.data.phone);
-      
-      // Set QR code if available
-      if (response.data.qr_code) {
-        setQrCode(response.data.qr_code);
-        // Auto-download QR code
-        downloadQRCode(response.data.qr_code, formData.name);
-      }
-      
-      setBookingSuccess(true);
-      
-      // Show success modal
-      showSuccessModal(response.data);
-      
-      // Call the parent callback to show phone verification
-      if (onRegistrationSuccess) {
-        console.log('Calling onRegistrationSuccess with data:', {
-          user_id: response.data.user_id,
-          phone: response.data.phone,
-          sms_sent: response.data.sms_sent,
-          qr_code: response.data.qr_code
-        });
-        onRegistrationSuccess({
-          user_id: response.data.user_id,
-          phone: response.data.phone,
-          sms_sent: response.data.sms_sent,
-          qr_code: response.data.qr_code
-        });
-      }
-
-    } catch (error) {
-      console.error('Error creating booking:', error);
-      
-      let errorMsg = "Failed to create booking";
-      let errorDetails = "";
-      
-      if (error.response) {
-        console.log('Error response data:', error.response.data);
-        console.log('Error response status:', error.response.status);
-        
-        if (error.response.data && error.response.data.error) {
-          errorMsg = error.response.data.error;
-        } else if (error.response.data && error.response.data.detail) {
-          errorMsg = error.response.data.detail;
-        } else {
-          errorMsg = `Server error (${error.response.status})`;
-        }
-        
-        if (error.response.data && error.response.data.details) {
-          errorDetails = error.response.data.details;
-        }
-      } else if (error.request) {
-        console.log('Error request:', error.request);
-        errorMsg = "Network error. Please check your connection.";
-      } else {
-        console.log('Error message:', error.message);
-        errorMsg = error.message || errorMsg;
-      }
-      
-      const errorHtml = errorDetails ? 
-        `<p><strong>Error:</strong> ${errorMsg}</p><p><strong>Details:</strong> ${errorDetails}</p>` :
-        `<p>${errorMsg}</p>`;
-      
-      Swal.fire({
-        title: "Error",
-        html: errorHtml,
-        icon: "error",
-        confirmButtonColor: "#0891b2",
-        width: errorDetails ? 600 : 400
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Show success modal
-  const showSuccessModal = (responseData) => {
-    const qrCodeHtml = qrCode ? 
-      `<div class="my-4 p-4 bg-white rounded-lg inline-block">
-        <img src="data:image/png;base64,${qrCode}" alt="Service QR Code" style="width: 200px; height: 200px;">
-      </div>
-      <p class="text-sm text-green-600 mt-2">✓ QR Code downloaded automatically</p>` : 
-      `<p class="text-sm text-gray-600">QR code will be available after email verification</p>`;
+    // Save the form data to localStorage to be used in the register page
+    localStorage.setItem('bookingFormData', JSON.stringify({
+      ...formData,
+      selectedPlan,
+      returnPath: window.location.pathname,
+      // Add a flag to indicate this data came from the booking modal
+      fromBookingModal: true
+    }));
     
-    const smsStatusHtml = responseData.sms_sent ? 
-      `<p class="text-sm text-green-600 mt-2">✓ Verification code sent to ${responseData.phone}</p>` :
-      responseData.phone ? 
-      `<p class="text-sm text-orange-600 mt-2">⚠ Failed to send SMS verification code</p>` : '';
-    
-    Swal.fire({
-      title: 'Registration Successful!',
-      html: `
-        <div>
-          <p>Your trial for <strong>${selectedPlan}</strong> has been confirmed!</p>
-          <p>A verification email has been sent to <strong>${formData.email}</strong></p>
-          ${qrCodeHtml}
-          ${smsStatusHtml}
-          ${responseData.phone ? '<p class="text-sm text-blue-600 mt-2">📱 Please check your phone for the verification code</p>' : ''}
-        </div>
-      `,
-      icon: 'success',
-      confirmButtonColor: '#0891b2',
-      confirmButtonText: 'Close',
-      willClose: () => {
-        handleCloseModal();
-      }
-    });
+    // Close the modal and navigate to register page
+    onClose();
+    router.push('/register');
   };
 
   // Validate form
   const validate = () => {
     let newErrors = {};
-    if (!formData.name.trim()) newErrors.name = "Name is required";
+    if (!formData.fullName.trim()) newErrors.fullName = "Full name is required";
+    if (!formData.nid.trim()) newErrors.nid = "NID number is required";
     if (!formData.email.trim()) newErrors.email = "Email is required";
     else if (!/^\S+@\S+\.\S+$/.test(formData.email)) newErrors.email = "Please enter a valid email";
     if (!formData.phone.trim()) newErrors.phone = "Phone number is required";
@@ -329,9 +276,10 @@ function BookingModal({ isOpen, onClose, selectedPlan, onRegistrationSuccess }) 
       setPhone('');
     }
     setFormData({
-      name: '',
+      fullName: '',
       email: '',
       phone: '',
+      nid: '',
       referral: '',
       division: '',
       district: '',
@@ -363,10 +311,17 @@ function BookingModal({ isOpen, onClose, selectedPlan, onRegistrationSuccess }) 
             {/* Header */}
             <div className={`sticky top-0 z-20 p-6 flex justify-between items-center border-b border-slate-100 dark:border-slate-800 ${isDark ? 'bg-slate-900' : 'bg-white'}`}>
               <div>
-                <h2 className="text-xl font-black text-cyan-600 tracking-tight">Start 7-Day Trial</h2>
+                <h2 className="text-xl font-black text-cyan-600 tracking-tight">
+                  {isLoggedIn ? 'Subscribe to Plan' : 'Start 7-Day Trial'}
+                </h2>
                 <p className={`text-[9px] font-bold uppercase tracking-[0.2em] ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
                   Plan: <span className="text-cyan-500">{selectedPlan}</span>
                 </p>
+                {isLoggedIn && (
+                  <p className={`text-xs mt-1 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+                    Logged in as: <span className="font-medium">{userName}</span>
+                  </p>
+                )}
               </div>
               <button onClick={handleCloseModal} className={`p-2 rounded-full ${isDark ? 'bg-slate-800 text-slate-400' : 'bg-slate-100 text-slate-500'}`}>
                 <FaTimes size={14} />
@@ -389,53 +344,89 @@ function BookingModal({ isOpen, onClose, selectedPlan, onRegistrationSuccess }) 
                 </div>
               </div>
 
+              {/* User Status Alert */}
+              {isLoggedIn && (
+                <div className={`p-4 rounded-xl ${isDark ? 'bg-cyan-900/30 border border-cyan-700/50' : 'bg-cyan-50 border border-cyan-200'} flex items-start gap-3`}>
+                  <FaCheckCircle className="text-cyan-500 mt-0.5" size={16} />
+                  <div>
+                    <p className={`text-sm font-medium ${isDark ? 'text-cyan-100' : 'text-cyan-900'}`}>
+                      You are logged in!
+                    </p>
+                    <p className={`text-xs ${isDark ? 'text-cyan-200' : 'text-cyan-700'} mt-1`}>
+                      Your account information has been pre-filled. Just complete your location details to subscribe.
+                    </p>
+                  </div>
+                </div>
+              )}
+
               {/* Form Section */}
               <form onSubmit={handleSubmit} className="space-y-4 text-left">
-                {/* Name */}
+                {/* Full Name - Disabled if logged in */}
                 <div className="relative">
                   <FaUser className="absolute left-4 top-1/2 -translate-y-1/2 text-cyan-500" />
                   <input
                     type="text"
-                    name="name"
+                    name="fullName"
                     placeholder="Full Name"
-                    className={`w-full pl-12 pr-4 py-4 rounded-2xl border-2 outline-none transition-all text-sm font-medium ${isDark ? 'bg-slate-800/50 text-white border-transparent' : 'bg-slate-50 text-slate-900 border-slate-100'} focus:border-cyan-500`}
-                    value={formData.name}
+                    className={`w-full pl-12 pr-4 py-4 rounded-2xl border-2 outline-none transition-all text-sm font-medium ${isDark ? 'bg-slate-800/50 text-white border-transparent' : 'bg-slate-50 text-slate-900 border-slate-100'} focus:border-cyan-500 ${isLoggedIn ? 'opacity-60 cursor-not-allowed' : ''}`}
+                    value={formData.fullName}
                     onChange={handleFormInputChange}
+                    disabled={isLoggedIn}
                   />
-                  {errors.name && <p className="text-[10px] font-bold text-red-500 mt-1 ml-3">{errors.name}</p>}
+                  {errors.fullName && <p className="text-[10px] font-bold text-red-500 mt-1 ml-3">{errors.fullName}</p>}
                 </div>
 
-                {/* Email */}
+                {/* Email - Disabled if logged in */}
                 <div className="relative">
                   <FaUser className="absolute left-4 top-1/2 -translate-y-1/2 text-cyan-500" />
                   <input
                     type="email"
                     name="email"
                     placeholder="Email Address"
-                    className={`w-full pl-12 pr-4 py-4 rounded-2xl border-2 outline-none transition-all text-sm font-medium ${isDark ? 'bg-slate-800/50 text-white border-transparent' : 'bg-slate-50 text-slate-900 border-slate-100'} focus:border-cyan-500`}
+                    className={`w-full pl-12 pr-4 py-4 rounded-2xl border-2 outline-none transition-all text-sm font-medium ${isDark ? 'bg-slate-800/50 text-white border-transparent' : 'bg-slate-50 text-slate-900 border-slate-100'} focus:border-cyan-500 ${isLoggedIn ? 'opacity-60 cursor-not-allowed' : ''}`}
                     value={formData.email}
                     onChange={handleFormInputChange}
+                    disabled={isLoggedIn}
                   />
                   {errors.email && <p className="text-[10px] font-bold text-red-500 mt-1 ml-3">{errors.email}</p>}
                 </div>
 
-                {/* Phone */}
+                {/* Phone - Disabled if logged in */}
                 <div className="relative">
                   <FaPhoneAlt className="absolute left-4 top-1/2 -translate-y-1/2 text-cyan-500" />
                   <input
                     type="tel"
                     name="phone"
                     placeholder="Phone Number (10-11 digits)"
-                    className={`w-full pl-12 pr-4 py-4 rounded-2xl border-2 outline-none transition-all text-sm font-medium ${isDark ? 'bg-slate-800/50 text-white border-transparent' : 'bg-slate-50 text-slate-900 border-slate-100'} focus:border-cyan-500`}
+                    className={`w-full pl-12 pr-4 py-4 rounded-2xl border-2 outline-none transition-all text-sm font-medium ${isDark ? 'bg-slate-800/50 text-white border-transparent' : 'bg-slate-50 text-slate-900 border-slate-100'} focus:border-cyan-500 ${isLoggedIn ? 'opacity-60 cursor-not-allowed' : ''}`}
                     value={formData.phone}
                     onChange={(e) => {
-                      const value = e.target.value.replace(/\D/g, '');
-                      setFormData(prev => ({ ...prev, phone: value }));
+                      if (!isLoggedIn) {
+                        const value = e.target.value.replace(/\D/g, '');
+                        setFormData(prev => ({ ...prev, phone: value }));
+                      }
                     }}
                     maxLength={11}
+                    disabled={isLoggedIn}
                   />
                   {errors.phone && <p className="text-[10px] font-bold text-red-500 mt-1 ml-3">{errors.phone}</p>}
                 </div>
+
+                {/* NID - Hidden if logged in */}
+                {!isLoggedIn && (
+                  <div className="relative">
+                    <FaIdCard className="absolute left-4 top-1/2 -translate-y-1/2 text-cyan-500" />
+                    <input
+                      type="text"
+                      name="nid"
+                      placeholder="NID Card Number"
+                      className={`w-full pl-12 pr-4 py-4 rounded-2xl border-2 outline-none transition-all text-sm font-medium ${isDark ? 'bg-slate-800/50 text-white border-transparent' : 'bg-slate-50 text-slate-900 border-slate-100'} focus:border-cyan-500`}
+                      value={formData.nid}
+                      onChange={handleFormInputChange}
+                    />
+                    {errors.nid && <p className="text-[10px] font-bold text-red-500 mt-1 ml-3">{errors.nid}</p>}
+                  </div>
+                )}
 
                 {/* Division Selection */}
                 <div className="relative">
@@ -544,7 +535,7 @@ function BookingModal({ isOpen, onClose, selectedPlan, onRegistrationSuccess }) 
                       Processing...
                     </>
                   ) : (
-                    'Start 7-Day Trial'
+                    isLoggedIn ? 'Subscribe Now' : 'Start 7-Day Trial'
                   )}
                 </button>
               </form>
