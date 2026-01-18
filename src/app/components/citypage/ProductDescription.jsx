@@ -1,5 +1,10 @@
+<<<<<<< HEAD
 // app/components/city-page/ProductDescription.jsx
 "use client";
+=======
+
+'use client';
+>>>>>>> b58ac136b5ecbd17066a8752c3e27a8df27485bd
 
 import { motion } from "framer-motion";
 import { CheckCircle, ArrowRight } from "lucide-react";

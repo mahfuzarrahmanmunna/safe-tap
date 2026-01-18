@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import {
+<<<<<<< HEAD
   Menu,
   X,
   ChevronDown,
@@ -39,9 +40,19 @@ import { Target } from "lucide-react";
 import { useTheme } from "@/app/contexts/ThemeContext";
 import { usePathname, useRouter } from "next/navigation";
 import ServiceModal from "../ServiceModal";
+=======
+  Menu, X, ChevronDown, Phone, Mail, Droplet, Home, Info, Package,
+  Wrench, FileText, Contact, Facebook, Youtube, Linkedin,
+  Clock, Filter, Users, TestTube, Sparkles, Sun, Moon, ArrowRight, 
+  MapPin, Shield, Star, Search, Headphones
+} from 'lucide-react';
+import { Target } from 'lucide-react';
+import { useTheme } from '@/app/contexts/ThemeContext';
+import { usePathname, useRouter } from 'next/navigation';
+import ServiceModal from '../ServiceModal';
+>>>>>>> b58ac136b5ecbd17066a8752c3e27a8df27485bd
 
 /* ------------------ DATA ------------------ */
-
 const navigationItems = [
   { name: "Home", href: "/", icon: Home },
   {
@@ -55,11 +66,19 @@ const navigationItems = [
       { name: "Technology", href: "/about/technology", icon: Sparkles },
     ],
   },
+<<<<<<< HEAD
   { name: "Products", href: "/products", icon: Package, isModal: true },
   { name: "Services", onClick: () => null, icon: Wrench }, // Will be updated dynamically
   { name: "Contact", href: "/pages/contact", icon: Contact },
 ];
+=======
+  { name: 'Products', href: '/products', icon: Package, isModal: true },
+  { name: 'Services', onClick: () => null, icon: Wrench }, 
+  { name: 'Blog', href: 'pages/blogs', icon: FileText }, 
+  { name: 'Contact', href: '/pages/contact', icon: Contact },
+>>>>>>> b58ac136b5ecbd17066a8752c3e27a8df27485bd
 
+];
 const socialLinks = [
   { icon: Facebook, href: "#", label: "Facebook" },
   { icon: Youtube, href: "#", label: "Youtube" },

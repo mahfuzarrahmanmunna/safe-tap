@@ -1,4 +1,5 @@
 "use client";
+<<<<<<< HEAD
 import React, { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
@@ -21,6 +22,16 @@ import { useTheme } from "@/app/contexts/ThemeContext";
 import Swal from "sweetalert2";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/app/contexts/AuthContext";
+=======
+import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
+import { motion, AnimatePresence } from 'framer-motion';
+
+import { FaTimes, FaPhoneAlt, FaUser, FaMapMarkerAlt, FaTicketAlt, FaStickyNote } from 'react-icons/fa';
+import { useTheme } from '@/app/contexts/ThemeContext';
+import PhoneVerificationModal from './PhoneVerificationModal';
+import Swal from 'sweetalert2';
+>>>>>>> b58ac136b5ecbd17066a8752c3e27a8df27485bd
 
 function BookingModal({
   isOpen,
@@ -56,6 +67,7 @@ function BookingModal({
   );
 
   const [formData, setFormData] = useState({
+<<<<<<< HEAD
     fullName: "",
     email: "",
     phone: "",
@@ -66,6 +78,13 @@ function BookingModal({
     thana: "",
     addressDetails: "",
     notes: "",
+=======
+    name: '', 
+    phone: '', 
+    referral: '', 
+    city: '',
+    notes: ''
+>>>>>>> b58ac136b5ecbd17066a8752c3e27a8df27485bd
   });
 
   // API base URL
@@ -342,6 +361,7 @@ function BookingModal({
   const modalContent = (
     <AnimatePresence>
       {isOpen && (
+<<<<<<< HEAD
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none">
           <motion.div
             initial={{ opacity: 0 }}
@@ -389,6 +409,35 @@ function BookingModal({
                     <span className="font-medium">{userName}</span>
                   </p>
                 )}
+=======
+        <div className="fixed inset-0 z-[999999] flex items-center justify-center p-4 pointer-events-none">
+   <motion.div 
+  initial={{ scale: 0.9, opacity: 0, y: 20 }}
+  animate={{ scale: 1, opacity: 1, y: 0 }}
+  exit={{ scale: 0.9, opacity: 0, y: 20 }}
+
+  className={`relative w-full max-w-lg rounded-[2.5rem] shadow-2xl transition-colors duration-300 h-[90vh] overflow-y-auto pointer-events-auto
+    scrollbar-hide md:scrollbar-default
+    ${isDark ? 'bg-slate-900 border border-slate-800 text-white' : 'bg-white border border-cyan-50 text-slate-900'}`}
+  style={{
+    msOverflowStyle: 'none',  
+    scrollbarWidth: 'none',   
+  }}
+>
+ 
+  <style jsx>{`
+    div::-webkit-scrollbar {
+      display: none;
+    }
+  `}</style>
+            {/* Header */}
+            <div className={`sticky top-0 z-20 p-6 flex justify-between items-center border-b border-slate-100 dark:border-slate-800 ${isDark ? 'bg-slate-900' : 'bg-white'}`}>
+              <div>
+                <h2 className="text-xl font-black text-cyan-600 tracking-tight">Start 7-Day Trial</h2>
+                <p className={`text-[9px] font-bold uppercase tracking-[0.2em] ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+                  Plan: <span className="text-cyan-500">{selectedPlan}</span>
+                </p>
+>>>>>>> b58ac136b5ecbd17066a8752c3e27a8df27485bd
               </div>
               <button
                 onClick={handleCloseModal}
@@ -693,7 +742,7 @@ function BookingModal({
                   />
                 </div>
 
-                {/* Notes Field */}
+                {/* Notes Field  */}
                 <div className="relative">
                   <FaStickyNote className="absolute left-4 top-5 text-cyan-500" />
                   <textarea
