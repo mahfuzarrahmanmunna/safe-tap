@@ -1,37 +1,25 @@
 "use client";
-<<<<<<< HEAD
 import React, { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import axios from "axios";
+import axios from "axios"; // Make sure to import axios
+
 import {
   FaTimes,
+  FaPhoneAlt,
   FaUser,
   FaMapMarkerAlt,
   FaTicketAlt,
   FaStickyNote,
-  FaChevronDown,
   FaCheckCircle,
-  FaPhoneAlt,
-  FaQrcode,
-  FaDownload,
   FaIdCard,
-  FaExclamationTriangle,
+  FaChevronDown,
 } from "react-icons/fa";
 import { useTheme } from "@/app/contexts/ThemeContext";
+import PhoneVerificationModal from "./PhoneVerificationModal";
 import Swal from "sweetalert2";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/app/contexts/AuthContext";
-=======
-import React, { useState, useEffect } from 'react';
-import { createPortal } from 'react-dom';
-import { motion, AnimatePresence } from 'framer-motion';
-
-import { FaTimes, FaPhoneAlt, FaUser, FaMapMarkerAlt, FaTicketAlt, FaStickyNote } from 'react-icons/fa';
-import { useTheme } from '@/app/contexts/ThemeContext';
-import PhoneVerificationModal from './PhoneVerificationModal';
-import Swal from 'sweetalert2';
->>>>>>> b58ac136b5ecbd17066a8752c3e27a8df27485bd
 
 function BookingModal({
   isOpen,
@@ -60,31 +48,26 @@ function BookingModal({
   const [districts, setDistricts] = useState([]);
   const [thanas, setThanas] = useState([]);
   const [locationError, setLocationError] = useState("");
+  const [fetchingLocation, setFetchingLocation] = useState(false);
 
   // State for the map source URL
   const [mapSrc, setMapSrc] = useState(
-    "https://www.google.com/maps?q=Bangladesh&output=embed"
+    "https://www.google.com/maps?q=Bangladesh&output=embed",
   );
 
   const [formData, setFormData] = useState({
-<<<<<<< HEAD
+    name: "",
+    phone: "",
+    referral: "",
+    city: "",
+    notes: "",
     fullName: "",
     email: "",
-    phone: "",
     nid: "",
-    referral: "",
     division: "",
     district: "",
     thana: "",
     addressDetails: "",
-    notes: "",
-=======
-    name: '', 
-    phone: '', 
-    referral: '', 
-    city: '',
-    notes: ''
->>>>>>> b58ac136b5ecbd17066a8752c3e27a8df27485bd
   });
 
   // API base URL
@@ -95,7 +78,10 @@ function BookingModal({
     setMounted(true);
     // Check if user is logged in
     checkAuthStatus();
-    // Fetch divisions when component mounts
+  }, []);
+
+  // Fetch divisions when modal opens
+  useEffect(() => {
     if (isOpen) {
       fetchDivisions();
     }
@@ -103,7 +89,7 @@ function BookingModal({
 
   // Check if user is logged in
   const checkAuthStatus = () => {
-    const token = localStorage.getItem("access_token");
+    const token = localStorage.getItem("accessToken"); // Changed from access_token to accessToken
     const user = localStorage.getItem("user");
 
     if (token && user) {
@@ -133,13 +119,24 @@ function BookingModal({
   // Fetch all divisions
   const fetchDivisions = async () => {
     try {
-      setLoading(true);
-      const response = await axios.get(`http://127.0.0.1:8000/api/divisions/`);
+      setFetchingLocation(true);
+      setLocationError("");
+      console.log("Fetching divisions from:", `${API_BASE_URL}/api/divisions/`);
+
+      const response = await axios.get(`${API_BASE_URL}/api/divisions/`);
+      console.log("Divisions response:", response.data);
       setDivisions(response.data);
     } catch (err) {
+      console.error("Error fetching divisions:", err);
       setLocationError("Failed to fetch divisions. Please try again later.");
+      Swal.fire({
+        title: "Error",
+        text: "Failed to fetch divisions. Please try again later.",
+        icon: "error",
+        confirmButtonColor: "#0891b2",
+      });
     } finally {
-      setLoading(false);
+      setFetchingLocation(false);
     }
   };
 
@@ -152,7 +149,7 @@ function BookingModal({
     const locationQuery =
       thanaName || districtName || divisionName || "Bangladesh";
     const newMapSrc = `https://www.google.com/maps?q=${encodeURIComponent(
-      locationQuery
+      locationQuery,
     )}&output=embed`;
     setMapSrc(newMapSrc);
   }, [
@@ -188,15 +185,25 @@ function BookingModal({
 
     if (divisionId) {
       try {
-        setLoading(true);
+        setFetchingLocation(true);
+        console.log("Fetching districts for division:", divisionId);
+
         const response = await axios.get(
-          `http://127.0.0.1:8000/api/districts/?division_id=${divisionId}`
+          `${API_BASE_URL}/api/districts/?division_id=${divisionId}`,
         );
+        console.log("Districts response:", response.data);
         setDistricts(response.data);
       } catch (err) {
+        console.error("Error fetching districts:", err);
         setLocationError("Failed to fetch districts. Please try again later.");
+        Swal.fire({
+          title: "Error",
+          text: "Failed to fetch districts. Please try again later.",
+          icon: "error",
+          confirmButtonColor: "#0891b2",
+        });
       } finally {
-        setLoading(false);
+        setFetchingLocation(false);
       }
     }
   };
@@ -214,15 +221,25 @@ function BookingModal({
 
     if (districtId) {
       try {
-        setLoading(true);
+        setFetchingLocation(true);
+        console.log("Fetching thanas for district:", districtId);
+
         const response = await axios.get(
-          `http://127.0.0.1:8000/api/thanas/?district_id=${districtId}`
+          `${API_BASE_URL}/api/thanas/?district_id=${districtId}`,
         );
+        console.log("Thanas response:", response.data);
         setThanas(response.data);
       } catch (err) {
+        console.error("Error fetching thanas:", err);
         setLocationError("Failed to fetch thanas. Please try again later.");
+        Swal.fire({
+          title: "Error",
+          text: "Failed to fetch thanas. Please try again later.",
+          icon: "error",
+          confirmButtonColor: "#0891b2",
+        });
       } finally {
-        setLoading(false);
+        setFetchingLocation(false);
       }
     }
   };
@@ -279,7 +296,7 @@ function BookingModal({
           // Save to localStorage for checkout page
           localStorage.setItem(
             "subscriptionData",
-            JSON.stringify(subscriptionData)
+            JSON.stringify(subscriptionData),
           );
 
           // Redirect to subscription/checkout page instead of register
@@ -302,7 +319,7 @@ function BookingModal({
         returnPath: window.location.pathname,
         // Add a flag to indicate this data came from the booking modal
         fromBookingModal: true,
-      })
+      }),
     );
 
     // Close the modal and navigate to register page
@@ -361,83 +378,37 @@ function BookingModal({
   const modalContent = (
     <AnimatePresence>
       {isOpen && (
-<<<<<<< HEAD
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none">
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={handleCloseModal}
-            className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm pointer-events-auto"
-          />
-
+        <div className="fixed inset-0 z-[999999] flex items-center justify-center p-4 pointer-events-none">
           <motion.div
             initial={{ scale: 0.9, opacity: 0, y: 20 }}
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.9, opacity: 0, y: 20 }}
-            className={`relative w-full max-w-lg rounded-[2.5rem] shadow-2xl overflow-hidden transition-colors duration-300 h-[90vh] overflow-y-auto no-scrollbar pointer-events-auto
-              ${
-                isDark
-                  ? "bg-slate-900 border border-slate-800 text-white"
-                  : "bg-white border border-cyan-50 text-slate-900"
-              }`}
+            className={`relative w-full max-w-lg rounded-[2.5rem] shadow-2xl transition-colors duration-300 h-[90vh] overflow-y-auto pointer-events-auto
+    scrollbar-hide md:scrollbar-default
+    ${isDark ? "bg-slate-900 border border-slate-800 text-white" : "bg-white border border-cyan-50 text-slate-900"}`}
+            style={{
+              msOverflowStyle: "none",
+              scrollbarWidth: "none",
+            }}
           >
+            <style jsx>{`
+              div::-webkit-scrollbar {
+                display: none;
+              }
+            `}</style>
             {/* Header */}
             <div
-              className={`sticky top-0 z-20 p-6 flex justify-between items-center border-b border-slate-100 dark:border-slate-800 ${
-                isDark ? "bg-slate-900" : "bg-white"
-              }`}
+              className={`sticky top-0 z-20 p-6 flex justify-between items-center border-b border-slate-100 dark:border-slate-800 ${isDark ? "bg-slate-900" : "bg-white"}`}
             >
               <div>
                 <h2 className="text-xl font-black text-cyan-600 tracking-tight">
-                  {isLoggedIn ? "Subscribe to Plan" : "Start 7-Day Trial"}
+                  Start 7-Day Trial
                 </h2>
                 <p
-                  className={`text-[9px] font-bold uppercase tracking-[0.2em] ${
-                    isDark ? "text-slate-400" : "text-slate-500"
-                  }`}
+                  className={`text-[9px] font-bold uppercase tracking-[0.2em] ${isDark ? "text-slate-400" : "text-slate-500"}`}
                 >
                   Plan: <span className="text-cyan-500">{selectedPlan}</span>
                 </p>
-                {isLoggedIn && (
-                  <p
-                    className={`text-xs mt-1 ${
-                      isDark ? "text-slate-400" : "text-slate-500"
-                    }`}
-                  >
-                    Logged in as:{" "}
-                    <span className="font-medium">{userName}</span>
-                  </p>
-                )}
-=======
-        <div className="fixed inset-0 z-[999999] flex items-center justify-center p-4 pointer-events-none">
-   <motion.div 
-  initial={{ scale: 0.9, opacity: 0, y: 20 }}
-  animate={{ scale: 1, opacity: 1, y: 0 }}
-  exit={{ scale: 0.9, opacity: 0, y: 20 }}
-
-  className={`relative w-full max-w-lg rounded-[2.5rem] shadow-2xl transition-colors duration-300 h-[90vh] overflow-y-auto pointer-events-auto
-    scrollbar-hide md:scrollbar-default
-    ${isDark ? 'bg-slate-900 border border-slate-800 text-white' : 'bg-white border border-cyan-50 text-slate-900'}`}
-  style={{
-    msOverflowStyle: 'none',  
-    scrollbarWidth: 'none',   
-  }}
->
- 
-  <style jsx>{`
-    div::-webkit-scrollbar {
-      display: none;
-    }
-  `}</style>
-            {/* Header */}
-            <div className={`sticky top-0 z-20 p-6 flex justify-between items-center border-b border-slate-100 dark:border-slate-800 ${isDark ? 'bg-slate-900' : 'bg-white'}`}>
-              <div>
-                <h2 className="text-xl font-black text-cyan-600 tracking-tight">Start 7-Day Trial</h2>
-                <p className={`text-[9px] font-bold uppercase tracking-[0.2em] ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
-                  Plan: <span className="text-cyan-500">{selectedPlan}</span>
-                </p>
->>>>>>> b58ac136b5ecbd17066a8752c3e27a8df27485bd
               </div>
               <button
                 onClick={handleCloseModal}
@@ -503,6 +474,45 @@ function BookingModal({
                       complete your location details to subscribe.
                     </p>
                   </div>
+                </div>
+              )}
+
+              {/* Location Error Alert */}
+              {locationError && (
+                <div
+                  className={`p-4 rounded-xl ${
+                    isDark
+                      ? "bg-red-900/30 border border-red-700/50"
+                      : "bg-red-50 border border-red-200"
+                  } flex items-start gap-3`}
+                >
+                  <FaTimes className="text-red-500 mt-0.5" size={16} />
+                  <div>
+                    <p
+                      className={`text-sm font-medium ${
+                        isDark ? "text-red-100" : "text-red-900"
+                      }`}
+                    >
+                      Location Data Error
+                    </p>
+                    <p
+                      className={`text-xs ${
+                        isDark ? "text-red-200" : "text-red-700"
+                      } mt-1`}
+                    >
+                      {locationError}
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {/* Loading Indicator */}
+              {fetchingLocation && (
+                <div className="flex items-center justify-center py-4">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-cyan-500"></div>
+                  <span className="ml-2 text-sm text-cyan-600">
+                    Loading location data...
+                  </span>
                 </div>
               )}
 
@@ -622,9 +632,12 @@ function BookingModal({
                       isDark
                         ? "bg-slate-800/50 text-white border-transparent"
                         : "bg-slate-50 text-slate-900 border-slate-100"
-                    } focus:border-cyan-500 cursor-pointer`}
+                    } focus:border-cyan-500 cursor-pointer ${
+                      fetchingLocation ? "opacity-50" : ""
+                    }`}
                     value={formData.division}
                     onChange={handleDivisionSelect}
+                    disabled={fetchingLocation}
                   >
                     <option value="">Select Division *</option>
                     {divisions.map((division) => (
@@ -652,10 +665,10 @@ function BookingModal({
                         : "bg-slate-50 text-slate-900 border-slate-100"
                     } focus:border-cyan-500 cursor-pointer ${
                       formData.division ? "" : "opacity-50"
-                    }`}
+                    } ${fetchingLocation ? "opacity-50" : ""}`}
                     value={formData.district}
                     onChange={handleDistrictSelect}
-                    disabled={!formData.division}
+                    disabled={!formData.division || fetchingLocation}
                   >
                     <option value="">Select District *</option>
                     {districts.map((district) => (
@@ -683,10 +696,10 @@ function BookingModal({
                         : "bg-slate-50 text-slate-900 border-slate-100"
                     } focus:border-cyan-500 cursor-pointer ${
                       formData.district ? "" : "opacity-50"
-                    }`}
+                    } ${fetchingLocation ? "opacity-50" : ""}`}
                     value={formData.thana}
                     onChange={handleThanaSelect}
-                    disabled={!formData.district}
+                    disabled={!formData.district || fetchingLocation}
                   >
                     <option value="">Select Thana *</option>
                     {thanas.map((thana) => (
@@ -762,12 +775,14 @@ function BookingModal({
                 <button
                   type="submit"
                   className="w-full py-4 bg-cyan-600 hover:bg-cyan-700 disabled:bg-cyan-400 text-white font-black text-lg rounded-2xl shadow-lg transition-all active:scale-95 shadow-cyan-600/20 flex items-center justify-center gap-2"
-                  disabled={loading}
+                  disabled={loading || fetchingLocation}
                 >
-                  {loading ? (
+                  {loading || fetchingLocation ? (
                     <>
                       <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                      Processing...
+                      {fetchingLocation
+                        ? "Loading Location Data..."
+                        : "Processing..."}
                     </>
                   ) : isLoggedIn ? (
                     "Subscribe Now"

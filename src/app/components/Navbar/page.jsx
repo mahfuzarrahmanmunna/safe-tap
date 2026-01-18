@@ -4,7 +4,6 @@ import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import {
-<<<<<<< HEAD
   Menu,
   X,
   ChevronDown,
@@ -40,17 +39,7 @@ import { Target } from "lucide-react";
 import { useTheme } from "@/app/contexts/ThemeContext";
 import { usePathname, useRouter } from "next/navigation";
 import ServiceModal from "../ServiceModal";
-=======
-  Menu, X, ChevronDown, Phone, Mail, Droplet, Home, Info, Package,
-  Wrench, FileText, Contact, Facebook, Youtube, Linkedin,
-  Clock, Filter, Users, TestTube, Sparkles, Sun, Moon, ArrowRight, 
-  MapPin, Shield, Star, Search, Headphones
-} from 'lucide-react';
-import { Target } from 'lucide-react';
-import { useTheme } from '@/app/contexts/ThemeContext';
-import { usePathname, useRouter } from 'next/navigation';
-import ServiceModal from '../ServiceModal';
->>>>>>> b58ac136b5ecbd17066a8752c3e27a8df27485bd
+import { useAuth } from "@/app/contexts/AuthContext";
 
 /* ------------------ DATA ------------------ */
 const navigationItems = [
@@ -66,19 +55,12 @@ const navigationItems = [
       { name: "Technology", href: "/about/technology", icon: Sparkles },
     ],
   },
-<<<<<<< HEAD
   { name: "Products", href: "/products", icon: Package, isModal: true },
   { name: "Services", onClick: () => null, icon: Wrench }, // Will be updated dynamically
+  { name: "Blog", href: "pages/blogs", icon: FileText },
   { name: "Contact", href: "/pages/contact", icon: Contact },
 ];
-=======
-  { name: 'Products', href: '/products', icon: Package, isModal: true },
-  { name: 'Services', onClick: () => null, icon: Wrench }, 
-  { name: 'Blog', href: 'pages/blogs', icon: FileText }, 
-  { name: 'Contact', href: '/pages/contact', icon: Contact },
->>>>>>> b58ac136b5ecbd17066a8752c3e27a8df27485bd
 
-];
 const socialLinks = [
   { icon: Facebook, href: "#", label: "Facebook" },
   { icon: Youtube, href: "#", label: "Youtube" },
@@ -610,6 +592,7 @@ const UserDropdown = ({ theme, userName, onLogout }) => {
 
 export default function Navbar() {
   const { theme, toggleTheme } = useTheme();
+  const { logout } = useAuth(); // Use the logout function from AuthContext
   const [scrolled, setScrolled] = useState(false);
   const [openDropdown, setOpenDropdown] = useState(null);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -627,6 +610,7 @@ export default function Navbar() {
   const searchInputRef = useRef(null);
   const quickContactRef = useRef(null);
   const dropdownRefs = useRef({});
+  const router = useRouter();
 
   const isCommercial = pathname === "/commercial";
 
@@ -634,7 +618,7 @@ export default function Navbar() {
   useEffect(() => {
     const checkAuthStatus = () => {
       // Check for token in localStorage
-      const token = localStorage.getItem("access_token");
+      const token = localStorage.getItem("accessToken");
       const user = localStorage.getItem("user");
 
       if (token && user) {
@@ -685,7 +669,7 @@ export default function Navbar() {
   useEffect(() => {
     if (searchQuery) {
       const filtered = searchSuggestions.filter((item) =>
-        item.toLowerCase().includes(searchQuery.toLowerCase())
+        item.toLowerCase().includes(searchQuery.toLowerCase()),
       );
       setFilteredSuggestions(filtered);
     } else {
@@ -707,12 +691,12 @@ export default function Navbar() {
     if (e.key === "ArrowDown") {
       e.preventDefault();
       setSelectedSuggestionIndex((prev) =>
-        prev < filteredSuggestions.length - 1 ? prev + 1 : 0
+        prev < filteredSuggestions.length - 1 ? prev + 1 : 0,
       );
     } else if (e.key === "ArrowUp") {
       e.preventDefault();
       setSelectedSuggestionIndex((prev) =>
-        prev > 0 ? prev - 1 : filteredSuggestions.length - 1
+        prev > 0 ? prev - 1 : filteredSuggestions.length - 1,
       );
     } else if (e.key === "Enter" && selectedSuggestionIndex >= 0) {
       e.preventDefault();
@@ -723,17 +707,15 @@ export default function Navbar() {
   };
 
   const handleLogout = () => {
-    // Clear localStorage
-    localStorage.removeItem("access_token");
-    localStorage.removeItem("refresh_token");
-    localStorage.removeItem("user");
+    // Use the logout function from AuthContext
+    logout();
 
-    // Update state
+    // Update local state
     setIsLoggedIn(false);
     setUserName("");
 
     // Redirect to home page
-    window.location.href = "/";
+    router.push("/");
   };
 
   return (
