@@ -1,6 +1,6 @@
-// RegisterPage.jsx
+// pages/register/page.jsx
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import axios from "axios";
 import {
@@ -18,18 +18,25 @@ import {
   FaSun,
   FaMoon,
   FaIdCard,
+  FaSms,
+  FaTimes,
+  FaExclamation,
 } from "react-icons/fa";
 import { useRouter } from "next/navigation";
 import Swal from "sweetalert2";
 import Link from "next/link";
 import { useTheme } from "../contexts/ThemeContext";
+import { useAuth } from "../contexts/AuthContext";
 import Lottie from "lottie-react";
 import registerAnimation from "../public/animations/register-animation.json";
 import successAnimation from "../public/animations/success-animation.json";
+import { auth, setupRecaptcha } from "../config/firebase";
+import { signInWithPhoneNumber } from "firebase/auth";
 
 const RegisterPage = () => {
   const router = useRouter();
-  const { theme, toggleTheme } = useTheme();
+  const { theme } = useTheme();
+  const { login } = useAuth();
   const isDark = theme === "dark";
 
   // Form states
@@ -49,6 +56,17 @@ const RegisterPage = () => {
     agreeToTerms: false,
   });
 
+  // Phone verification states
+  const [phoneVerified, setPhoneVerified] = useState(false);
+  const [verificationCode, setVerificationCode] = useState("");
+  const [confirmationResult, setConfirmationResult] = useState(null);
+  const [showPhoneVerification, setShowPhoneVerification] = useState(false);
+  const [phoneVerificationLoading, setPhoneVerificationLoading] =
+    useState(false);
+
+  // Development mode to bypass phone verification
+  const [devMode, setDevMode] = useState(true); // Default to true for now
+
   // UI states
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
@@ -67,9 +85,23 @@ const RegisterPage = () => {
   const [selectedPlan, setSelectedPlan] = useState("");
   const [returnPath, setReturnPath] = useState("/");
 
+  // Refs for Firebase
+  const recaptchaContainerRef = useRef(null);
+
   // API base URL
   const API_BASE_URL =
     process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
+
+  // Initialize Firebase reCAPTCHA only if not in development mode
+  useEffect(() => {
+    if (
+      !devMode &&
+      typeof window !== "undefined" &&
+      recaptchaContainerRef.current
+    ) {
+      setupRecaptcha("recaptcha-container");
+    }
+  }, [devMode]);
 
   // Check for saved form data and theme preference on mount
   useEffect(() => {
@@ -98,6 +130,9 @@ const RegisterPage = () => {
             notes: parsed.notes || "",
           }));
 
+          // Fixed: Use parsed.fullName instead of undefined fullName
+          console.log("Loaded booking form data:", parsed.fullName);
+
           setSelectedPlan(parsed.selectedPlan || "");
           setReturnPath(parsed.returnPath || "/");
 
@@ -125,7 +160,6 @@ const RegisterPage = () => {
           }));
         }
         console.log(fullName);
-
         // Remove the saved data after loading
         localStorage.removeItem("bookingFormData");
       } catch (e) {
@@ -166,7 +200,7 @@ const RegisterPage = () => {
       referral: formData.referral,
       notes: formData.notes,
     };
-
+    // console.log(fullName);
     localStorage.setItem("registerFormData", JSON.stringify(dataToSave));
   }, [
     formData.fullName,
@@ -186,6 +220,7 @@ const RegisterPage = () => {
     try {
       const response = await axios.get(`${API_BASE_URL}/api/divisions/`);
       setDivisions(response.data);
+      console.log(response.data);
       return response.data;
     } catch (err) {
       console.error("Failed to fetch divisions", err);
@@ -197,7 +232,7 @@ const RegisterPage = () => {
   const fetchDistricts = async (divisionId) => {
     try {
       const response = await axios.get(
-        `${API_BASE_URL}/api/districts/?division_id=${divisionId}`
+        `${API_BASE_URL}/api/districts/?division_id=${divisionId}`,
       );
       setDistricts(response.data);
       return response.data;
@@ -211,7 +246,7 @@ const RegisterPage = () => {
   const fetchThanas = async (districtId) => {
     try {
       const response = await axios.get(
-        `${API_BASE_URL}/api/thanas/?district_id=${districtId}`
+        `${API_BASE_URL}/api/thanas/?district_id=${districtId}`,
       );
       setThanas(response.data);
       return response.data;
@@ -293,6 +328,164 @@ const RegisterPage = () => {
     setPasswordStrength(Math.min(strength, 5));
   };
 
+  // Send verification code to phone
+  const sendPhoneVerificationCode = async () => {
+    console.log("sendPhoneVerificationCode called, devMode:", devMode);
+
+    if (!formData.phone) {
+      setErrors({ ...errors, phone: "Phone number is required" });
+      return;
+    }
+
+    // DEVELOPMENT MODE - Skip Firebase verification
+    if (devMode) {
+      console.log("Using development mode for phone verification");
+      setPhoneVerificationLoading(true);
+
+      // Simulate API call delay
+      setTimeout(() => {
+        setPhoneVerified(true);
+        setPhoneVerificationLoading(false);
+        Swal.fire({
+          title: "Phone Verified!",
+          text: "Phone verified in development mode.",
+          icon: "success",
+          confirmButtonColor: "#0891b2",
+        });
+      }, 1000);
+      return;
+    }
+
+    // Check if Firebase is properly initialized
+    if (!auth) {
+      Swal.fire({
+        title: "Configuration Error",
+        text: "Firebase is not properly configured. Please check your environment variables.",
+        icon: "error",
+        confirmButtonColor: "#0891b2",
+      });
+      return;
+    }
+
+    // Format phone number for Firebase (should include country code)
+    let phoneNumber = formData.phone;
+    if (!phoneNumber.startsWith("+")) {
+      // Assuming Bangladesh numbers, add country code if not present
+      phoneNumber = "+880" + phoneNumber.substring(1); // Remove leading 0 if present
+    }
+
+    setPhoneVerificationLoading(true);
+
+    try {
+      const appVerifier = window.recaptchaVerifier;
+      if (!appVerifier) {
+        throw new Error("reCAPTCHA not initialized");
+      }
+
+      const result = await signInWithPhoneNumber(
+        auth,
+        phoneNumber,
+        appVerifier,
+      );
+      setConfirmationResult(result);
+      setShowPhoneVerification(true);
+      setPhoneVerificationLoading(false);
+
+      Swal.fire({
+        title: "Verification Code Sent",
+        text: "A verification code has been sent to your phone number.",
+        icon: "success",
+        confirmButtonColor: "#0891b2",
+      });
+    } catch (error) {
+      console.error("Error sending verification code:", error);
+      setPhoneVerificationLoading(false);
+
+      let errorMessage = "Failed to send verification code. Please try again.";
+
+      // Handle specific Firebase errors
+      if (error.code === "auth/billing-not-enabled") {
+        errorMessage =
+          "Phone authentication requires billing to be enabled in your Firebase project. Please enable billing in the Firebase Console or use development mode.";
+      } else if (error.code === "auth/api-key-not-valid") {
+        errorMessage =
+          "Firebase configuration error. Please check your API key.";
+      } else if (error.code === "auth/too-many-requests") {
+        errorMessage = "Too many requests. Please try again later.";
+      } else if (error.code === "auth/invalid-phone-number") {
+        errorMessage = "Invalid phone number. Please check and try again.";
+      } else if (error.code === "auth/quota-exceeded") {
+        errorMessage = "SMS quota exceeded. Please try again later.";
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+
+      Swal.fire({
+        title: "Error",
+        html: errorMessage,
+        icon: "error",
+        confirmButtonColor: "#0891b2",
+        width: 500,
+      });
+    }
+  };
+
+  // Verify phone number with code
+  const verifyPhoneNumber = async () => {
+    if (!verificationCode) {
+      setErrors({
+        ...errors,
+        verificationCode: "Verification code is required",
+      });
+      return;
+    }
+
+    // Development mode - skip actual Firebase verification
+    if (devMode) {
+      setTimeout(() => {
+        setPhoneVerified(true);
+        setShowPhoneVerification(false);
+        Swal.fire({
+          title: "Phone Verified!",
+          text: "Phone verified in development mode.",
+          icon: "success",
+          confirmButtonColor: "#0891b2",
+        });
+      }, 500);
+      return;
+    }
+
+    try {
+      await confirmationResult.confirm(verificationCode);
+      setPhoneVerified(true);
+      setShowPhoneVerification(false);
+
+      Swal.fire({
+        title: "Phone Verified!",
+        text: "Your phone number has been verified successfully.",
+        icon: "success",
+        confirmButtonColor: "#0891b2",
+      });
+    } catch (error) {
+      console.error("Error verifying phone number:", error);
+
+      let errorMessage = "Invalid verification code. Please try again.";
+      if (error.code === "auth/invalid-verification-code") {
+        errorMessage = "Invalid verification code. Please check and try again.";
+      } else if (error.code === "auth/code-expired") {
+        errorMessage =
+          "Verification code has expired. Please request a new one.";
+      }
+
+      Swal.fire({
+        title: "Verification Failed",
+        text: errorMessage,
+        icon: "error",
+        confirmButtonColor: "#0891b2",
+      });
+    }
+  };
+
   // Validate form
   const validateForm = () => {
     const newErrors = {};
@@ -315,6 +508,11 @@ const RegisterPage = () => {
       newErrors.phone = "Phone number is required";
     } else if (!/^\d{10,11}$/.test(formData.phone)) {
       newErrors.phone = "Please enter a valid phone number (10-11 digits)";
+    }
+
+    // Only require phone verification if not in development mode
+    if (!devMode && !phoneVerified) {
+      newErrors.phoneVerification = "Please verify your phone number";
     }
 
     if (!formData.pin) {
@@ -354,7 +552,6 @@ const RegisterPage = () => {
   };
 
   // Handle form submission
-  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -379,6 +576,7 @@ const RegisterPage = () => {
         referral: formData.referral,
         notes: formData.notes,
         plan: selectedPlan,
+        is_phone_verified: devMode || phoneVerified, // Use dev mode or actual verification
       });
 
       setLoading(false);
@@ -390,6 +588,26 @@ const RegisterPage = () => {
       // Download QR code if available
       if (response.data.qr_code) {
         downloadQRCode(response.data.qr_code, formData.fullName);
+      }
+
+      // Automatically log in the user using the login function from AuthContext
+      const loginResult = await login(formData.email, formData.pin);
+
+      if (!loginResult.success) {
+        console.error("Auto-login failed:", loginResult.error);
+        // Continue anyway, but show a warning
+        Swal.fire({
+          title: "Registration Successful!",
+          text: "Your account has been created successfully, but we couldn't log you in automatically. Please log in manually.",
+          icon: "warning",
+          confirmButtonColor: "#0891b2",
+          confirmButtonText: "Go to Login",
+        }).then((result) => {
+          if (result.isConfirmed) {
+            router.push("/login");
+          }
+        });
+        return;
       }
 
       // Show success message
@@ -495,6 +713,10 @@ const RegisterPage = () => {
       } else if (!/^\d{10,11}$/.test(formData.phone)) {
         newErrors.phone = "Please enter a valid phone number (10-11 digits)";
       }
+      // Only require phone verification if not in development mode
+      if (!devMode && !phoneVerified) {
+        newErrors.phoneVerification = "Please verify your phone number";
+      }
     } else if (formStep === 2) {
       if (!formData.pin) {
         newErrors.pin = "PIN is required";
@@ -597,6 +819,31 @@ const RegisterPage = () => {
 
             {/* Right side - Registration form */}
             <div className="md:w-3/5 p-8">
+              {/* Development Mode Toggle */}
+              <div className="flex justify-end mb-4">
+                <div className="flex items-center">
+                  <input
+                    type="checkbox"
+                    id="devMode"
+                    checked={devMode}
+                    onChange={(e) => setDevMode(e.target.checked)}
+                    className="mr-2"
+                  />
+                  <label
+                    htmlFor="devMode"
+                    className={`text-sm font-medium ${
+                      devMode
+                        ? "text-green-600"
+                        : isDark
+                          ? "text-gray-300"
+                          : "text-gray-600"
+                    }`}
+                  >
+                    {devMode ? "Development Mode ON" : "Development Mode OFF"}
+                  </label>
+                </div>
+              </div>
+
               {/* Progress indicator */}
               <div className="mb-6">
                 <div className="flex items-center justify-between">
@@ -607,8 +854,8 @@ const RegisterPage = () => {
                           step <= formStep
                             ? "bg-cyan-600 text-white"
                             : isDark
-                            ? "bg-gray-700 text-gray-400"
-                            : "bg-gray-200 text-gray-500"
+                              ? "bg-gray-700 text-gray-400"
+                              : "bg-gray-200 text-gray-500"
                         }`}
                       >
                         {step < formStep ? (
@@ -617,7 +864,18 @@ const RegisterPage = () => {
                           <span>{step}</span>
                         )}
                       </div>
-                      </div>
+                      {step < 3 && (
+                        <div
+                          className={`flex-1 h-1 mx-2 ${
+                            step < formStep
+                              ? "bg-cyan-600"
+                              : isDark
+                                ? "bg-gray-700"
+                                : "bg-gray-200"
+                          }`}
+                        ></div>
+                      )}
+                    </div>
                   ))}
                 </div>
                 <div className="flex justify-between items-center mt-2">
@@ -652,6 +910,18 @@ const RegisterPage = () => {
               >
                 Sign Up
               </h1>
+
+              {/* Development Mode Alert */}
+              {devMode && (
+                <div className="mb-4 p-3 bg-green-100 border border-green-400 text-green-700 rounded-lg">
+                  <div className="flex items-center">
+                    <FaExclamation className="mr-2" />
+                    <span className="text-sm font-medium">
+                      Development Mode is ON - Phone verification is bypassed
+                    </span>
+                  </div>
+                </div>
+              )}
 
               <form onSubmit={handleSubmit} className="space-y-4">
                 <AnimatePresence mode="wait">
@@ -724,39 +994,6 @@ const RegisterPage = () => {
                         )}
                       </div>
 
-                      {/* Phone field */}
-                      <div className="relative">
-                        <FaPhone
-                          className={`absolute left-3 top-1/2 -translate-y-1/2 ${
-                            isDark ? "text-gray-400" : "text-gray-500"
-                          }`}
-                        />
-                        <input
-                          type="tel"
-                          name="phone"
-                          placeholder="Phone Number"
-                          value={formData.phone}
-                          onChange={(e) => {
-                            const value = e.target.value.replace(/\D/g, "");
-                            handleInputChange({
-                              target: { name: "phone", value },
-                            });
-                          }}
-                          maxLength={11}
-                          className={`w-full pl-10 pr-4 py-3 rounded-lg border ${
-                            isDark
-                              ? "bg-gray-700 border-gray-600 text-white"
-                              : "bg-gray-50 border-gray-200 text-gray-800"
-                          } focus:outline-none focus:ring-2 focus:ring-cyan-500`}
-                        />
-                        {errors.phone && (
-                          <p className="text-red-500 text-xs mt-1 flex items-center">
-                            <FaExclamationTriangle className="mr-1" size={10} />
-                            {errors.phone}
-                          </p>
-                        )}
-                      </div>
-
                       {/* Email field */}
                       <div className="relative">
                         <FaEnvelope
@@ -783,6 +1020,160 @@ const RegisterPage = () => {
                           </p>
                         )}
                       </div>
+
+                      {/* Phone field with verification */}
+                      <div className="relative">
+                        <FaPhone
+                          className={`absolute left-3 top-1/2 -translate-y-1/2 ${
+                            isDark ? "text-gray-400" : "text-gray-500"
+                          }`}
+                        />
+                        <input
+                          type="tel"
+                          name="phone"
+                          placeholder="Phone Number"
+                          value={formData.phone}
+                          onChange={(e) => {
+                            const value = e.target.value.replace(/\D/g, "");
+                            handleInputChange({
+                              target: { name: "phone", value },
+                            });
+                          }}
+                          maxLength={11}
+                          disabled={phoneVerified}
+                          className={`w-full pl-10 pr-20 py-3 rounded-lg border ${
+                            isDark
+                              ? "bg-gray-700 border-gray-600 text-white"
+                              : "bg-gray-50 border-gray-200 text-gray-800"
+                          } focus:outline-none focus:ring-2 focus:ring-cyan-500 ${
+                            phoneVerified ? "opacity-75" : ""
+                          }`}
+                        />
+                        {devMode && (
+                          <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center text-green-600">
+                            <FaCheckCircle size={16} />
+                            <span className="ml-1 text-xs">Dev Mode</span>
+                          </div>
+                        )}
+                        {!phoneVerified && !devMode && (
+                          <button
+                            type="button"
+                            onClick={sendPhoneVerificationCode}
+                            disabled={
+                              phoneVerificationLoading || !formData.phone
+                            }
+                            className={`absolute right-3 top-1/2 -translate-y-1/2 px-3 py-1 text-xs rounded ${
+                              phoneVerificationLoading || !formData.phone
+                                ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                                : "bg-cyan-600 text-white hover:bg-cyan-700"
+                            }`}
+                          >
+                            {phoneVerificationLoading ? "Sending..." : "Verify"}
+                          </button>
+                        )}
+                        {!devMode && phoneVerified && (
+                          <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center text-green-600">
+                            <FaCheckCircle size={16} />
+                            <span className="ml-1 text-xs">Verified</span>
+                          </div>
+                        )}
+                        {errors.phone && (
+                          <p className="text-red-500 text-xs mt-1 flex items-center">
+                            <FaExclamationTriangle className="mr-1" size={10} />
+                            {errors.phone}
+                          </p>
+                        )}
+                        {errors.phoneVerification && (
+                          <p className="text-red-500 text-xs mt-1 flex items-center">
+                            <FaExclamationTriangle className="mr-1" size={10} />
+                            {errors.phoneVerification}
+                          </p>
+                        )}
+                      </div>
+
+                      {/* Phone verification modal */}
+                      {showPhoneVerification && (
+                        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                          <div
+                            className={`w-full max-w-md p-6 rounded-lg ${
+                              isDark ? "bg-gray-800" : "bg-white"
+                            }`}
+                          >
+                            <div className="flex justify-between items-center mb-4">
+                              <h3
+                                className={`text-lg font-semibold ${
+                                  isDark ? "text-white" : "text-gray-800"
+                                }`}
+                              >
+                                Verify Your Phone Number
+                              </h3>
+                              <button
+                                type="button"
+                                onClick={() => setShowPhoneVerification(false)}
+                                className={`p-1 rounded-full ${
+                                  isDark
+                                    ? "hover:bg-gray-700 text-gray-400"
+                                    : "hover:bg-gray-100 text-gray-600"
+                                }`}
+                              >
+                                <FaTimes size={16} />
+                              </button>
+                            </div>
+                            <p
+                              className={`mb-4 ${
+                                isDark ? "text-gray-300" : "text-gray-600"
+                              }`}
+                            >
+                              Enter the 6-digit code sent to {formData.phone}
+                            </p>
+                            <div className="relative mb-4">
+                              <FaSms
+                                className={`absolute left-3 top-1/2 -translate-y-1/2 ${
+                                  isDark ? "text-gray-400" : "text-gray-500"
+                                }`}
+                              />
+                              <input
+                                type="text"
+                                placeholder="Verification Code"
+                                value={verificationCode}
+                                onChange={(e) =>
+                                  setVerificationCode(e.target.value)
+                                }
+                                maxLength={6}
+                                className={`w-full pl-10 pr-4 py-3 rounded-lg border ${
+                                  isDark
+                                    ? "bg-gray-700 border-gray-600 text-white"
+                                    : "bg-gray-50 border-gray-200 text-gray-800"
+                                } focus:outline-none focus:ring-2 focus:ring-cyan-500`}
+                              />
+                            </div>
+                            <div className="flex space-x-3">
+                              <button
+                                type="button"
+                                onClick={verifyPhoneNumber}
+                                className={`flex-1 py-2 rounded-lg font-medium ${
+                                  isDark
+                                    ? "bg-cyan-600 hover:bg-cyan-700 text-white"
+                                    : "bg-cyan-600 hover:bg-cyan-700 text-white"
+                                }`}
+                              >
+                                Verify
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => setShowPhoneVerification(false)}
+                                className={`flex-1 py-2 rounded-lg font-medium ${
+                                  isDark
+                                    ? "bg-gray-700 hover:bg-gray-600 text-white"
+                                    : "bg-gray-200 hover:bg-gray-300 text-gray-800"
+                                }`}
+                              >
+                                Cancel
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      )}
 
                       <div className="flex justify-end">
                         <button
@@ -1251,6 +1642,11 @@ const RegisterPage = () => {
           </div>
         </motion.div>
       </main>
+
+      {/* Firebase reCAPTCHA container - only render if not in dev mode */}
+      {!devMode && (
+        <div id="recaptcha-container" ref={recaptchaContainerRef}></div>
+      )}
     </div>
   );
 };

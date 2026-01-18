@@ -12,21 +12,28 @@ import {
   FaCheckCircle,
   FaShieldAlt,
   FaUserPlus,
+  FaExclamation,
 } from "react-icons/fa";
 import { useRouter } from "next/navigation";
 import Swal from "sweetalert2";
 import Link from "next/link";
 import { useTheme } from "../contexts/ThemeContext";
-// import { useAuth } from "../contexts/AuthContext";
+import { useAuth } from "../contexts/AuthContext";
 import Lottie from "lottie-react";
 import loginAnimation from "../public/animations/login-animation.json";
-import { useAuth } from "../contexts/AuthContext";
 
 const LoginPage = () => {
   const router = useRouter();
   const { theme } = useTheme();
-  const { login, isAuthenticated } = useAuth();
+  const { login, isAuthenticated, loading: authLoading } = useAuth();
   const isDark = theme === "dark";
+
+  // Development mode state
+  const [devMode, setDevMode] = useState(true); // Default to true for now
+
+  // API base URL
+  const API_BASE_URL =
+    process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
 
   // Form states
   const [formData, setFormData] = useState({
@@ -43,7 +50,7 @@ const LoginPage = () => {
   // Redirect if already authenticated
   useEffect(() => {
     if (isAuthenticated) {
-      router.push('/dashboard');
+      router.push("/dashboard");
     }
   }, [isAuthenticated, router]);
 
@@ -94,31 +101,114 @@ const LoginPage = () => {
     setLoading(true);
 
     try {
-      const result = await login(formData.email, formData.pin);
-      
-      if (result.success) {
-        // Show success message
-        Swal.fire({
-          title: "Login Successful!",
-          text: "Welcome back. Redirecting to dashboard...",
-          icon: "success",
-          confirmButtonColor: "#0891b2",
-          confirmButtonText: "Continue",
-          timer: 2000,
-          timerProgressBar: true,
-        }).then(() => {
-          // Redirect to dashboard or home page
-          router.push("/dashboard");
-        });
+      console.log("Attempting login with:", {
+        email: formData.email,
+        pin: "****",
+      });
+
+      // In development mode, bypass email verification
+      if (devMode) {
+        // Try direct login without email verification
+        try {
+          const response = await axios.post(`${API_BASE_URL}/api/auth/login/`, {
+            email: formData.email,
+            pin: formData.pin,
+            bypass_email_verification: true, // Add this flag to bypass email verification
+          });
+
+          if (response.data.access && response.data.refresh) {
+            // Store tokens
+            localStorage.setItem("accessToken", response.data.access);
+            localStorage.setItem("refreshToken", response.data.refresh);
+
+            // Set default authorization header for axios
+            axios.defaults.headers.common["Authorization"] =
+              `Bearer ${response.data.access}`;
+
+            // Update auth context
+            const loginResult = await login(formData.email, formData.pin, true); // Pass true to skip API call
+
+            if (loginResult.success) {
+              Swal.fire({
+                title: "Login Successful!",
+                text: "Welcome back. Redirecting to dashboard...",
+                icon: "success",
+                confirmButtonColor: "#0891b2",
+                confirmButtonText: "Continue",
+                timer: 2000,
+                timerProgressBar: true,
+              }).then(() => {
+                router.push("/dashboard");
+              });
+            } else {
+              Swal.fire({
+                title: "Login Error",
+                text: loginResult.error,
+                icon: "error",
+                confirmButtonColor: "#0891b2",
+              });
+            }
+          } else {
+            throw new Error("Invalid response from server");
+          }
+        } catch (error) {
+          console.error("Development mode login error:", error);
+          Swal.fire({
+            title: "Login Error",
+            text: "An error occurred during login in development mode.",
+            icon: "error",
+            confirmButtonColor: "#0891b2",
+          });
+        }
       } else {
-        Swal.fire({
-          title: "Login Error",
-          text: result.error,
-          icon: "error",
-          confirmButtonColor: "#0891b2",
-        });
+        // Normal login with email verification
+        const result = await login(formData.email, formData.pin);
+
+        console.log("Login result:", result);
+
+        if (result.success) {
+          // Show success message
+          Swal.fire({
+            title: "Login Successful!",
+            text: "Welcome back. Redirecting to dashboard...",
+            icon: "success",
+            confirmButtonColor: "#0891b2",
+            confirmButtonText: "Continue",
+            timer: 2000,
+            timerProgressBar: true,
+          }).then(() => {
+            // Redirect to dashboard or home page
+            router.push("/dashboard");
+          });
+        } else {
+          // Check if the error is related to email verification
+          if (result.error.includes("Email not verified")) {
+            Swal.fire({
+              title: "Email Not Verified",
+              text: "Please verify your email before logging in. Check your inbox for the verification link.",
+              icon: "warning",
+              confirmButtonColor: "#0891b2",
+              confirmButtonText: "Resend Verification Email",
+              showCancelButton: true,
+              cancelButtonText: "Cancel",
+            }).then((result) => {
+              if (result.isConfirmed) {
+                // Send verification email
+                sendVerificationEmail(formData.email);
+              }
+            });
+          } else {
+            Swal.fire({
+              title: "Login Error",
+              text: result.error,
+              icon: "error",
+              confirmButtonColor: "#0891b2",
+            });
+          }
+        }
       }
     } catch (error) {
+      console.error("Login error:", error);
       Swal.fire({
         title: "Login Error",
         text: "An unexpected error occurred. Please try again.",
@@ -130,53 +220,39 @@ const LoginPage = () => {
     }
   };
 
-  // Handle forgot PIN
-  const handleForgotPin = () => {
-    Swal.fire({
-      title: "Forgot PIN?",
-      text: "Enter your email address to receive a PIN reset link.",
-      input: "email",
-      inputPlaceholder: "Enter your email address",
-      showCancelButton: true,
-      confirmButtonColor: "#0891b2",
-      cancelButtonColor: "#6b7280",
-      confirmButtonText: "Send Reset Link",
-      showLoaderOnConfirm: true,
-      preConfirm: async (email) => {
-        if (!email) {
-          Swal.showValidationMessage("Please enter your email address");
-          return;
-        }
+  // Send verification email
+  const sendVerificationEmail = async (email) => {
+    try {
+      const response = await axios.post(
+        `${API_BASE_URL}/api/auth/send-email/`,
+        { email },
+      );
 
-        if (!/^\S+@\S+\.\S+$/.test(email)) {
-          Swal.showValidationMessage("Please enter a valid email address");
-          return;
-        }
-
-        try {
-          const response = await axios.post(
-            "http://127.0.0.1:8000/api/auth/send-email/",
-            { email }
-          );
-          return response.data;
-        } catch (error) {
-          Swal.showValidationMessage(
-            error.response?.data?.error || "Failed to send reset link"
-          );
-        }
-      },
-      allowOutsideClick: () => !Swal.isLoading(),
-    }).then((result) => {
-      if (result.isConfirmed) {
-        Swal.fire({
-          title: "Reset Link Sent!",
-          text: "Please check your email for PIN reset instructions.",
-          icon: "success",
-          confirmButtonColor: "#0891b2",
-        });
-      }
-    });
+      Swal.fire({
+        title: "Email Sent!",
+        text: "Please check your inbox for the verification link.",
+        icon: "success",
+        confirmButtonColor: "#0891b2",
+      });
+    } catch (error) {
+      console.error("Error sending verification email:", error);
+      Swal.fire({
+        title: "Error",
+        text: "Failed to send verification email. Please try again.",
+        icon: "error",
+        confirmButtonColor: "#0891b2",
+      });
+    }
   };
+
+  // Show loading spinner while checking authentication
+  if (authLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-cyan-500"></div>
+      </div>
+    );
+  }
 
   return (
     <div
@@ -222,6 +298,31 @@ const LoginPage = () => {
 
             {/* Right side - Login form */}
             <div className="md:w-3/5 p-8">
+              {/* Development Mode Toggle */}
+              <div className="flex justify-end mb-4">
+                <div className="flex items-center">
+                  <input
+                    type="checkbox"
+                    id="devMode"
+                    checked={devMode}
+                    onChange={(e) => setDevMode(e.target.checked)}
+                    className="mr-2"
+                  />
+                  <label
+                    htmlFor="devMode"
+                    className={`text-sm font-medium ${
+                      devMode
+                        ? "text-green-600"
+                        : isDark
+                          ? "text-gray-300"
+                          : "text-gray-600"
+                    }`}
+                  >
+                    {devMode ? "Development Mode ON" : "Development Mode OFF"}
+                  </label>
+                </div>
+              </div>
+
               <div className="max-w-md mx-auto">
                 <h1
                   className={`text-2xl font-bold mb-6 ${
@@ -230,6 +331,18 @@ const LoginPage = () => {
                 >
                   Sign In
                 </h1>
+
+                {/* Development Mode Alert */}
+                {devMode && (
+                  <div className="mb-4 p-3 bg-green-100 border border-green-400 text-green-700 rounded-lg">
+                    <div className="flex items-center">
+                      <FaExclamation className="mr-2" />
+                      <span className="text-sm font-medium">
+                        Development Mode is ON - Email verification is bypassed
+                      </span>
+                    </div>
+                  </div>
+                )}
 
                 <form onSubmit={handleSubmit} className="space-y-6">
                   {/* Email field */}
@@ -285,11 +398,7 @@ const LoginPage = () => {
                         isDark ? "text-gray-400" : "text-gray-500"
                       }`}
                     >
-                      {showPin ? (
-                        <FaEyeSlash size={18} />
-                      ) : (
-                        <FaEye size={18} />
-                      )}
+                      {showPin ? <FaEyeSlash size={18} /> : <FaEye size={18} />}
                     </button>
                     {errors.pin && (
                       <p className="text-red-500 text-xs mt-1 flex items-center">
@@ -299,7 +408,7 @@ const LoginPage = () => {
                     )}
                   </div>
 
-                  {/* Remember me and forgot PIN */}
+                  {/* Remember me */}
                   <div className="flex items-center justify-between">
                     <div className="flex items-center">
                       <input
@@ -319,13 +428,6 @@ const LoginPage = () => {
                         Remember me
                       </label>
                     </div>
-                    <button
-                      type="button"
-                      onClick={handleForgotPin}
-                      className="text-sm text-cyan-600 hover:underline"
-                    >
-                      Forgot PIN?
-                    </button>
                   </div>
 
                   {/* Submit button */}
@@ -374,7 +476,7 @@ const LoginPage = () => {
                     isDark ? "text-gray-400" : "text-gray-600"
                   }`}
                 >
-                  Don't have an account?{" "}
+                  Do not have an account?{" "}
                   <Link
                     href="/register"
                     className="text-cyan-600 hover:underline font-medium flex items-center justify-center gap-1"
@@ -410,8 +512,8 @@ const LoginPage = () => {
                           isDark ? "text-gray-400" : "text-gray-600"
                         }`}
                       >
-                        Your login is protected with industry-standard encryption.
-                        We never store your PIN in plain text.
+                        Your login is protected with industry-standard
+                        encryption. We never store your PIN in plain text.
                       </p>
                     </div>
                   </div>
