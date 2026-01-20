@@ -1,6 +1,12 @@
 // config/firebase.js
+
 import { initializeApp } from "firebase/app";
-import { getAuth, RecaptchaVerifier } from "firebase/auth";
+import {
+  getAuth,
+  GoogleAuthProvider,
+  FacebookAuthProvider,
+  RecaptchaVerifier,
+} from "firebase/auth";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -13,45 +19,35 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-let app;
-let auth;
+const app = initializeApp(firebaseConfig);
 
-try {
-  app = initializeApp(firebaseConfig);
-  auth = getAuth(app);
-  console.log("Firebase initialized successfully");
-} catch (error) {
-  console.error("Error initializing Firebase:", error);
-}
+// Initialize Firebase Authentication and get a reference to the service
+export const auth = getAuth(app);
+export const googleProvider = new GoogleAuthProvider();
+export const facebookProvider = new FacebookAuthProvider();
 
-// Create a Recaptcha verifier
-export const setupRecaptcha = (elementId, buttonId) => {
-  if (!auth) {
-    console.error("Firebase auth not initialized");
-    return null;
-  }
+// Initialize and cache a reCAPTCHA verifier in the browser
+export const setupRecaptcha = (containerId) => {
+  if (typeof window === "undefined") return null;
+  if (!auth) return null;
 
-  try {
-    // Clear any existing recaptcha
-    if (window.recaptchaVerifier) {
-      window.recaptchaVerifier.clear();
-    }
-
-    window.recaptchaVerifier = new RecaptchaVerifier(auth, elementId, {
-      size: "invisible",
-      callback: (response) => {
-        console.log("reCAPTCHA solved");
-      },
-      "expired-callback": () => {
-        console.log("reCAPTCHA expired");
-      },
-    });
-
+  // Reuse existing verifier if present
+  if (window.recaptchaVerifier) {
     return window.recaptchaVerifier;
-  } catch (error) {
-    console.error("Error setting up reCAPTCHA:", error);
-    return null;
   }
+
+  window.recaptchaVerifier = new RecaptchaVerifier(
+    auth,
+    containerId,
+    {
+      size: "normal",
+      callback: () => {},
+      "expired-callback": () => {},
+    },
+  );
+
+  return window.recaptchaVerifier;
 };
 
-export { auth };
+
+export default app;

@@ -16,15 +16,14 @@ export default function Home() {
     <>
       {/* <HeroBanner/> */}
       <SafeTapBanner />
-      
-      <SafeTapSection />
+
+      {/* <SafeTapSection /> */}
       <SafeTapAdvantage />
       <Community></Community>
       <HowItWorks></HowItWorks>
       <Category></Category>
-   <WaterJourney></WaterJourney>
-   <FaqData></FaqData>
-
+      <WaterJourney></WaterJourney>
+      <FaqData></FaqData>
     </>
   );
 }

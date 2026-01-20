@@ -160,7 +160,14 @@ export default function HowItWorks() {
                 swiperRef.current = swiper;
 
                 setTimeout(() => {
-                  if (prevRef.current && nextRef.current) {
+                  if (
+                    swiper &&
+                    swiper.params &&
+                    swiper.params.navigation &&
+                    swiper.navigation &&
+                    prevRef.current &&
+                    nextRef.current
+                  ) {
                     swiper.params.navigation.prevEl = prevRef.current;
                     swiper.params.navigation.nextEl = nextRef.current;
 

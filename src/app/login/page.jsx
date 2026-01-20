@@ -1,60 +1,60 @@
-// pages/login.js
+// pages/firebase-login.js
 "use client";
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import axios from "axios";
 import {
+  FaGoogle,
+  FaFacebook,
+  FaExclamationTriangle,
+  FaShieldAlt,
+  FaUserPlus,
+  FaArrowRight,
   FaEnvelope,
   FaLock,
   FaEye,
   FaEyeSlash,
-  FaExclamationTriangle,
-  FaCheckCircle,
-  FaShieldAlt,
-  FaUserPlus,
-  FaExclamation,
 } from "react-icons/fa";
 import { useRouter } from "next/navigation";
 import Swal from "sweetalert2";
 import Link from "next/link";
 import { useTheme } from "../contexts/ThemeContext";
-import { useAuth } from "../contexts/AuthContext";
+import { useFirebaseAuth } from "../contexts/FirebaseAuthContext";
 import Lottie from "lottie-react";
 import loginAnimation from "../public/animations/login-animation.json";
 
-const LoginPage = () => {
+const FirebaseLoginPage = () => {
   const router = useRouter();
   const { theme } = useTheme();
-  const { login, isAuthenticated, loading: authLoading } = useAuth();
+  const { 
+    user, 
+    loading, 
+    error, 
+    signInWithGoogle, 
+    signInWithFacebook, 
+    signOut 
+  } = useFirebaseAuth();
   const isDark = theme === "dark";
 
-  // Development mode state
-  const [devMode, setDevMode] = useState(true); // Default to true for now
-
-  // API base URL
-  const API_BASE_URL =
-    process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
-
-  // Form states
+  // Form states for traditional login
   const [formData, setFormData] = useState({
     email: "",
     pin: "",
     rememberMe: false,
   });
-
-  // UI states
-  const [errors, setErrors] = useState({});
-  const [loading, setLoading] = useState(false);
+  
   const [showPin, setShowPin] = useState(false);
+  const [errors, setErrors] = useState({});
+  const [loginLoading, setLoginLoading] = useState(false);
+  const [useTraditionalLogin, setUseTraditionalLogin] = useState(false);
 
   // Redirect if already authenticated
   useEffect(() => {
-    if (isAuthenticated) {
-      router.push("/admin-dashboard");
+    if (user) {
+      router.push("/dashboard");
     }
-  }, [isAuthenticated, router]);
+  }, [user, router]);
 
-  // Handle input changes
+  // Handle input changes for traditional login
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
 
@@ -72,7 +72,7 @@ const LoginPage = () => {
     }
   };
 
-  // Validate form
+  // Validate form for traditional login
   const validateForm = () => {
     const newErrors = {};
 
@@ -90,7 +90,7 @@ const LoginPage = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  // Handle form submission
+  // Handle traditional form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -98,147 +98,98 @@ const LoginPage = () => {
       return;
     }
 
-    setLoading(true);
+    setLoginLoading(true);
 
     try {
-      console.log("Attempting login with:", {
+      // API call for traditional login
+      const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
+      const response = await axios.post(`${API_BASE_URL}/api/auth/login/`, {
         email: formData.email,
-        pin: "****",
+        pin: formData.pin,
       });
 
-      // In development mode, bypass email verification
-      if (devMode) {
-        // Try direct login without email verification
-        try {
-          const response = await axios.post(`${API_BASE_URL}/api/auth/login/`, {
-            email: formData.email,
-            pin: formData.pin,
-            bypass_email_verification: true, // Add this flag to bypass email verification
-          });
+      if (response.data.access && response.data.refresh) {
+        // Store tokens
+        localStorage.setItem("accessToken", response.data.access);
+        localStorage.setItem("refreshToken", response.data.refresh);
 
-          if (response.data.access && response.data.refresh) {
-            // Store tokens
-            localStorage.setItem("accessToken", response.data.access);
-            localStorage.setItem("refreshToken", response.data.refresh);
+        // Set default authorization header for axios
+        axios.defaults.headers.common["Authorization"] =
+          `Bearer ${response.data.access}`;
 
-            // Set default authorization header for axios
-            axios.defaults.headers.common["Authorization"] =
-              `Bearer ${response.data.access}`;
-
-            // Update auth context
-            const loginResult = await login(formData.email, formData.pin, true); // Pass true to skip API call
-
-            if (loginResult.success) {
-              Swal.fire({
-                title: "Login Successful!",
-                text: "Welcome back. Redirecting to dashboard...",
-                icon: "success",
-                confirmButtonColor: "#0891b2",
-                confirmButtonText: "Continue",
-                timer: 2000,
-                timerProgressBar: true,
-              }).then(() => {
-                router.push("/dashboard");
-              });
-            } else {
-              Swal.fire({
-                title: "Login Error",
-                text: loginResult.error,
-                icon: "error",
-                confirmButtonColor: "#0891b2",
-              });
-            }
-          } else {
-            throw new Error("Invalid response from server");
-          }
-        } catch (error) {
-          console.error("Development mode login error:", error);
-          Swal.fire({
-            title: "Login Error",
-            text: "An error occurred during login in development mode.",
-            icon: "error",
-            confirmButtonColor: "#0891b2",
-          });
-        }
+        Swal.fire({
+          title: "Login Successful!",
+          text: "Welcome back. Redirecting to dashboard...",
+          icon: "success",
+          confirmButtonColor: "#0891b2",
+          confirmButtonText: "Continue",
+          timer: 2000,
+          timerProgressBar: true,
+        }).then(() => {
+          router.push("/dashboard");
+        });
       } else {
-        // Normal login with email verification
-        const result = await login(formData.email, formData.pin);
-
-        console.log("Login result:", result);
-
-        if (result.success) {
-          // Show success message
-          Swal.fire({
-            title: "Login Successful!",
-            text: "Welcome back. Redirecting to dashboard...",
-            icon: "success",
-            confirmButtonColor: "#0891b2",
-            confirmButtonText: "Continue",
-            timer: 2000,
-            timerProgressBar: true,
-          }).then(() => {
-            // Redirect to dashboard or home page
-            router.push("/dashboard");
-          });
-        } else {
-          // Check if the error is related to email verification
-          if (result.error.includes("Email not verified")) {
-            Swal.fire({
-              title: "Email Not Verified",
-              text: "Please verify your email before logging in. Check your inbox for the verification link.",
-              icon: "warning",
-              confirmButtonColor: "#0891b2",
-              confirmButtonText: "Resend Verification Email",
-              showCancelButton: true,
-              cancelButtonText: "Cancel",
-            }).then((result) => {
-              if (result.isConfirmed) {
-                // Send verification email
-                sendVerificationEmail(formData.email);
-              }
-            });
-          } else {
-            Swal.fire({
-              title: "Login Error",
-              text: result.error,
-              icon: "error",
-              confirmButtonColor: "#0891b2",
-            });
-          }
-        }
+        throw new Error("Invalid response from server");
       }
     } catch (error) {
       console.error("Login error:", error);
       Swal.fire({
         title: "Login Error",
-        text: "An unexpected error occurred. Please try again.",
+        text: error.response?.data?.error || "An error occurred during login.",
         icon: "error",
         confirmButtonColor: "#0891b2",
       });
     } finally {
-      setLoading(false);
+      setLoginLoading(false);
     }
   };
 
-  // Send verification email
-  const sendVerificationEmail = async (email) => {
-    try {
-      const response = await axios.post(
-        `${API_BASE_URL}/api/auth/send-email/`,
-        { email },
-      );
-
+  // Handle Google sign-in
+  const handleGoogleSignIn = async () => {
+    const result = await signInWithGoogle();
+    
+    if (result.success) {
       Swal.fire({
-        title: "Email Sent!",
-        text: "Please check your inbox for the verification link.",
+        title: "Login Successful!",
+        text: "Welcome back. Redirecting to dashboard...",
         icon: "success",
         confirmButtonColor: "#0891b2",
+        confirmButtonText: "Continue",
+        timer: 2000,
+        timerProgressBar: true,
+      }).then(() => {
+        router.push("/dashboard");
       });
-    } catch (error) {
-      console.error("Error sending verification email:", error);
+    } else {
       Swal.fire({
-        title: "Error",
-        text: "Failed to send verification email. Please try again.",
+        title: "Login Error",
+        text: result.error,
+        icon: "error",
+        confirmButtonColor: "#0891b2",
+      });
+    }
+  };
+
+  // Handle Facebook sign-in
+  const handleFacebookSignIn = async () => {
+    const result = await signInWithFacebook();
+    
+    if (result.success) {
+      Swal.fire({
+        title: "Login Successful!",
+        text: "Welcome back. Redirecting to dashboard...",
+        icon: "success",
+        confirmButtonColor: "#0891b2",
+        confirmButtonText: "Continue",
+        timer: 2000,
+        timerProgressBar: true,
+      }).then(() => {
+        router.push("/dashboard");
+      });
+    } else {
+      Swal.fire({
+        title: "Login Error",
+        text: result.error,
         icon: "error",
         confirmButtonColor: "#0891b2",
       });
@@ -246,7 +197,7 @@ const LoginPage = () => {
   };
 
   // Show loading spinner while checking authentication
-  if (authLoading) {
+  if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-cyan-500"></div>
@@ -298,31 +249,6 @@ const LoginPage = () => {
 
             {/* Right side - Login form */}
             <div className="md:w-3/5 p-8">
-              {/* Development Mode Toggle */}
-              <div className="flex justify-end mb-4">
-                <div className="flex items-center">
-                  <input
-                    type="checkbox"
-                    id="devMode"
-                    checked={devMode}
-                    onChange={(e) => setDevMode(e.target.checked)}
-                    className="mr-2"
-                  />
-                  <label
-                    htmlFor="devMode"
-                    className={`text-sm font-medium ${
-                      devMode
-                        ? "text-green-600"
-                        : isDark
-                          ? "text-gray-300"
-                          : "text-gray-600"
-                    }`}
-                  >
-                    {devMode ? "Development Mode ON" : "Development Mode OFF"}
-                  </label>
-                </div>
-              </div>
-
               <div className="max-w-md mx-auto">
                 <h1
                   className={`text-2xl font-bold mb-6 ${
@@ -332,143 +258,214 @@ const LoginPage = () => {
                   Sign In
                 </h1>
 
-                {/* Development Mode Alert */}
-                {devMode && (
-                  <div className="mb-4 p-3 bg-green-100 border border-green-400 text-green-700 rounded-lg">
-                    <div className="flex items-center">
-                      <FaExclamation className="mr-2" />
-                      <span className="text-sm font-medium">
-                        Development Mode is ON - Email verification is bypassed
-                      </span>
-                    </div>
-                  </div>
-                )}
-
-                <form onSubmit={handleSubmit} className="space-y-6">
-                  {/* Email field */}
-                  <div className="relative">
-                    <FaEnvelope
-                      className={`absolute left-3 top-1/2 -translate-y-1/2 ${
-                        isDark ? "text-gray-400" : "text-gray-500"
-                      }`}
-                    />
-                    <input
-                      type="email"
-                      name="email"
-                      placeholder="Email Address"
-                      value={formData.email}
-                      onChange={handleInputChange}
-                      className={`w-full pl-10 pr-4 py-3 rounded-lg border ${
-                        isDark
-                          ? "bg-gray-700 border-gray-600 text-white"
-                          : "bg-gray-50 border-gray-200 text-gray-800"
-                      } focus:outline-none focus:ring-2 focus:ring-cyan-500`}
-                    />
-                    {errors.email && (
-                      <p className="text-red-500 text-xs mt-1 flex items-center">
-                        <FaExclamationTriangle className="mr-1" size={10} />
-                        {errors.email}
-                      </p>
-                    )}
-                  </div>
-
-                  {/* PIN field */}
-                  <div className="relative">
-                    <FaLock
-                      className={`absolute left-3 top-1/2 -translate-y-1/2 ${
-                        isDark ? "text-gray-400" : "text-gray-500"
-                      }`}
-                    />
-                    <input
-                      type={showPin ? "text" : "password"}
-                      name="pin"
-                      placeholder="Enter PIN"
-                      value={formData.pin}
-                      onChange={handleInputChange}
-                      className={`w-full pl-10 pr-12 py-3 rounded-lg border ${
-                        isDark
-                          ? "bg-gray-700 border-gray-600 text-white"
-                          : "bg-gray-50 border-gray-200 text-gray-800"
-                      } focus:outline-none focus:ring-2 focus:ring-cyan-500`}
-                    />
+                {!useTraditionalLogin ? (
+                  // Social login buttons
+                  <div className="space-y-4">
                     <button
-                      type="button"
-                      onClick={() => setShowPin(!showPin)}
-                      className={`absolute right-3 top-1/2 -translate-y-1/2 ${
-                        isDark ? "text-gray-400" : "text-gray-500"
+                      onClick={handleGoogleSignIn}
+                      className={`w-full py-3 px-4 rounded-lg font-medium transition-colors flex items-center justify-center gap-3 ${
+                        isDark
+                          ? "bg-gray-700 hover:bg-gray-600 text-white"
+                          : "bg-gray-100 hover:bg-gray-200 text-gray-800"
                       }`}
                     >
-                      {showPin ? <FaEyeSlash size={18} /> : <FaEye size={18} />}
+                      <FaGoogle className="text-red-500" size={20} />
+                      Continue with Google
                     </button>
-                    {errors.pin && (
-                      <p className="text-red-500 text-xs mt-1 flex items-center">
-                        <FaExclamationTriangle className="mr-1" size={10} />
-                        {errors.pin}
-                      </p>
-                    )}
-                  </div>
 
-                  {/* Remember me */}
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center">
-                      <input
-                        type="checkbox"
-                        name="rememberMe"
-                        id="rememberMe"
-                        checked={formData.rememberMe}
-                        onChange={handleInputChange}
-                        className="mr-2"
-                      />
-                      <label
-                        htmlFor="rememberMe"
-                        className={`text-sm ${
-                          isDark ? "text-gray-300" : "text-gray-700"
+                    <button
+                      onClick={handleFacebookSignIn}
+                      className={`w-full py-3 px-4 rounded-lg font-medium transition-colors flex items-center justify-center gap-3 ${
+                        isDark
+                          ? "bg-gray-700 hover:bg-gray-600 text-white"
+                          : "bg-gray-100 hover:bg-gray-200 text-gray-800"
+                      }`}
+                    >
+                      <FaFacebook className="text-blue-600" size={20} />
+                      Continue with Facebook
+                    </button>
+
+                    <div className="relative my-6">
+                      <div
+                        className={`absolute inset-0 flex items-center ${
+                          isDark ? "text-gray-600" : "text-gray-400"
                         }`}
                       >
-                        Remember me
-                      </label>
+                        <div className="w-full border-t"></div>
+                      </div>
+                      <div
+                        className={`relative flex justify-center text-sm ${
+                          isDark ? "text-gray-400" : "text-gray-500"
+                        }`}
+                      >
+                        <span
+                          className={`px-2 ${
+                            isDark ? "bg-gray-800" : "bg-white"
+                          }`}
+                        >
+                          OR
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Traditional login link */}
+                    <div
+                      className={`text-center ${
+                        isDark ? "text-gray-400" : "text-gray-600"
+                      }`}
+                    >
+                      <button
+                        onClick={() => setUseTraditionalLogin(true)}
+                        className="text-cyan-600 hover:underline font-medium flex items-center justify-center gap-1 w-full"
+                      >
+                        Sign in with email and PIN
+                        <FaArrowRight size={14} />
+                      </button>
                     </div>
                   </div>
+                ) : (
+                  // Traditional login form
+                  <form onSubmit={handleSubmit} className="space-y-6">
+                    {/* Email field */}
+                    <div className="relative">
+                      <FaEnvelope
+                        className={`absolute left-3 top-1/2 -translate-y-1/2 ${
+                          isDark ? "text-gray-400" : "text-gray-500"
+                        }`}
+                      />
+                      <input
+                        type="email"
+                        name="email"
+                        placeholder="Email Address"
+                        value={formData.email}
+                        onChange={handleInputChange}
+                        className={`w-full pl-10 pr-4 py-3 rounded-lg border ${
+                          isDark
+                            ? "bg-gray-700 border-gray-600 text-white"
+                            : "bg-gray-50 border-gray-200 text-gray-800"
+                        } focus:outline-none focus:ring-2 focus:ring-cyan-500`}
+                      />
+                      {errors.email && (
+                        <p className="text-red-500 text-xs mt-1 flex items-center">
+                          <FaExclamationTriangle className="mr-1" size={10} />
+                          {errors.email}
+                        </p>
+                      )}
+                    </div>
 
-                  {/* Submit button */}
-                  <button
-                    type="submit"
-                    disabled={loading}
-                    className={`w-full py-3 rounded-lg font-medium transition-colors ${
-                      loading
-                        ? "bg-gray-400 cursor-not-allowed"
-                        : "bg-cyan-600 hover:bg-cyan-700 text-white"
-                    }`}
-                  >
-                    {loading ? (
-                      <span className="flex items-center justify-center">
-                        <svg
-                          className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 24 24"
+                    {/* PIN field */}
+                    <div className="relative">
+                      <FaLock
+                        className={`absolute left-3 top-1/2 -translate-y-1/2 ${
+                          isDark ? "text-gray-400" : "text-gray-500"
+                        }`}
+                      />
+                      <input
+                        type={showPin ? "text" : "password"}
+                        name="pin"
+                        placeholder="Enter PIN"
+                        value={formData.pin}
+                        onChange={handleInputChange}
+                        className={`w-full pl-10 pr-12 py-3 rounded-lg border ${
+                          isDark
+                            ? "bg-gray-700 border-gray-600 text-white"
+                            : "bg-gray-50 border-gray-200 text-gray-800"
+                        } focus:outline-none focus:ring-2 focus:ring-cyan-500`}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPin(!showPin)}
+                        className={`absolute right-3 top-1/2 -translate-y-1/2 ${
+                          isDark ? "text-gray-400" : "text-gray-500"
+                        }`}
+                      >
+                        {showPin ? <FaEyeSlash size={18} /> : <FaEye size={18} />}
+                      </button>
+                      {errors.pin && (
+                        <p className="text-red-500 text-xs mt-1 flex items-center">
+                          <FaExclamationTriangle className="mr-1" size={10} />
+                          {errors.pin}
+                        </p>
+                      )}
+                    </div>
+
+                    {/* Remember me */}
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center">
+                        <input
+                          type="checkbox"
+                          name="rememberMe"
+                          id="rememberMe"
+                          checked={formData.rememberMe}
+                          onChange={handleInputChange}
+                          className="mr-2"
+                        />
+                        <label
+                          htmlFor="rememberMe"
+                          className={`text-sm ${
+                            isDark ? "text-gray-300" : "text-gray-700"
+                          }`}
                         >
-                          <circle
-                            className="opacity-25"
-                            cx="12"
-                            cy="12"
-                            r="10"
-                            stroke="currentColor"
-                            strokeWidth="4"
-                          ></circle>
-                          <path
-                            className="opacity-75"
-                            fill="currentColor"
-                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                          ></path>
-                        </svg>
-                        Signing In...
-                      </span>
-                    ) : (
-                      "Sign In"
-                    )}
-                  </button>
-                </form>
+                          Remember me
+                        </label>
+                      </div>
+                    </div>
+
+                    {/* Submit button */}
+                    <button
+                      type="submit"
+                      disabled={loginLoading}
+                      className={`w-full py-3 rounded-lg font-medium transition-colors ${
+                        loginLoading
+                          ? "bg-gray-400 cursor-not-allowed"
+                          : "bg-cyan-600 hover:bg-cyan-700 text-white"
+                      }`}
+                    >
+                      {loginLoading ? (
+                        <span className="flex items-center justify-center">
+                          <svg
+                            className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                          >
+                            <circle
+                              className="opacity-25"
+                              cx="12"
+                              cy="12"
+                              r="10"
+                              stroke="currentColor"
+                              strokeWidth="4"
+                            ></circle>
+                            <path
+                              className="opacity-75"
+                              fill="currentColor"
+                              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                            ></path>
+                          </svg>
+                          Signing In...
+                        </span>
+                      ) : (
+                        "Sign In"
+                      )}
+                    </button>
+
+                    {/* Social login link */}
+                    <div
+                      className={`text-center ${
+                        isDark ? "text-gray-400" : "text-gray-600"
+                      }`}
+                    >
+                      <button
+                        onClick={() => setUseTraditionalLogin(false)}
+                        className="text-cyan-600 hover:underline font-medium flex items-center justify-center gap-1 w-full"
+                      >
+                        <FaArrowRight size={14} className="rotate-180" />
+                        Back to social login
+                      </button>
+                    </div>
+                  </form>
+                )}
 
                 {/* Register link */}
                 <div
@@ -476,9 +473,9 @@ const LoginPage = () => {
                     isDark ? "text-gray-400" : "text-gray-600"
                   }`}
                 >
-                  Do not have an account?{" "}
+                  Don't have an account?{" "}
                   <Link
-                    href="/register"
+                    href="/firebase-register"
                     className="text-cyan-600 hover:underline font-medium flex items-center justify-center gap-1"
                   >
                     <FaUserPlus size={14} />
@@ -512,8 +509,7 @@ const LoginPage = () => {
                           isDark ? "text-gray-400" : "text-gray-600"
                         }`}
                       >
-                        Your login is protected with industry-standard
-                        encryption. We never store your PIN in plain text.
+                        Your login is protected with Firebase authentication. We never store your password.
                       </p>
                     </div>
                   </div>
@@ -527,4 +523,4 @@ const LoginPage = () => {
   );
 };
 
-export default LoginPage;
+export default FirebaseLoginPage;
