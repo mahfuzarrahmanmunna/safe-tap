@@ -14,14 +14,14 @@ const isDashboardPath = (pathname) => {
   if (!pathname) return false;
 
   // Check for main dashboard paths
-  if (
-    pathname === "/dashboard" ||
-    pathname === "/admin/dashboard" ||
-    pathname === "/technasian/dashboard" ||
-    pathname === "/customer/dashboard"
-  ) {
-    return true;
-  }
+  // if (
+  //   pathname === "/dashboard" ||
+  //   pathname === "/admin/dashboard" ||
+  //   pathname === "/technasian/dashboard" ||
+  //   pathname === "/customer/dashboard"
+  // ) {
+  //   return true;
+  // }
 
   // Check for any subpaths under dashboard routes
   if (

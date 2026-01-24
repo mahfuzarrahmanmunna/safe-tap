@@ -1252,7 +1252,7 @@ export default function Navbar() {
                   <kbd className="px-2 py-1 text-xs bg-gray-100 rounded">
                     Enter
                   </kbd>{" "}
-                  to search for "{searchQuery}"
+                  to search for `{searchQuery}`
                 </motion.div>
               )}
             </div>
@@ -1406,7 +1406,7 @@ export default function Navbar() {
                       </div>
                     </div>
                     <Link
-                      href="/dashboard"
+                      href="/admin-dashboard"
                       onClick={closeMobileMenu}
                       className={`w-full flex items-center space-x-2 p-3 rounded-lg ${
                         theme === "dark"

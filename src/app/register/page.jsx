@@ -100,6 +100,7 @@ const RegisterPage = () => {
   const [thanas, setThanas] = useState([]);
   const [selectedPlan, setSelectedPlan] = useState("");
   const [returnPath, setReturnPath] = useState("/");
+  const [locationDataLoaded, setLocationDataLoaded] = useState(false);
 
   // Refs for Firebase
   const recaptchaContainerRef = useRef(null);
@@ -118,6 +119,23 @@ const RegisterPage = () => {
       setupRecaptcha("recaptcha-container");
     }
   }, [devMode]);
+
+  // Fetch all divisions on component mount
+  useEffect(() => {
+    const initializeLocationData = async () => {
+      try {
+        const divisionsData = await fetchDivisions();
+        setLocationDataLoaded(true);
+        return divisionsData;
+      } catch (error) {
+        console.error("Failed to initialize location data:", error);
+        setLocationDataLoaded(true); // Still set to true to prevent infinite loading
+        return [];
+      }
+    };
+
+    initializeLocationData();
+  }, []);
 
   // Check for saved form data and theme preference on mount
   useEffect(() => {
@@ -152,15 +170,12 @@ const RegisterPage = () => {
           setSelectedPlan(parsed.selectedPlan || "");
           setReturnPath(parsed.returnPath || "/");
 
-          // Fetch divisions, districts, and thanas if location data is present
-          if (parsed.division) {
-            fetchDivisions().then(() => {
-              if (parsed.division) {
-                fetchDistricts(parsed.division).then(() => {
-                  if (parsed.district) {
-                    fetchThanas(parsed.district);
-                  }
-                });
+          // Fetch districts and thanas if location data is present
+          // Wait for divisions to be loaded first
+          if (parsed.division && locationDataLoaded) {
+            fetchDistricts(parsed.division).then(() => {
+              if (parsed.district) {
+                fetchThanas(parsed.district);
               }
             });
           }
@@ -193,13 +208,26 @@ const RegisterPage = () => {
             email: parsed.email || "",
             phone: parsed.phone || "",
             address: parsed.address || "",
+            division: parsed.division || "",
+            district: parsed.district || "",
+            thana: parsed.thana || "",
           }));
+
+          // Fetch districts and thanas if location data is present
+          // Wait for divisions to be loaded first
+          if (parsed.division && locationDataLoaded) {
+            fetchDistricts(parsed.division).then(() => {
+              if (parsed.district) {
+                fetchThanas(parsed.district);
+              }
+            });
+          }
         } catch (e) {
           console.error("Failed to parse saved form data", e);
         }
       }
     }
-  }, []);
+  }, [locationDataLoaded]);
 
   // Save form data to localStorage whenever it changes (excluding sensitive fields)
   useEffect(() => {
@@ -234,7 +262,7 @@ const RegisterPage = () => {
     try {
       const response = await axios.get(`${API_BASE_URL}/api/divisions/`);
       setDivisions(response.data);
-      console.log(response.data);
+      console.log("Divisions loaded:", response.data);
       return response.data;
     } catch (err) {
       console.error("Failed to fetch divisions", err);
@@ -249,6 +277,7 @@ const RegisterPage = () => {
         `${API_BASE_URL}/api/districts/?division_id=${divisionId}`,
       );
       setDistricts(response.data);
+      console.log("Districts loaded:", response.data);
       return response.data;
     } catch (err) {
       console.error("Failed to fetch districts", err);
@@ -263,6 +292,7 @@ const RegisterPage = () => {
         `${API_BASE_URL}/api/thanas/?district_id=${districtId}`,
       );
       setThanas(response.data);
+      console.log("Thanas loaded:", response.data);
       return response.data;
     } catch (err) {
       console.error("Failed to fetch thanas", err);
@@ -489,8 +519,34 @@ const RegisterPage = () => {
 
       // Handle specific Firebase errors
       if (error.code === "auth/billing-not-enabled") {
-        errorMessage =
-          "Phone authentication requires billing to be enabled in your Firebase project. Please enable billing in the Firebase Console or use development mode.";
+        errorMessage = (
+          <div>
+            <p>
+              Phone authentication requires billing to be enabled in your
+              Firebase project.
+            </p>
+            <p>
+              Please enable billing in the Firebase Console or use development
+              mode.
+            </p>
+            <div className="mt-3">
+              <button
+                className="px-4 py-2 bg-cyan-600 text-white rounded mr-2"
+                onClick={() => setDevMode(true)}
+              >
+                Enable Development Mode
+              </button>
+              <a
+                href="https://console.firebase.google.com/project/_/billing/enable"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-4 py-2 bg-blue-600 text-white rounded"
+              >
+                Enable Billing
+              </a>
+            </div>
+          </div>
+        );
       } else if (error.code === "auth/api-key-not-valid") {
         errorMessage =
           "Firebase configuration error. Please check your API key.";
@@ -651,6 +707,46 @@ const RegisterPage = () => {
     return Object.keys(newErrors).length === 0;
   };
 
+  // Function to download QR code
+  const downloadQRCode = (qrCodeData, userName) => {
+    if (!qrCodeData) return;
+
+    // Create a filename with the user's name
+    const fileName = `${userName || "user"}-safetap-qr.png`;
+
+    // Create a link element and trigger download
+    const link = document.createElement("a");
+    link.href = `data:image/png;base64,${qrCodeData}`;
+    link.download = fileName;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  // Function to download support link as text file
+  const downloadSupportLink = (supportLink, userName) => {
+    if (!supportLink) return;
+
+    // Create a text file with the support link
+    const textContent = `Support Link for ${userName || "User"}\n\n${supportLink}\n\nSave this link for future reference.`;
+    const blob = new Blob([textContent], { type: "text/plain" });
+    const url = window.URL.createObjectURL(blob);
+
+    // Create a filename with the user's name
+    const fileName = `${userName || "user"}-support-link.txt`;
+
+    // Create a link element and trigger download
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = fileName;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    // Clean up the URL
+    window.URL.revokeObjectURL(url);
+  };
+
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -698,6 +794,10 @@ const RegisterPage = () => {
       // Get ID token from Firebase user
       const idToken = await firebaseUserToUse.getIdToken();
 
+      // Log the Firebase user info
+      console.log("Firebase User:", firebaseUserToUse);
+      console.log("ID Token:", idToken);
+
       // Prepare registration data
       const registrationData = {
         id_token: idToken,
@@ -714,10 +814,60 @@ const RegisterPage = () => {
         is_phone_verified: devMode || phoneVerified,
       };
 
-      // Send registration data to API
-      const response = await axios
-        .post(`${API_BASE_URL}/api/auth/firebase/register/`, registrationData)
-        .catch((error) => {
+      // Log the registration data being sent
+      console.log("Registration Data:", registrationData);
+
+      let response;
+
+      // Try Firebase registration first
+      try {
+        response = await axios.post(
+          `${API_BASE_URL}/api/auth/firebase/register/`,
+          registrationData,
+        );
+      } catch (error) {
+        // Log the full error response
+        console.error("Full Error Response:", error.response);
+        console.error("Error Data:", error.response?.data);
+        console.error("Error Status:", error.response?.status);
+
+        // If Firebase registration fails, try regular registration as fallback
+        if (error.response?.status === 400 && devMode) {
+          console.log(
+            "Firebase registration failed, trying regular registration as fallback",
+          );
+
+          const regularRegistrationData = {
+            username: formData.email.split("@")[0],
+            email: formData.email,
+            password: formData.pin,
+            pin: formData.pin,
+            first_name: formData.fullName.split(" ")[0],
+            last_name: formData.fullName.split(" ").slice(1).join(" "),
+            phone: formData.phone,
+            nid: formData.nid,
+            division: formData.division,
+            district: formData.district,
+            thana: formData.thana,
+            address: formData.address,
+            referral: formData.referral,
+            notes: formData.notes,
+            role: "customer",
+            is_phone_verified: devMode || phoneVerified,
+          };
+
+          console.log("Fallback Registration Data:", regularRegistrationData);
+
+          try {
+            response = await axios.post(
+              `${API_BASE_URL}/api/auth/register/`,
+              regularRegistrationData,
+            );
+          } catch (fallbackError) {
+            console.error("Fallback registration also failed:", fallbackError);
+            throw fallbackError;
+          }
+        } else {
           // Handle connection refused error
           if (error.code === "ECONNREFUSED") {
             throw new Error(
@@ -725,7 +875,8 @@ const RegisterPage = () => {
             );
           }
           throw error;
-        });
+        }
+      }
 
       setLoading(false);
       setRegistrationSuccess(true);
@@ -745,10 +896,15 @@ const RegisterPage = () => {
         downloadQRCode(response.data.qr_code, formData.fullName);
       }
 
+      // Download support link if available
+      if (response.data.support_link) {
+        downloadSupportLink(response.data.support_link, formData.fullName);
+      }
+
       // Show success message
       Swal.fire({
         title: "Registration Successful!",
-        text: "Your account has been created successfully and your QR code has been downloaded.",
+        text: "Your account has been created successfully. Your QR code and support link have been downloaded.",
         icon: "success",
         confirmButtonColor: "#0891b2",
         confirmButtonText: "Continue",
@@ -777,6 +933,15 @@ const RegisterPage = () => {
         } else if (errorData.detail) {
           errorMsg = errorData.detail;
         }
+
+        // Handle specific database constraint errors
+        if (
+          errorData.error &&
+          errorData.error.includes("UNIQUE constraint failed")
+        ) {
+          errorMsg =
+            "There was an issue creating your account. This email might already be registered. Please try signing in instead.";
+        }
       } else if (error.message) {
         errorMsg = error.message;
       }
@@ -788,22 +953,6 @@ const RegisterPage = () => {
         confirmButtonColor: "#0891b2",
       });
     }
-  };
-
-  // Function to download QR code
-  const downloadQRCode = (qrCodeData, userName) => {
-    if (!qrCodeData) return;
-
-    // Create a filename with the user's name
-    const fileName = `${userName || "user"}-safetap-qr.png`;
-
-    // Create a link element and trigger download
-    const link = document.createElement("a");
-    link.href = `data:image/png;base64,${qrCodeData}`;
-    link.download = fileName;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
   };
 
   // Get password strength color and text
@@ -1075,11 +1224,29 @@ const RegisterPage = () => {
               {/* Development Mode Alert */}
               {devMode && (
                 <div className="mb-4 p-3 bg-green-100 border border-green-400 text-green-700 rounded-lg">
-                  <div className="flex items-center">
-                    <FaExclamation className="mr-2" />
-                    <span className="text-sm font-medium">
-                      Development Mode is ON - Phone verification is bypassed
-                    </span>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center">
+                      <FaExclamation className="mr-2" />
+                      <span className="text-sm font-medium">
+                        Development Mode is ON - Phone verification is bypassed
+                      </span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setPhoneVerified(true);
+                        Swal.fire({
+                          title: "Phone Verified!",
+                          text: "Phone manually verified in development mode.",
+                          icon: "success",
+                          confirmButtonColor: "#0891b2",
+                          timer: 1500,
+                        });
+                      }}
+                      className="px-3 py-1 bg-green-600 text-white text-xs rounded"
+                    >
+                      Verify Phone
+                    </button>
                   </div>
                 </div>
               )}
@@ -1908,7 +2075,7 @@ const RegisterPage = () => {
               >
                 Already have an account?{" "}
                 <Link
-                  href="/firebase-login"
+                  href="/login"
                   className="text-cyan-600 hover:underline font-medium"
                 >
                   Sign In

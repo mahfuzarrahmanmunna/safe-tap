@@ -4,170 +4,48 @@ import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
-  Home,
-  Users,
-  Settings,
-  FileText,
-  BarChart3,
-  Package,
-  Mail,
-  Calendar,
-  Bell,
-  Search,
-  Menu,
-  X,
-  ChevronDown,
+  // ... (keep all your existing imports)
   LogOut,
   User,
   HelpCircle,
   Shield,
   CreditCard,
-  Globe,
-  Zap,
-  Layers,
-  Database,
-  Cloud,
-  Smartphone,
-  Monitor,
-  Moon,
-  Sun,
-  TrendingUp,
-  Activity,
+  LayoutDashboard,
+  UserCheck,
+  Users,
+  Briefcase,
   DollarSign,
+  FileText,
+  BarChart3,
   ShoppingCart,
   MessageSquare,
-  Archive,
-  LayoutDashboard,
-  PieChart,
-  Target,
-  Briefcase,
-  Star,
   CheckSquare,
   AlertCircle,
   Info,
-  ArrowUp,
-  ArrowDown,
-  MoreHorizontal,
-  Grid3x3,
-  Sparkles,
-  Gem,
-  Award,
-  Bookmark,
-  ChevronLeft,
-  ChevronRight,
-  ArrowLeft,
-  ArrowRight,
-  PanelLeftClose,
   PanelLeftOpen,
-  ChevronRight as ChevronRightIcon,
-  UserCheck,
-  UserClock,
-  UserPlus,
-  UserX,
-  UserCog,
-  Crown,
-  ClipboardList,
-  FileCheck,
-  Clock,
-  Timer,
-  Award as AwardIcon,
-  Target as TargetIcon,
-  TrendingUp as TrendingUpIcon,
-  FileText as FileTextIcon,
-  MessageSquare as MessageSquareIcon,
-  Calendar as CalendarIcon,
-  User as UserIcon,
-  Settings as SettingsIcon,
-  LogOut as LogOutIcon,
-  HelpCircle as HelpCircleIcon,
-  Bell as BellIcon,
-  Home as HomeIcon,
-  Building,
-  UserPlus as UserPlusIcon,
-  FileText as DocumentIcon,
-  BarChart as BarChartIcon,
-  Mail as MailIcon,
-  Star as StarIcon,
-  Key,
-  Eye,
-  EyeOff,
-  Copy,
-  Check,
-  Command,
-  ArrowRight as ArrowRightIcon,
-  ExternalLink,
-  Clock as ClockIcon,
-  TrendingUp as TrendingUpIcon2,
-  FileText as FileTextIcon2,
-  User as UserIcon2,
-  Settings as SettingsIcon2,
-  BarChart3 as BarChart3Icon,
-  MessageSquare as MessageSquareIcon2,
-  ShoppingCart as ShoppingCartIcon,
-  Calendar as CalendarIcon2,
-  Shield as ShieldIcon,
-  CreditCard as CreditCardIcon,
-  Zap as ZapIcon,
-  Globe as GlobeIcon,
-  Layers as LayersIcon,
-  Database as DatabaseIcon,
-  Cloud as CloudIcon,
-  Smartphone as SmartphoneIcon,
-  Monitor as MonitorIcon,
-  // Project management icons
-  FolderOpen,
-  Folder,
-  Projector,
-  UserShield,
-  ShieldCheck,
+  PanelLeftClose,
+  Sparkles,
   Lock,
-  Unlock,
-  KeyRound,
-  BadgeCheck,
-  FolderKanban,
-  GanttChart,
-  Kanban,
-  SquareStack,
-  FolderTree,
-  GitBranch,
-  FolderPlus,
-  FolderLock,
-  FolderOpenDot,
-  FileQuestion,
-  FolderInput,
-  FolderOutput,
-  FolderSync,
-  FolderCog,
-  FolderX,
-  FolderPlus as FolderPlusIcon,
-  FolderLock as FolderLockIcon,
-  FolderOpen as FolderOpenIcon,
-  FolderCog as FolderCogIcon,
-  FolderX as FolderXIcon,
-  FolderSync as FolderSyncIcon,
-  FolderInput as FolderInputIcon,
-  FolderOutput as FolderOutputIcon,
-  FolderTree as FolderTreeIcon,
-  FolderQuestion as FolderQuestionIcon,
-  FolderKanban as FolderKanbanIcon,
-  FolderDot as FolderDotIcon,
-  FolderOpenDot as FolderOpenDotIcon,
-  FolderLockDot as FolderLockDotIcon,
-  FolderCogDot as FolderCogDotIcon,
-  FolderXDot as FolderXDotIcon,
-  FolderSyncDot as FolderSyncDotIcon,
-  FolderInputDot as FolderInputDotIcon,
-  FolderOutputDot as FolderOutputDotIcon,
-  FolderTreeDot as FolderTreeDotIcon,
-  FolderQuestionDot as FolderQuestionDotIcon,
-  FolderKanbanDot as FolderKanbanDotIcon,
+  ChevronDown,
+  ChevronRightIcon,
+  Sun,
+  Moon,
+  Menu,
+  Search,
+  Command,
+  ClockIcon,
+  ExternalLink,
+  Bell,
+  Crown,
+  Settings,
+  // ... (rest of your imports)
 } from "lucide-react";
-// import { useSession, signOut } from "next-auth/react";
+import { useFirebaseAuth } from "@/app/contexts/FirebaseAuthContext";
 import { toast } from "react-hot-toast";
-import { UserPenIcon } from "lucide-react";
-import { UserPlus2Icon } from "lucide-react";
 
 export default function AdminLayout({ children }) {
+  const { user, signOut } = useFirebaseAuth(); // Use Firebase auth context
+  const router = useRouter();
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [darkMode, setDarkMode] = useState(true);
@@ -183,6 +61,8 @@ export default function AdminLayout({ children }) {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const [Loading, setLoading] = useState(true);
+  const [userRole, setUserRole] = useState(null); // Add state for user role
+  const [checkingRole, setCheckingRole] = useState(true); // Add state for role checking
 
   // New states for client account management
   const [showClientAccountModal, setShowClientAccountModal] = useState(false);
@@ -192,7 +72,7 @@ export default function AdminLayout({ children }) {
   const [generatedPassword, setGeneratedPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [passwordCopied, setPasswordCopied] = useState(false);
-  const [user, setUser] = useState(null);
+
   // State for user permissions
   const [userPermissions, setUserPermissions] = useState({
     project: {
@@ -228,7 +108,6 @@ export default function AdminLayout({ children }) {
   });
 
   const pathname = usePathname();
-  const router = useRouter();
 
   // Refs for dropdowns to handle clicks outside
   const notificationsRef = useRef(null);
@@ -236,417 +115,63 @@ export default function AdminLayout({ children }) {
   const clientModalRef = useRef(null);
   const searchRef = useRef(null);
 
-  // Sample notifications data
-  const notifications = [
-    {
-      id: 1,
-      title: "New user registered",
-      time: "5 min ago",
-      read: false,
-      type: "success",
-      description: "A new user has joined your platform",
-    },
-    {
-      id: 2,
-      title: "System update available",
-      time: "1 hour ago",
-      read: false,
-      type: "info",
-      description: "Version 2.0.1 is now available",
-    },
-    {
-      id: 3,
-      title: "Payment received",
-      time: "3 hours ago",
-      read: true,
-      type: "success",
-      description: "Payment of $1,250 received",
-    },
-    {
-      id: 4,
-      title: "Server maintenance scheduled",
-      time: "1 day ago",
-      read: true,
-      type: "warning",
-      description: "Scheduled for tomorrow at 2 AM",
-    },
-  ];
-
-  // Detect screen size
+  // Check user role and redirect if not admin
   useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth < 640) {
-        setScreenSize("sm");
-        setSidebarOpen(false);
-      } else if (window.innerWidth < 1024) {
-        setScreenSize("md");
-        setSidebarOpen(false);
-      } else if (window.innerWidth < 1280) {
-        setScreenSize("lg");
-        setSidebarOpen(true);
-      } else {
-        setScreenSize("xl");
-        setSidebarOpen(true);
+    const checkUserRole = async () => {
+      if (!user) {
+        setCheckingRole(false);
+        return;
       }
-    };
 
-    handleResize();
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
-  // Load search history from localStorage
-  useEffect(() => {
-    const savedHistory = localStorage.getItem("searchHistory");
-    if (savedHistory) {
       try {
-        setSearchHistory(JSON.parse(savedHistory));
-      } catch (error) {
-        console.error("Error parsing search history:", error);
-      }
-    }
-  }, []);
+        // Get the user's Firebase ID token
+        const token = await user.getIdToken();
 
-  // Load user permissions from localStorage or API
-  useEffect(() => {
-    const loadUserPermissions = async () => {
-      try {
-        // Try to get permissions from localStorage first
-        const savedPermissions = localStorage.getItem("userPermissions");
-        if (savedPermissions) {
-          setUserPermissions(JSON.parse(savedPermissions));
-          return;
-        }
-
-        // If not in localStorage, fetch from API
-        const response = await fetch("/api/users/permissions");
-        if (response.ok) {
-          const permissions = await response.json();
-          setUserPermissions(permissions);
-          localStorage.setItem("userPermissions", JSON.stringify(permissions));
-        }
-      } catch (error) {
-        console.error("Error loading user permissions:", error);
-      }
-    };
-
-    loadUserPermissions();
-  }, []);
-
-  // Close dropdowns when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (
-        notificationsRef.current &&
-        !notificationsRef.current.contains(event.target)
-      ) {
-        setNotificationsOpen(false);
-      }
-      if (profileRef.current && !profileRef.current.contains(event.target)) {
-        setProfileOpen(false);
-      }
-      if (
-        clientModalRef.current &&
-        !clientModalRef.current.contains(event.target) &&
-        showClientAccountModal
-      ) {
-        setShowClientAccountModal(false);
-      }
-      if (searchRef.current && !searchRef.current.contains(event.target)) {
-        setSearchFocused(false);
-      }
-      if (
-        showLogoutConfirm &&
-        !event.target.closest(".logout-confirm-dialog")
-      ) {
-        setShowLogoutConfirm(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [showLogoutConfirm, showClientAccountModal]);
-
-  // Keyboard shortcut for search (Ctrl/Cmd + K)
-  useEffect(() => {
-    const handleKeyDown = (event) => {
-      if ((event.ctrlKey || event.metaKey) && event.key === "k") {
-        event.preventDefault();
-        document.getElementById("global-search")?.focus();
-      }
-    };
-
-    document.addEventListener("keydown", handleKeyDown);
-    return () => document.removeEventListener("keydown", handleKeyDown);
-  }, []);
-
-  // Check if user has permission to access current route
-  const hasPermission = (permission) => {
-    // Check specific permission
-    if (
-      permission.startsWith("project.") &&
-      userPermissions.project[permission.split(".")[1]]
-    ) {
-      return true;
-    }
-
-    if (
-      permission.startsWith("task.") &&
-      userPermissions.task[permission.split(".")[1]]
-    ) {
-      return true;
-    }
-
-    if (
-      permission.startsWith("team.") &&
-      userPermissions.team[permission.split(".")[1]]
-    ) {
-      return true;
-    }
-
-    if (
-      permission.startsWith("system.") &&
-      userPermissions.system[permission.split(".")[1]]
-    ) {
-      return true;
-    }
-
-    return false;
-  };
-
-  // Handle logout with confirmation
-  const handleLogout = async () => {
-    setIsLoggingOut(true);
-    try {
-      // Sign out from NextAuth
-      await signOut({ redirect: false });
-
-      // Clear all localStorage items
-      localStorage.removeItem("userRole");
-      localStorage.removeItem("userName");
-      localStorage.removeItem("userEmail");
-      localStorage.removeItem("userPermissions");
-
-      // Clear any session storage items
-      sessionStorage.clear();
-
-      // Reset all state
-      setSidebarOpen(true);
-      setSidebarCollapsed(false);
-      setActiveSubmenu("");
-      setSearchQuery("");
-      setNotificationsOpen(false);
-      setProfileOpen(false);
-
-      // Close logout confirmation dialog
-      setShowLogoutConfirm(false);
-
-      // Redirect to login page
-      router.push("/login");
-    } catch (error) {
-      console.error("Logout error:", error);
-      // Even if there's an error, try to redirect to login
-      router.push("/login");
-    } finally {
-      setIsLoggingOut(false);
-    }
-  };
-
-  // Show logout confirmation dialog
-  const showLogoutConfirmation = () => {
-    setShowLogoutConfirm(true);
-    setProfileOpen(false);
-  };
-
-  // Generate a random password
-  const generateRandomPassword = () => {
-    const chars =
-      "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*";
-    let password = "";
-    for (let i = 0; i < 12; i++) {
-      password += chars.charAt(Math.floor(Math.random() * chars.length));
-    }
-    return password;
-  };
-
-  // Create client account
-  const handleCreateClientAccount = async () => {
-    if (!clientEmail || !clientName) {
-      toast.error("Please provide both client name and email");
-      return;
-    }
-
-    setIsCreatingClient(true);
-    try {
-      const tempPassword = generateRandomPassword();
-      setGeneratedPassword(tempPassword);
-
-      // Create client account in your database
-      const response = await fetch("/api/admin/create-client", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name: clientName,
-          email: clientEmail,
-          password: tempPassword,
-          role: "client",
-          // Send password reset email
-          sendResetEmail: true,
-        }),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        toast.success(
-          "Client account created successfully! Password reset email sent.",
-        );
-        // Reset form
-        setClientEmail("");
-        setClientName("");
-        setShowClientAccountModal(false);
-      } else {
-        toast.error(data.message || "Failed to create client account");
-      }
-    } catch (error) {
-      console.error("Error creating client account:", error);
-      toast.error("An error occurred while creating client account");
-    } finally {
-      setIsCreatingClient(false);
-    }
-  };
-
-  // Copy password to clipboard
-  const copyPasswordToClipboard = () => {
-    navigator.clipboard.writeText(generatedPassword);
-    setPasswordCopied(true);
-    toast.success("Password copied to clipboard");
-    setTimeout(() => setPasswordCopied(false), 2000);
-  };
-
-  // Enhanced search functionality
-  const handleSearch = (query) => {
-    setSearchQuery(query);
-
-    if (!query.trim()) {
-      setSearchResults([]);
-      return;
-    }
-
-    // Check if query is a URL
-    const urlRegex =
-      /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/;
-    if (urlRegex.test(query.trim())) {
-      // Add protocol if missing
-      let url = query.trim();
-      if (!url.startsWith("http://") && !url.startsWith("https://")) {
-        url = "https://" + url;
-      }
-
-      setSearchResults([
-        {
-          type: "url",
-          title: `Navigate to: ${url}`,
-          description: "Open this URL in a new tab",
-          icon: <ExternalLink className="w-4 h-4" />,
-          action: () => {
-            window.open(url, "_blank");
-            addToSearchHistory(query);
-            setSearchQuery("");
-            setSearchResults([]);
-            setSearchFocused(false);
+        // Check the user's role from your backend
+        const response = await fetch("http://127.0.0.1:8000/api/auth/me/", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
           },
-        },
-      ]);
-      return;
-    }
-
-    // Filter menu items based on query
-    const filteredItems = adminMenuItems.filter(
-      (item) =>
-        item.title.toLowerCase().includes(query.toLowerCase()) ||
-        (item.href && item.href.toLowerCase().includes(query.toLowerCase())),
-    );
-
-    // Flatten submenu items
-    const submenuItems = [];
-    adminMenuItems.forEach((item) => {
-      if (item.submenu) {
-        item.submenu.forEach((subitem) => {
-          if (
-            subitem.title.toLowerCase().includes(query.toLowerCase()) ||
-            subitem.href.toLowerCase().includes(query.toLowerCase())
-          ) {
-            submenuItems.push({
-              ...subitem,
-              parentTitle: item.title,
-              parentIcon: item.icon,
-            });
-          }
         });
+
+        if (response.ok) {
+          const userData = await response.json();
+          const role = userData.profile?.role || "customer";
+          setUserRole(role);
+
+          // If user is not admin, logout and redirect
+          if (role !== "admin" && !userData.is_staff) {
+            console.log("User is not admin, logging out...");
+            await signOut();
+            toast.error(
+              "You don't have admin privileges. You have been logged out.",
+            );
+            router.push("/login");
+          }
+        } else {
+          // If we can't verify the role, assume no admin access
+          console.log("Could not verify user role, logging out...");
+          await signOut();
+          toast.error("Authentication failed. You have been logged out.");
+          router.push("/login");
+        }
+      } catch (error) {
+        console.error("Error checking user role:", error);
+        // If there's an error, logout and redirect
+        await signOut();
+        toast.error("Authentication error. You have been logged out.");
+        router.push("/login");
+      } finally {
+        setCheckingRole(false);
       }
-    });
+    };
 
-    // Combine results
-    const results = [
-      ...filteredItems.map((item) => ({
-        type: "menu",
-        title: item.title,
-        description: `Navigate to ${item.title}`,
-        icon: item.icon,
-        href: item.href,
-        action: () => {
-          if (item.href) {
-            router.push(item.href);
-            addToSearchHistory(query);
-            setSearchQuery("");
-            setSearchResults([]);
-            setSearchFocused(false);
-          }
-        },
-      })),
-      ...submenuItems.map((item) => ({
-        type: "submenu",
-        title: item.title,
-        description: `${item.parentTitle} > ${item.title}`,
-        icon: item.parentIcon,
-        href: item.href,
-        action: () => {
-          if (item.href) {
-            router.push(item.href);
-            addToSearchHistory(query);
-            setSearchQuery("");
-            setSearchResults([]);
-            setSearchFocused(false);
-          }
-        },
-      })),
-    ];
+    checkUserRole();
+  }, [user, router, signOut]);
 
-    setSearchResults(results);
-  };
-
-  // Add query to search history
-  const addToSearchHistory = (query) => {
-    const newHistory = [
-      query,
-      ...searchHistory.filter((item) => item !== query),
-    ].slice(0, 5);
-    setSearchHistory(newHistory);
-    localStorage.setItem("searchHistory", JSON.stringify(newHistory));
-  };
-
-  // Clear search history
-  const clearSearchHistory = () => {
-    setSearchHistory([]);
-    localStorage.removeItem("searchHistory");
-  };
-
-  // Admin menu items
+  // Admin menu items - MOVED HERE BEFORE USAGE
   const adminMenuItems = [
     {
       title: "Dashboard",
@@ -699,7 +224,7 @@ export default function AdminLayout({ children }) {
     {
       title: "Analytics",
       icon: <BarChart3 className="w-5 h-5" />,
-      href: "dashboard/manage-analytics",
+      href: "/admin-dashboard/manage-analytics",
       badge: null,
       color: "orange",
       gradient: "from-orange-500 to-orange-600",
@@ -707,7 +232,7 @@ export default function AdminLayout({ children }) {
     {
       title: "Orders",
       icon: <ShoppingCart className="w-5 h-5" />,
-      href: "manage-orders",
+      href: "/admin-dashboard/manage-orders",
       badge: "5",
       color: "cyan",
       gradient: "from-cyan-500 to-cyan-600",
@@ -715,24 +240,15 @@ export default function AdminLayout({ children }) {
     {
       title: "Messages",
       icon: <MessageSquare className="w-5 h-5" />,
-      href: "/dashboard/free-chat-support",
+      href: "/admin-dashboard/free-chat-support",
       badge: "3",
       color: "indigo",
       gradient: "from-indigo-500 to-indigo-600",
     },
     {
-      title: "Client Accounts",
-      icon: <UserPlus className="w-5 h-5" />,
-      href: "/dashboard/create-client-account",
-      badge: null,
-      color: "amber",
-      gradient: "from-amber-500 to-amber-600",
-      // onClick: () => setShowClientAccountModal(true)
-    },
-    {
       title: "Settings",
       icon: <Settings className="w-5 h-5" />,
-      href: "manage-settings",
+      href: "/admin-dashboard/manage-settings",
       badge: null,
       color: "gray",
       gradient: "from-gray-500 to-gray-600",
@@ -745,6 +261,120 @@ export default function AdminLayout({ children }) {
     },
   ];
 
+  // Sample notifications data
+  const notifications = [
+    {
+      id: 1,
+      title: "New user registered",
+      time: "5 min ago",
+      read: false,
+      type: "success",
+      description: "A new user has joined your platform",
+    },
+    {
+      id: 2,
+      title: "System update available",
+      time: "1 hour ago",
+      read: false,
+      type: "info",
+      description: "Version 2.0.1 is now available",
+    },
+    {
+      id: 3,
+      title: "Payment received",
+      time: "3 hours ago",
+      read: true,
+      type: "success",
+      description: "Payment of $1,250 received",
+    },
+    {
+      id: 4,
+      title: "Server maintenance scheduled",
+      time: "1 day ago",
+      read: true,
+      type: "warning",
+      description: "Scheduled for tomorrow at 2 AM",
+    },
+  ];
+
+  // Handle logout with confirmation
+  const handleLogout = async () => {
+    setIsLoggingOut(true);
+    try {
+      await signOut();
+      toast.success("Logged out successfully");
+      router.push("/login");
+    } catch (error) {
+      console.error("Logout error:", error);
+      toast.error("Failed to log out. Please try again.");
+      // Even if there's an error, redirect to login
+      router.push("/login");
+    } finally {
+      setIsLoggingOut(false);
+      setShowLogoutConfirm(false);
+    }
+  };
+
+  // Show logout confirmation dialog
+  const showLogoutConfirmation = () => {
+    setShowLogoutConfirm(true);
+    setProfileOpen(false);
+  };
+
+  // Get user initials for avatar
+  const getUserInitials = () => {
+    if (!user) return "U";
+
+    if (user.displayName) {
+      return user.displayName
+        .split(" ")
+        .map((n) => n[0])
+        .join("")
+        .toUpperCase()
+        .slice(0, 2);
+    }
+
+    if (user.email) {
+      return user.email.substring(0, 2).toUpperCase();
+    }
+
+    return "U";
+  };
+
+  // Check if user has permission to access current route
+  const hasPermission = (permission) => {
+    // Check specific permission
+    if (
+      permission.startsWith("project.") &&
+      userPermissions.project[permission.split(".")[1]]
+    ) {
+      return true;
+    }
+
+    if (
+      permission.startsWith("task.") &&
+      userPermissions.task[permission.split(".")[1]]
+    ) {
+      return true;
+    }
+
+    if (
+      permission.startsWith("team.") &&
+      userPermissions.team[permission.split(".")[1]]
+    ) {
+      return true;
+    }
+
+    if (
+      permission.startsWith("system.") &&
+      userPermissions.system[permission.split(".")[1]]
+    ) {
+      return true;
+    }
+
+    return false;
+  };
+
   const toggleSubmenu = (title) => {
     if (activeSubmenu === title) {
       setActiveSubmenu("");
@@ -754,7 +384,7 @@ export default function AdminLayout({ children }) {
   };
 
   const isActive = (href) => {
-    if (href === "/dashboard") {
+    if (href === "/admin-dashboard") {
       return pathname === href;
     }
     return pathname.startsWith(href);
@@ -788,8 +418,6 @@ export default function AdminLayout({ children }) {
           return "text-teal-600 dark:text-teal-400 bg-gradient-to-r from-teal-50 to-teal-100/50 dark:from-teal-900/30 dark:to-teal-800/20 border-teal-200 dark:border-teal-700 shadow-lg shadow-teal-500/10";
         case "orange":
           return "text-orange-600 dark:text-orange-400 bg-gradient-to-r from-orange-50 to-orange-100/50 dark:from-orange-900/30 dark:to-orange-800/20 border-orange-200 dark:border-orange-700 shadow-lg shadow-orange-500/10";
-        case "cyan":
-          return "text-cyan-600 dark:text-cyan-400 bg-gradient-to-r from-cyan-50 to-cyan-100/50 dark:from-cyan-900/30 dark:to-cyan-800/20 border-cyan-200 dark:border-cyan-700 shadow-lg shadow-cyan-500/10";
         case "indigo":
           return "text-indigo-600 dark:text-indigo-400 bg-gradient-to-r from-indigo-50 to-indigo-100/50 dark:from-indigo-900/30 dark:to-indigo-800/20 border-indigo-200 dark:border-indigo-700 shadow-lg shadow-indigo-500/10";
         case "emerald":
@@ -811,8 +439,6 @@ export default function AdminLayout({ children }) {
           return "text-slate-300 dark:text-slate-400 hover:text-teal-400 hover:bg-teal-500/10 dark:hover:bg-teal-900/20 hover:border-teal-500/30 dark:hover:border-teal-700";
         case "orange":
           return "text-slate-300 dark:text-slate-400 hover:text-orange-400 hover:bg-orange-500/10 dark:hover:bg-orange-900/20 hover:border-orange-500/30 dark:hover:border-orange-700";
-        case "cyan":
-          return "text-slate-300 dark:text-slate-400 hover:text-cyan-400 hover:bg-cyan-500/10 dark:hover:bg-cyan-900/20 hover:border-cyan-500/30 dark:hover:border-cyan-700";
         case "indigo":
           return "text-slate-300 dark:text-slate-400 hover:text-indigo-400 hover:bg-indigo-500/10 dark:hover:bg-indigo-900/20 hover:border-indigo-500/30 dark:hover:border-indigo-700";
         case "emerald":
@@ -862,6 +488,59 @@ export default function AdminLayout({ children }) {
 
     return breadcrumbs;
   };
+
+  // Show loading spinner while checking user role
+  if (checkingRole) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-cyan-500 mx-auto"></div>
+          <p className="mt-4 text-gray-600 dark:text-gray-400">
+            Verifying access...
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (userRole && userRole !== "admin") {
+    return (
+      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+        <div className="bg-white p-8 rounded-lg shadow-md max-w-md w-full">
+          <div className="text-center">
+            <svg
+              className="mx-auto h-12 w-12 text-red-500"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 15.5c-.77.833.192 2.5 1.732 2.5z"
+              />
+            </svg>
+            <h3 className="mt-4 text-lg font-medium text-gray-900">
+              Access Denied
+            </h3>
+            <p className="mt-2 text-sm text-gray-500">
+              You do not have permission to access this page. Admin access
+              required.
+            </p>
+            <div className="mt-6">
+              <button
+                onClick={() => router.push("/dashboard")}
+                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              >
+                Go to Dashboard
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   // Special handling for chat support page - render without dashboard layout
   if (pathname === "/dashboard/free-chat-support") {
@@ -1345,7 +1024,7 @@ export default function AdminLayout({ children }) {
                         ))}
                       </div>
                       <div className="p-3 border-t border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/50">
-                        <button className=" cursor-pointerw-full text-center text-sm font-semibold text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors">
+                        <button className="w-full text-center text-sm font-semibold text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors">
                           View all notifications
                         </button>
                       </div>
@@ -1353,21 +1032,21 @@ export default function AdminLayout({ children }) {
                   )}
                 </div>
 
-                {/* Enhanced Profile */}
+                {/* Enhanced Profile with Working Logout */}
                 <div className="relative" ref={profileRef}>
                   <button
                     onClick={() => setProfileOpen(!profileOpen)}
                     className="flex items-center space-x-2 p-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-all duration-200 border border-transparent hover:border-slate-200 dark:hover:border-slate-700 group"
                   >
                     <div className="w-9 h-9 rounded-xl flex items-center justify-center text-white font-bold text-sm shadow-lg group-hover:shadow-xl group-hover:shadow-opacity-50 transition-all duration-300 bg-gradient-to-br from-blue-500 via-cyan-500 to-cyan-500 shadow-cyan-500/30 group-hover:shadow-cyan-500/50">
-                      {/* {getUserInitials()} */}
+                      {getUserInitials()}
                     </div>
                     <ChevronDown
                       className={`w-4 h-4 text-slate-600 dark:text-slate-300 hidden sm:block transition-transform duration-200 ${profileOpen ? "rotate-180" : ""}`}
                     />
                   </button>
 
-                  {/* Enhanced Profile Dropdown */}
+                  {/* Enhanced Profile Dropdown with Working Logout */}
                   {profileOpen && (
                     <div className="absolute right-0 mt-2 w-64 bg-white dark:bg-slate-800 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 z-50 overflow-hidden backdrop-blur-xl">
                       <div className="p-5 border-b border-slate-200 dark:border-slate-700 bg-gradient-to-r from-blue-50 to-cyan-50 dark:from-slate-800 dark:to-slate-900">
@@ -1377,15 +1056,15 @@ export default function AdminLayout({ children }) {
                           </div>
                           <div>
                             <p className="font-bold text-slate-900 dark:text-white">
-                              {session?.user?.name || "User"}
+                              {user?.displayName || "Admin User"}
                             </p>
                             <p className="text-xs text-slate-500 dark:text-slate-400">
-                              {session?.user?.email || "user@example.com"}
+                              {user?.email || "admin@example.com"}
                             </p>
                             <div className="flex items-center mt-1">
                               <Crown className="w-3 h-3 text-amber-500 mr-1" />
                               <span className="text-xs font-medium text-cyan-600 dark:text-cyan-400 capitalize">
-                                Admin
+                                {userRole || "Admin"}
                               </span>
                             </div>
                           </div>
@@ -1454,151 +1133,12 @@ export default function AdminLayout({ children }) {
         </main>
       </div>
 
-      {/* Client Account Creation Modal */}
-      {showClientAccountModal && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center">
-          <div
-            className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 p-6 max-w-md w-full mx-4 client-account-modal"
-            ref={clientModalRef}
-          >
-            <div className="flex items-center justify-center w-12 h-12 bg-blue-100 dark:bg-blue-900/20 rounded-full mx-auto mb-4">
-              <UserPlus className="w-6 h-6 text-blue-600 dark:text-blue-400" />
-            </div>
-            <h3 className="text-xl font-bold text-center text-slate-900 dark:text-white mb-2">
-              Create Client Account
-            </h3>
-            <p className="text-slate-600 dark:text-slate-400 text-center mb-6">
-              Create a new account for your client. They will receive an email
-              with instructions to set their password.
-            </p>
-
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
-                  Client Name
-                </label>
-                <input
-                  type="text"
-                  value={clientName}
-                  onChange={(e) => setClientName(e.target.value)}
-                  className="w-full px-4 py-2 border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all duration-200"
-                  placeholder="Enter client name"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
-                  Client Email
-                </label>
-                <input
-                  type="email"
-                  value={clientEmail}
-                  onChange={(e) => setClientEmail(e.target.value)}
-                  className="w-full px-4 py-2 border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all duration-200"
-                  placeholder="Enter client email"
-                />
-              </div>
-
-              {generatedPassword && (
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
-                    Temporary Password
-                  </label>
-                  <div className="flex">
-                    <input
-                      type={showPassword ? "text" : "password"}
-                      value={generatedPassword}
-                      readOnly
-                      className="flex-1 px-4 py-2 border border-slate-200 dark:border-slate-700 rounded-l-xl bg-slate-50 dark:bg-slate-700 text-slate-900 dark:text-white"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="px-3 py-2 bg-slate-100 dark:bg-slate-700 border border-l-0 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300"
-                    >
-                      {showPassword ? (
-                        <EyeOff className="w-5 h-5" />
-                      ) : (
-                        <Eye className="w-5 h-5" />
-                      )}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={copyPasswordToClipboard}
-                      className="px-3 py-2 bg-slate-100 dark:bg-slate-700 border border-l-0 border-slate-200 dark:border-slate-700 rounded-r-xl text-slate-600 dark:text-slate-300"
-                    >
-                      {passwordCopied ? (
-                        <Check className="w-5 h-5 text-green-500" />
-                      ) : (
-                        <Copy className="w-5 h-5" />
-                      )}
-                    </button>
-                  </div>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                    This password will be sent to client&apos;s email. They can
-                    change it after logging in.
-                  </p>
-                </div>
-              )}
-            </div>
-
-            <div className="flex space-x-3 mt-6">
-              <button
-                onClick={() => {
-                  setShowClientAccountModal(false);
-                  setClientEmail("");
-                  setClientName("");
-                  setGeneratedPassword("");
-                }}
-                className="flex-1 px-4 py-2 bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200 rounded-xl hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors font-medium"
-                disabled={isCreatingClient}
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleCreateClientAccount}
-                className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors font-medium flex items-center justify-center"
-                disabled={isCreatingClient}
-              >
-                {isCreatingClient ? (
-                  <>
-                    <svg
-                      className="animate-spin -ml-1 mr-3 h-4 w-4 text-white"
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                    >
-                      <circle
-                        className="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        strokeWidth="4"
-                      ></circle>
-                      <path
-                        className="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                      ></path>
-                    </svg>
-                    Creating...
-                  </>
-                ) : (
-                  "Create Account"
-                )}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Logout Confirmation Dialog */}
+      {/* Logout Confirmation Dialog with Enhanced Design */}
       {showLogoutConfirm && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center">
-          <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 p-6 max-w-sm w-full mx-4 logout-confirm-dialog">
-            <div className="flex items-center justify-center w-12 h-12 bg-red-100 dark:bg-red-900/20 rounded-full mx-auto mb-4">
-              <LogOut className="w-6 h-6 text-red-600 dark:text-red-400" />
+          <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 p-6 max-w-sm w-full mx-4 logout-confirm-dialog transform transition-all">
+            <div className="flex items-center justify-center w-16 h-16 bg-red-100 dark:bg-red-900/20 rounded-full mx-auto mb-4">
+              <LogOut className="w-8 h-8 text-red-600 dark:text-red-400" />
             </div>
             <h3 className="text-xl font-bold text-center text-slate-900 dark:text-white mb-2">
               Confirm Logout
@@ -1609,14 +1149,14 @@ export default function AdminLayout({ children }) {
             <div className="flex space-x-3">
               <button
                 onClick={() => setShowLogoutConfirm(false)}
-                className="flex-1 px-4 py-2 bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200 rounded-xl hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors font-medium"
+                className="flex-1 px-4 py-3 bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200 rounded-xl hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors font-medium"
                 disabled={isLoggingOut}
               >
                 Cancel
               </button>
               <button
                 onClick={handleLogout}
-                className="flex-1 px-4 py-2 bg-red-600 text-white rounded-xl hover:bg-red-700 transition-colors font-medium flex items-center justify-center"
+                className="flex-1 px-4 py-3 bg-red-600 text-white rounded-xl hover:bg-red-700 transition-colors font-medium flex items-center justify-center"
                 disabled={isLoggingOut}
               >
                 {isLoggingOut ? (

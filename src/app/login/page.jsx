@@ -1,4 +1,3 @@
-// pages/firebase-login.js
 "use client";
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
@@ -25,24 +24,25 @@ import loginAnimation from "../public/animations/login-animation.json";
 const FirebaseLoginPage = () => {
   const router = useRouter();
   const { theme } = useTheme();
-  const { 
-    user, 
-    loading, 
-    error, 
-    signInWithGoogle, 
-    signInWithFacebook, 
-    signOut 
+  const {
+    user,
+    loading,
+    error,
+    signInWithGoogle,
+    signInWithFacebook,
+    signInWithEmailAndPassword,
+    signOut,
   } = useFirebaseAuth();
   const isDark = theme === "dark";
 
   // Form states for traditional login
   const [formData, setFormData] = useState({
     email: "",
-    pin: "",
+    password: "",
     rememberMe: false,
   });
-  
-  const [showPin, setShowPin] = useState(false);
+
+  const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState({});
   const [loginLoading, setLoginLoading] = useState(false);
   const [useTraditionalLogin, setUseTraditionalLogin] = useState(false);
@@ -50,7 +50,7 @@ const FirebaseLoginPage = () => {
   // Redirect if already authenticated
   useEffect(() => {
     if (user) {
-      router.push("/dashboard");
+      router.push("/admin-dashboard");
     }
   }, [user, router]);
 
@@ -82,15 +82,17 @@ const FirebaseLoginPage = () => {
       newErrors.email = "Please enter a valid email";
     }
 
-    if (!formData.pin) {
-      newErrors.pin = "PIN is required";
+    if (!formData.password) {
+      newErrors.password = "Password is required";
+    } else if (formData.password.length < 6) {
+      newErrors.password = "Password must be at least 6 characters";
     }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  // Handle traditional form submission
+  // Handle traditional form submission with Firebase
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -101,21 +103,17 @@ const FirebaseLoginPage = () => {
     setLoginLoading(true);
 
     try {
-      // API call for traditional login
-      const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
-      const response = await axios.post(`${API_BASE_URL}/api/auth/login/`, {
-        email: formData.email,
-        pin: formData.pin,
-      });
+      // Use Firebase authentication for email/password login
+      const result = await signInWithEmailAndPassword(
+        formData.email,
+        formData.password,
+      );
 
-      if (response.data.access && response.data.refresh) {
-        // Store tokens
-        localStorage.setItem("accessToken", response.data.access);
-        localStorage.setItem("refreshToken", response.data.refresh);
-
-        // Set default authorization header for axios
-        axios.defaults.headers.common["Authorization"] =
-          `Bearer ${response.data.access}`;
+      if (result.success) {
+        // Store user data in localStorage if needed
+        if (result.user) {
+          localStorage.setItem("userInfo", JSON.stringify(result.user));
+        }
 
         Swal.fire({
           title: "Login Successful!",
@@ -126,16 +124,34 @@ const FirebaseLoginPage = () => {
           timer: 2000,
           timerProgressBar: true,
         }).then(() => {
-          router.push("/dashboard");
+          router.push("/admin-dashboard");
         });
       } else {
-        throw new Error("Invalid response from server");
+        throw new Error(result.error || "Login failed");
       }
     } catch (error) {
       console.error("Login error:", error);
+
+      // Handle specific Firebase error codes
+      let errorMessage = "An error occurred during login.";
+      if (error.code === "auth/user-not-found") {
+        errorMessage = "No account found with this email address.";
+      } else if (error.code === "auth/wrong-password") {
+        errorMessage = "Incorrect password. Please try again.";
+      } else if (error.code === "auth/too-many-requests") {
+        errorMessage =
+          "Too many failed login attempts. Please try again later.";
+      } else if (error.code === "auth/user-disabled") {
+        errorMessage = "This account has been disabled.";
+      } else if (error.code === "auth/invalid-email") {
+        errorMessage = "The email address is not valid.";
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+
       Swal.fire({
         title: "Login Error",
-        text: error.response?.data?.error || "An error occurred during login.",
+        text: errorMessage,
         icon: "error",
         confirmButtonColor: "#0891b2",
       });
@@ -147,8 +163,13 @@ const FirebaseLoginPage = () => {
   // Handle Google sign-in
   const handleGoogleSignIn = async () => {
     const result = await signInWithGoogle();
-    
+
     if (result.success) {
+      // Store user data in localStorage if needed
+      if (result.user) {
+        localStorage.setItem("userInfo", JSON.stringify(result.user));
+      }
+
       Swal.fire({
         title: "Login Successful!",
         text: "Welcome back. Redirecting to dashboard...",
@@ -158,7 +179,7 @@ const FirebaseLoginPage = () => {
         timer: 2000,
         timerProgressBar: true,
       }).then(() => {
-        router.push("/dashboard");
+        router.push("/admin-dashboard");
       });
     } else {
       Swal.fire({
@@ -173,8 +194,13 @@ const FirebaseLoginPage = () => {
   // Handle Facebook sign-in
   const handleFacebookSignIn = async () => {
     const result = await signInWithFacebook();
-    
+
     if (result.success) {
+      // Store user data in localStorage if needed
+      if (result.user) {
+        localStorage.setItem("userInfo", JSON.stringify(result.user));
+      }
+
       Swal.fire({
         title: "Login Successful!",
         text: "Welcome back. Redirecting to dashboard...",
@@ -184,7 +210,7 @@ const FirebaseLoginPage = () => {
         timer: 2000,
         timerProgressBar: true,
       }).then(() => {
-        router.push("/dashboard");
+        router.push("/admin-dashboard");
       });
     } else {
       Swal.fire({
@@ -318,7 +344,7 @@ const FirebaseLoginPage = () => {
                         onClick={() => setUseTraditionalLogin(true)}
                         className="text-cyan-600 hover:underline font-medium flex items-center justify-center gap-1 w-full"
                       >
-                        Sign in with email and PIN
+                        Sign in with email and password
                         <FaArrowRight size={14} />
                       </button>
                     </div>
@@ -353,7 +379,7 @@ const FirebaseLoginPage = () => {
                       )}
                     </div>
 
-                    {/* PIN field */}
+                    {/* Password field */}
                     <div className="relative">
                       <FaLock
                         className={`absolute left-3 top-1/2 -translate-y-1/2 ${
@@ -361,10 +387,10 @@ const FirebaseLoginPage = () => {
                         }`}
                       />
                       <input
-                        type={showPin ? "text" : "password"}
-                        name="pin"
-                        placeholder="Enter PIN"
-                        value={formData.pin}
+                        type={showPassword ? "text" : "password"}
+                        name="password"
+                        placeholder="Enter Password"
+                        value={formData.password}
                         onChange={handleInputChange}
                         className={`w-full pl-10 pr-12 py-3 rounded-lg border ${
                           isDark
@@ -374,17 +400,21 @@ const FirebaseLoginPage = () => {
                       />
                       <button
                         type="button"
-                        onClick={() => setShowPin(!showPin)}
+                        onClick={() => setShowPassword(!showPassword)}
                         className={`absolute right-3 top-1/2 -translate-y-1/2 ${
                           isDark ? "text-gray-400" : "text-gray-500"
                         }`}
                       >
-                        {showPin ? <FaEyeSlash size={18} /> : <FaEye size={18} />}
+                        {showPassword ? (
+                          <FaEyeSlash size={18} />
+                        ) : (
+                          <FaEye size={18} />
+                        )}
                       </button>
-                      {errors.pin && (
+                      {errors.password && (
                         <p className="text-red-500 text-xs mt-1 flex items-center">
                           <FaExclamationTriangle className="mr-1" size={10} />
-                          {errors.pin}
+                          {errors.password}
                         </p>
                       )}
                     </div>
@@ -409,6 +439,14 @@ const FirebaseLoginPage = () => {
                           Remember me
                         </label>
                       </div>
+                      <Link
+                        href="/forgot-password"
+                        className={`text-sm ${
+                          isDark ? "text-cyan-400" : "text-cyan-600"
+                        } hover:underline`}
+                      >
+                        Forgot password?
+                      </Link>
                     </div>
 
                     {/* Submit button */}
@@ -473,9 +511,9 @@ const FirebaseLoginPage = () => {
                     isDark ? "text-gray-400" : "text-gray-600"
                   }`}
                 >
-                  Don't have an account?{" "}
+                  Do not have an account?{" "}
                   <Link
-                    href="/firebase-register"
+                    href="/register"
                     className="text-cyan-600 hover:underline font-medium flex items-center justify-center gap-1"
                   >
                     <FaUserPlus size={14} />
@@ -509,7 +547,8 @@ const FirebaseLoginPage = () => {
                           isDark ? "text-gray-400" : "text-gray-600"
                         }`}
                       >
-                        Your login is protected with Firebase authentication. We never store your password.
+                        Your login is protected with Firebase authentication. We
+                        never store your password.
                       </p>
                     </div>
                   </div>
