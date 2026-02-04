@@ -40,6 +40,7 @@ import {
 } from "lucide-react";
 import { useFirebaseAuth } from "@/app/contexts/FirebaseAuthContext";
 import { toast } from "react-hot-toast";
+import { FaProductHunt } from "react-icons/fa";
 
 export default function AdminLayout({ children }) {
   const { user, signOut } = useFirebaseAuth();
@@ -210,6 +211,14 @@ export default function AdminLayout({ children }) {
       badge: "4",
       color: "cyan",
       gradient: "from-cyan-600 to-cyan-700",
+    },
+    {
+      title: "Manage Product Page",
+      icon: <FaProductHunt className="w-5 h-5" />,
+      href: "/admin-dashboard/manage-product-page",
+      badge: null,
+      color: 'blue',
+      gradient: "from-blue-600 to-blue-500"
     },
     {
       title: "Pricing",

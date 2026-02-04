@@ -412,11 +412,10 @@ function BookingModal({
               </div>
               <button
                 onClick={handleCloseModal}
-                className={`p-2 rounded-full ${
-                  isDark
-                    ? "bg-slate-800 text-slate-400"
-                    : "bg-slate-100 text-slate-500"
-                }`}
+                className={`p-2 rounded-full ${isDark
+                  ? "bg-slate-800 text-slate-400"
+                  : "bg-slate-100 text-slate-500"
+                  }`}
               >
                 <FaTimes size={14} />
               </button>
@@ -442,7 +441,7 @@ function BookingModal({
                   <FaMapMarkerAlt size={10} />{" "}
                   {thanas.find((t) => t.id == formData.thana)?.name ||
                     districts.find((d) => d.id == formData.district)?.name ||
-                    divisions.find((d) => d.id == formData.division)?.name ||
+                    divisions?.find((d) => d?.id == formData?.division)?.name ||
                     "Service Area"}
                 </div>
               </div>
@@ -450,25 +449,22 @@ function BookingModal({
               {/* User Status Alert */}
               {isLoggedIn && (
                 <div
-                  className={`p-4 rounded-xl ${
-                    isDark
-                      ? "bg-cyan-900/30 border border-cyan-700/50"
-                      : "bg-cyan-50 border border-cyan-200"
-                  } flex items-start gap-3`}
+                  className={`p-4 rounded-xl ${isDark
+                    ? "bg-cyan-900/30 border border-cyan-700/50"
+                    : "bg-cyan-50 border border-cyan-200"
+                    } flex items-start gap-3`}
                 >
                   <FaCheckCircle className="text-cyan-500 mt-0.5" size={16} />
                   <div>
                     <p
-                      className={`text-sm font-medium ${
-                        isDark ? "text-cyan-100" : "text-cyan-900"
-                      }`}
+                      className={`text-sm font-medium ${isDark ? "text-cyan-100" : "text-cyan-900"
+                        }`}
                     >
                       You are logged in!
                     </p>
                     <p
-                      className={`text-xs ${
-                        isDark ? "text-cyan-200" : "text-cyan-700"
-                      } mt-1`}
+                      className={`text-xs ${isDark ? "text-cyan-200" : "text-cyan-700"
+                        } mt-1`}
                     >
                       Your account information has been pre-filled. Just
                       complete your location details to subscribe.
@@ -480,25 +476,22 @@ function BookingModal({
               {/* Location Error Alert */}
               {locationError && (
                 <div
-                  className={`p-4 rounded-xl ${
-                    isDark
-                      ? "bg-red-900/30 border border-red-700/50"
-                      : "bg-red-50 border border-red-200"
-                  } flex items-start gap-3`}
+                  className={`p-4 rounded-xl ${isDark
+                    ? "bg-red-900/30 border border-red-700/50"
+                    : "bg-red-50 border border-red-200"
+                    } flex items-start gap-3`}
                 >
                   <FaTimes className="text-red-500 mt-0.5" size={16} />
                   <div>
                     <p
-                      className={`text-sm font-medium ${
-                        isDark ? "text-red-100" : "text-red-900"
-                      }`}
+                      className={`text-sm font-medium ${isDark ? "text-red-100" : "text-red-900"
+                        }`}
                     >
                       Location Data Error
                     </p>
                     <p
-                      className={`text-xs ${
-                        isDark ? "text-red-200" : "text-red-700"
-                      } mt-1`}
+                      className={`text-xs ${isDark ? "text-red-200" : "text-red-700"
+                        } mt-1`}
                     >
                       {locationError}
                     </p>
@@ -525,13 +518,11 @@ function BookingModal({
                     type="text"
                     name="fullName"
                     placeholder="Full Name"
-                    className={`w-full pl-12 pr-4 py-4 rounded-2xl border-2 outline-none transition-all text-sm font-medium ${
-                      isDark
-                        ? "bg-slate-800/50 text-white border-transparent"
-                        : "bg-slate-50 text-slate-900 border-slate-100"
-                    } focus:border-cyan-500 ${
-                      isLoggedIn ? "opacity-60 cursor-not-allowed" : ""
-                    }`}
+                    className={`w-full pl-12 pr-4 py-4 rounded-2xl border-2 outline-none transition-all text-sm font-medium ${isDark
+                      ? "bg-slate-800/50 text-white border-transparent"
+                      : "bg-slate-50 text-slate-900 border-slate-100"
+                      } focus:border-cyan-500 ${isLoggedIn ? "opacity-60 cursor-not-allowed" : ""
+                      }`}
                     value={formData.fullName}
                     onChange={handleFormInputChange}
                     disabled={isLoggedIn}
@@ -550,13 +541,11 @@ function BookingModal({
                     type="email"
                     name="email"
                     placeholder="Email Address"
-                    className={`w-full pl-12 pr-4 py-4 rounded-2xl border-2 outline-none transition-all text-sm font-medium ${
-                      isDark
-                        ? "bg-slate-800/50 text-white border-transparent"
-                        : "bg-slate-50 text-slate-900 border-slate-100"
-                    } focus:border-cyan-500 ${
-                      isLoggedIn ? "opacity-60 cursor-not-allowed" : ""
-                    }`}
+                    className={`w-full pl-12 pr-4 py-4 rounded-2xl border-2 outline-none transition-all text-sm font-medium ${isDark
+                      ? "bg-slate-800/50 text-white border-transparent"
+                      : "bg-slate-50 text-slate-900 border-slate-100"
+                      } focus:border-cyan-500 ${isLoggedIn ? "opacity-60 cursor-not-allowed" : ""
+                      }`}
                     value={formData.email}
                     onChange={handleFormInputChange}
                     disabled={isLoggedIn}
@@ -575,13 +564,11 @@ function BookingModal({
                     type="tel"
                     name="phone"
                     placeholder="Phone Number (10-11 digits)"
-                    className={`w-full pl-12 pr-4 py-4 rounded-2xl border-2 outline-none transition-all text-sm font-medium ${
-                      isDark
-                        ? "bg-slate-800/50 text-white border-transparent"
-                        : "bg-slate-50 text-slate-900 border-slate-100"
-                    } focus:border-cyan-500 ${
-                      isLoggedIn ? "opacity-60 cursor-not-allowed" : ""
-                    }`}
+                    className={`w-full pl-12 pr-4 py-4 rounded-2xl border-2 outline-none transition-all text-sm font-medium ${isDark
+                      ? "bg-slate-800/50 text-white border-transparent"
+                      : "bg-slate-50 text-slate-900 border-slate-100"
+                      } focus:border-cyan-500 ${isLoggedIn ? "opacity-60 cursor-not-allowed" : ""
+                      }`}
                     value={formData.phone}
                     onChange={(e) => {
                       if (!isLoggedIn) {
@@ -607,11 +594,10 @@ function BookingModal({
                       type="text"
                       name="nid"
                       placeholder="NID Card Number"
-                      className={`w-full pl-12 pr-4 py-4 rounded-2xl border-2 outline-none transition-all text-sm font-medium ${
-                        isDark
-                          ? "bg-slate-800/50 text-white border-transparent"
-                          : "bg-slate-50 text-slate-900 border-slate-100"
-                      } focus:border-cyan-500`}
+                      className={`w-full pl-12 pr-4 py-4 rounded-2xl border-2 outline-none transition-all text-sm font-medium ${isDark
+                        ? "bg-slate-800/50 text-white border-transparent"
+                        : "bg-slate-50 text-slate-900 border-slate-100"
+                        } focus:border-cyan-500`}
                       value={formData.nid}
                       onChange={handleFormInputChange}
                     />
@@ -628,13 +614,11 @@ function BookingModal({
                   <FaMapMarkerAlt className="absolute left-4 top-1/2 -translate-y-1/2 text-cyan-500 z-10" />
                   <select
                     name="division"
-                    className={`w-full pl-12 pr-10 py-4 rounded-2xl border-2 outline-none appearance-none transition-all text-sm font-medium ${
-                      isDark
-                        ? "bg-slate-800/50 text-white border-transparent"
-                        : "bg-slate-50 text-slate-900 border-slate-100"
-                    } focus:border-cyan-500 cursor-pointer ${
-                      fetchingLocation ? "opacity-50" : ""
-                    }`}
+                    className={`w-full pl-12 pr-10 py-4 rounded-2xl border-2 outline-none appearance-none transition-all text-sm font-medium ${isDark
+                      ? "bg-slate-800/50 text-white border-transparent"
+                      : "bg-slate-50 text-slate-900 border-slate-100"
+                      } focus:border-cyan-500 cursor-pointer ${fetchingLocation ? "opacity-50" : ""
+                      }`}
                     value={formData.division}
                     onChange={handleDivisionSelect}
                     disabled={fetchingLocation}
@@ -659,13 +643,11 @@ function BookingModal({
                   <FaMapMarkerAlt className="absolute left-4 top-1/2 -translate-y-1/2 text-cyan-500 z-10" />
                   <select
                     name="district"
-                    className={`w-full pl-12 pr-10 py-4 rounded-2xl border-2 outline-none appearance-none transition-all text-sm font-medium ${
-                      isDark
-                        ? "bg-slate-800/50 text-white border-transparent"
-                        : "bg-slate-50 text-slate-900 border-slate-100"
-                    } focus:border-cyan-500 cursor-pointer ${
-                      formData.division ? "" : "opacity-50"
-                    } ${fetchingLocation ? "opacity-50" : ""}`}
+                    className={`w-full pl-12 pr-10 py-4 rounded-2xl border-2 outline-none appearance-none transition-all text-sm font-medium ${isDark
+                      ? "bg-slate-800/50 text-white border-transparent"
+                      : "bg-slate-50 text-slate-900 border-slate-100"
+                      } focus:border-cyan-500 cursor-pointer ${formData.division ? "" : "opacity-50"
+                      } ${fetchingLocation ? "opacity-50" : ""}`}
                     value={formData.district}
                     onChange={handleDistrictSelect}
                     disabled={!formData.division || fetchingLocation}
@@ -690,13 +672,11 @@ function BookingModal({
                   <FaMapMarkerAlt className="absolute left-4 top-1/2 -translate-y-1/2 text-cyan-500 z-10" />
                   <select
                     name="thana"
-                    className={`w-full pl-12 pr-10 py-4 rounded-2xl border-2 outline-none appearance-none transition-all text-sm font-medium ${
-                      isDark
-                        ? "bg-slate-800/50 text-white border-transparent"
-                        : "bg-slate-50 text-slate-900 border-slate-100"
-                    } focus:border-cyan-500 cursor-pointer ${
-                      formData.district ? "" : "opacity-50"
-                    } ${fetchingLocation ? "opacity-50" : ""}`}
+                    className={`w-full pl-12 pr-10 py-4 rounded-2xl border-2 outline-none appearance-none transition-all text-sm font-medium ${isDark
+                      ? "bg-slate-800/50 text-white border-transparent"
+                      : "bg-slate-50 text-slate-900 border-slate-100"
+                      } focus:border-cyan-500 cursor-pointer ${formData.district ? "" : "opacity-50"
+                      } ${fetchingLocation ? "opacity-50" : ""}`}
                     value={formData.thana}
                     onChange={handleThanaSelect}
                     disabled={!formData.district || fetchingLocation}
@@ -723,11 +703,10 @@ function BookingModal({
                     name="addressDetails"
                     placeholder="Enter your detailed address (house number, street, etc.)"
                     rows="3"
-                    className={`w-full pl-12 pr-4 py-4 rounded-2xl border-2 border-transparent outline-none transition-all text-sm font-medium focus:border-cyan-500 resize-none ${
-                      isDark
-                        ? "bg-slate-800/50 text-white"
-                        : "bg-slate-50 text-slate-900"
-                    }`}
+                    className={`w-full pl-12 pr-4 py-4 rounded-2xl border-2 border-transparent outline-none transition-all text-sm font-medium focus:border-cyan-500 resize-none ${isDark
+                      ? "bg-slate-800/50 text-white"
+                      : "bg-slate-50 text-slate-900"
+                      }`}
                     value={formData.addressDetails}
                     onChange={handleFormInputChange}
                   />
@@ -745,11 +724,10 @@ function BookingModal({
                     type="text"
                     name="referral"
                     placeholder="Referral Code (Optional)"
-                    className={`w-full pl-12 pr-4 py-4 rounded-2xl border-2 border-transparent outline-none transition-all text-sm font-medium focus:border-cyan-500 ${
-                      isDark
-                        ? "bg-slate-800/50 text-white"
-                        : "bg-slate-50 text-slate-900"
-                    }`}
+                    className={`w-full pl-12 pr-4 py-4 rounded-2xl border-2 border-transparent outline-none transition-all text-sm font-medium focus:border-cyan-500 ${isDark
+                      ? "bg-slate-800/50 text-white"
+                      : "bg-slate-50 text-slate-900"
+                      }`}
                     value={formData.referral}
                     onChange={handleFormInputChange}
                   />
@@ -762,11 +740,10 @@ function BookingModal({
                     name="notes"
                     placeholder="Any special instructions or notes?"
                     rows="3"
-                    className={`w-full pl-12 pr-4 py-4 rounded-2xl border-2 border-transparent outline-none transition-all text-sm font-medium focus:border-cyan-500 resize-none ${
-                      isDark
-                        ? "bg-slate-800/50 text-white"
-                        : "bg-slate-50 text-slate-900"
-                    }`}
+                    className={`w-full pl-12 pr-4 py-4 rounded-2xl border-2 border-transparent outline-none transition-all text-sm font-medium focus:border-cyan-500 resize-none ${isDark
+                      ? "bg-slate-800/50 text-white"
+                      : "bg-slate-50 text-slate-900"
+                      }`}
                     value={formData.notes}
                     onChange={handleFormInputChange}
                   />
