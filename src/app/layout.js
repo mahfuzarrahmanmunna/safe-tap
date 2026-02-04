@@ -8,6 +8,7 @@ import { ThemeProvider } from "./contexts/ThemeContext";
 import { AuthProvider } from "./contexts/AuthContext";
 import { FirebaseAuthProvider } from "./contexts/FirebaseAuthContext";
 import { usePathname } from "next/navigation"; // Import usePathname
+import { UserProfileProvider } from "@/lib/UserProfileProvider/UserProfileProvider";
 
 // Helper function to check if the current path is a dashboard
 const isDashboardPath = (pathname) => {
@@ -52,21 +53,23 @@ export default function RootLayout({ children }) {
       >
         <AuthProvider>
           <FirebaseAuthProvider>
-            <ThemeProvider>
-              {/* Only render Navbar if not on a dashboard page */}
-              {!isDashboard && <Navbar />}
+            <UserProfileProvider>
+              <ThemeProvider>
+                {/* Only render Navbar if not on a dashboard page */}
+                {!isDashboard && <Navbar />}
 
-              <main className={`flex-grow ${isDashboard ? "w-full" : ""}`}>
-                <div
-                  className={`${isDashboard ? "max-w-full" : "max-content-width container-padding"}`}
-                >
-                  {children}
-                </div>
-              </main>
+                <main className={`flex-grow ${isDashboard ? "w-full" : ""}`}>
+                  <div
+                    className={`${isDashboard ? "max-w-full" : "max-content-width container-padding"}`}
+                  >
+                    {children}
+                  </div>
+                </main>
 
-              {/* Only render Footer if not on a dashboard page */}
-              {!isDashboard && <Footer />}
-            </ThemeProvider>
+                {/* Only render Footer if not on a dashboard page */}
+                {!isDashboard && <Footer />}
+              </ThemeProvider>
+            </UserProfileProvider>
           </FirebaseAuthProvider>
         </AuthProvider>
       </body>

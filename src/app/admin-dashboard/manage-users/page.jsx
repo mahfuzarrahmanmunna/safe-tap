@@ -21,6 +21,17 @@ export default function ManageUsers() {
   const [userRole, setUserRole] = useState(null);
   const { user, signOut } = useFirebaseAuth();
 
+<<<<<<< HEAD
+=======
+  // Add state for geographical data
+  const [divisions, setDivisions] = useState([]);
+  const [districts, setDistricts] = useState([]);
+  const [thanas, setThanas] = useState([]);
+  const [filteredDistricts, setFilteredDistricts] = useState([]);
+  const [filteredThanas, setFilteredThanas] = useState([]);
+  const [geoDataLoaded, setGeoDataLoaded] = useState(false);
+
+>>>>>>> a7ec3f6 (added many of things.)
   useEffect(() => {
     // Check if user is authenticated
     if (!user) {
@@ -50,6 +61,10 @@ export default function ManageUsers() {
           // Only fetch users if the user is an admin
           if (userData) {
             fetchUsers();
+<<<<<<< HEAD
+=======
+            fetchGeographicalData();
+>>>>>>> a7ec3f6 (added many of things.)
           } else {
             setError(
               "You don't have permission to access this page. Admin access required.",
@@ -69,6 +84,68 @@ export default function ManageUsers() {
     checkUserRole();
   }, [user, router]);
 
+<<<<<<< HEAD
+=======
+  // Helper function to fetch all pages of a paginated API
+  const fetchAllPages = async (url, token) => {
+    let allResults = [];
+    let nextUrl = url;
+
+    while (nextUrl) {
+      const response = await axios.get(nextUrl, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      allResults = [...allResults, ...response.data.results];
+      nextUrl = response.data.next;
+    }
+
+    return allResults;
+  };
+
+  // Fetch geographical data
+  const fetchGeographicalData = async () => {
+    try {
+      // Get the current user's Firebase ID token
+      const token = await user.getIdToken();
+
+      // Fetch divisions
+      const divisionsResponse = await axios.get(
+        "http://127.0.0.1:8000/api/divisions/",
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+      setDivisions(divisionsResponse.data.results || []);
+
+      // Fetch all districts (all pages)
+      const allDistricts = await fetchAllPages(
+        "http://127.0.0.1:8000/api/districts/",
+        token
+      );
+      setDistricts(allDistricts);
+
+      // Fetch all thanas (all pages)
+      const allThanas = await fetchAllPages(
+        "http://127.0.0.1:8000/api/thanas/",
+        token
+      );
+      setThanas(allThanas);
+
+      setGeoDataLoaded(true);
+    } catch (err) {
+      console.error("Error fetching geographical data:", err);
+      setGeoDataLoaded(true); // Set to true even on error to prevent infinite loading
+    }
+  };
+
+>>>>>>> a7ec3f6 (added many of things.)
   const fetchUsers = async () => {
     try {
       setLoading(true);
@@ -114,8 +191,13 @@ export default function ManageUsers() {
         } else {
           setError(
             err.response.data?.error ||
+<<<<<<< HEAD
               err.response.data?.detail ||
               `Failed to fetch users (Status: ${err.response.status})`,
+=======
+            err.response.data?.detail ||
+            `Failed to fetch users (Status: ${err.response.status})`,
+>>>>>>> a7ec3f6 (added many of things.)
           );
         }
       } else if (err.request) {
@@ -132,9 +214,111 @@ export default function ManageUsers() {
     }
   };
 
+<<<<<<< HEAD
   const handleEditUser = (user) => {
     setSelectedUser(user);
     setEditMode(true);
+=======
+  // Handle division change to filter districts
+  const handleDivisionChange = (divisionId) => {
+    if (!Array.isArray(districts)) return;
+
+    const filtered = districts.filter(
+      (district) => district.division === parseInt(divisionId),
+    );
+    setFilteredDistricts(filtered);
+    setFilteredThanas([]); // Reset thanas when division changes
+
+    // Update selected user with division name
+    if (Array.isArray(divisions)) {
+      const division = divisions.find((d) => d.id === parseInt(divisionId));
+      setSelectedUser({
+        ...selectedUser,
+        profile: {
+          ...selectedUser.profile,
+          service_area_division: division ? division.name : "",
+          service_area_district: "", // Reset district and thana
+          service_area_thana: "",
+        },
+      });
+    }
+  };
+
+  // Handle district change to filter thanas
+  const handleDistrictChange = (districtId) => {
+    if (!Array.isArray(thanas)) return;
+
+    const filtered = thanas.filter(
+      (thana) => thana.district === parseInt(districtId),
+    );
+    setFilteredThanas(filtered);
+
+    // Update selected user with district name
+    if (Array.isArray(districts)) {
+      const district = districts.find((d) => d.id === parseInt(districtId));
+      setSelectedUser({
+        ...selectedUser,
+        profile: {
+          ...selectedUser.profile,
+          service_area_district: district ? district.name : "",
+          service_area_thana: "", // Reset thana
+        },
+      });
+    }
+  };
+
+  // Handle thana change
+  const handleThanaChange = (thanaId) => {
+    if (!Array.isArray(thanas)) return;
+
+    // Update selected user with thana name
+    const thana = thanas.find((t) => t.id === parseInt(thanaId));
+    setSelectedUser({
+      ...selectedUser,
+      profile: {
+        ...selectedUser.profile,
+        service_area_thana: thana ? thana.name : "",
+      },
+    });
+  };
+
+  // Initialize filtered districts and thanas when editing a user
+  const handleEditUser = (user) => {
+    // Check if geographical data is loaded
+    if (!geoDataLoaded) {
+      setError("Geographical data is still loading. Please try again in a moment.");
+      return;
+    }
+
+    setSelectedUser(user);
+    setEditMode(true);
+
+    // Find and set filtered districts based on user's division
+    if (user.profile.service_area_division && Array.isArray(divisions)) {
+      const division = divisions.find(
+        (d) => d.name === user.profile.service_area_division,
+      );
+      if (division) {
+        const filtered = districts.filter(
+          (district) => district.division === division.id,
+        );
+        setFilteredDistricts(filtered);
+
+        // Find and set filtered thanas based on user's district
+        if (user.profile.service_area_district) {
+          const district = districts.find(
+            (d) => d.name === user.profile.service_area_district,
+          );
+          if (district) {
+            const filteredThanas = thanas.filter(
+              (thana) => thana.district === district.id,
+            );
+            setFilteredThanas(filteredThanas);
+          }
+        }
+      }
+    }
+>>>>>>> a7ec3f6 (added many of things.)
   };
 
   const handleSaveUser = async () => {
@@ -164,7 +348,11 @@ export default function ManageUsers() {
           email: selectedUser.email,
           phone: selectedUser.profile.phone,
           role: selectedUser.profile.role,
+<<<<<<< HEAD
           is_staff: selectedUser.is_staff, // Add this line
+=======
+          is_staff: selectedUser.is_staff,
+>>>>>>> a7ec3f6 (added many of things.)
           service_area_division: selectedUser.profile.service_area_division,
           service_area_district: selectedUser.profile.service_area_district,
           service_area_thana: selectedUser.profile.service_area_thana,
@@ -231,6 +419,7 @@ export default function ManageUsers() {
         users.map((user) =>
           user.id === userId
             ? {
+<<<<<<< HEAD
                 ...user,
                 profile: {
                   ...user.profile,
@@ -238,6 +427,15 @@ export default function ManageUsers() {
                   support_link: result.support_link,
                 },
               }
+=======
+              ...user,
+              profile: {
+                ...user.profile,
+                qr_code: result.qr_code,
+                support_link: result.support_link,
+              },
+            }
+>>>>>>> a7ec3f6 (added many of things.)
             : user,
         ),
       );
@@ -305,6 +503,7 @@ export default function ManageUsers() {
 
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
+<<<<<<< HEAD
   // If user is not admin, show permission denied message
   if (userRole && userRole !== "admin") {
     return (
@@ -382,6 +581,10 @@ export default function ManageUsers() {
       </header> */}
 
       {/* Main content */}
+=======
+  return (
+    <div className="min-h-screen bg-gray-100">
+>>>>>>> a7ec3f6 (added many of things.)
       <main className="flex-1 relative overflow-y-auto focus:outline-none">
         <div className="py-6">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
@@ -562,13 +765,21 @@ export default function ManageUsers() {
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
                               <span
+<<<<<<< HEAD
                                 className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
                                   user.profile.role === "admin"
+=======
+                                className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${user.profile.role === "admin"
+>>>>>>> a7ec3f6 (added many of things.)
                                     ? "bg-purple-100 text-purple-800"
                                     : user.profile.role === "provider"
                                       ? "bg-blue-100 text-blue-800"
                                       : "bg-green-100 text-green-800"
+<<<<<<< HEAD
                                 }`}
+=======
+                                  }`}
+>>>>>>> a7ec3f6 (added many of things.)
                               >
                                 {user.profile.role}
                               </span>
@@ -577,21 +788,35 @@ export default function ManageUsers() {
                               <div className="text-sm text-gray-900">
                                 <div className="flex items-center">
                                   <span
+<<<<<<< HEAD
                                     className={`inline-block w-2 h-2 rounded-full mr-1 ${
                                       user.profile.is_email_verified
                                         ? "bg-green-400"
                                         : "bg-red-400"
                                     }`}
+=======
+                                    className={`inline-block w-2 h-2 rounded-full mr-1 ${user.profile.is_email_verified
+                                        ? "bg-green-400"
+                                        : "bg-red-400"
+                                      }`}
+>>>>>>> a7ec3f6 (added many of things.)
                                   ></span>
                                   Email
                                 </div>
                                 <div className="flex items-center mt-1">
                                   <span
+<<<<<<< HEAD
                                     className={`inline-block w-2 h-2 rounded-full mr-1 ${
                                       user.profile.is_phone_verified
                                         ? "bg-green-400"
                                         : "bg-red-400"
                                     }`}
+=======
+                                    className={`inline-block w-2 h-2 rounded-full mr-1 ${user.profile.is_phone_verified
+                                        ? "bg-green-400"
+                                        : "bg-red-400"
+                                      }`}
+>>>>>>> a7ec3f6 (added many of things.)
                                   ></span>
                                   Phone
                                 </div>
@@ -619,6 +844,10 @@ export default function ManageUsers() {
                               <button
                                 onClick={() => handleEditUser(user)}
                                 className="text-indigo-600 hover:text-indigo-900 mr-3"
+<<<<<<< HEAD
+=======
+                                disabled={!geoDataLoaded}
+>>>>>>> a7ec3f6 (added many of things.)
                               >
                                 Edit
                               </button>
@@ -708,11 +937,18 @@ export default function ManageUsers() {
                             <button
                               key={i}
                               onClick={() => paginate(i + 1)}
+<<<<<<< HEAD
                               className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${
                                 currentPage === i + 1
                                   ? "z-10 bg-indigo-50 border-indigo-500 text-indigo-600"
                                   : "bg-white border-gray-300 text-gray-500 hover:bg-gray-50"
                               }`}
+=======
+                              className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${currentPage === i + 1
+                                  ? "z-10 bg-indigo-50 border-indigo-500 text-indigo-600"
+                                  : "bg-white border-gray-300 text-gray-500 hover:bg-gray-50"
+                                }`}
+>>>>>>> a7ec3f6 (added many of things.)
                             >
                               {i + 1}
                             </button>
@@ -871,6 +1107,7 @@ export default function ManageUsers() {
                     <label className="block text-gray-700 text-sm font-bold mb-2">
                       Service Area Division
                     </label>
+<<<<<<< HEAD
                     <input
                       type="text"
                       className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
@@ -885,12 +1122,33 @@ export default function ManageUsers() {
                         })
                       }
                     />
+=======
+                    <select
+                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                      value={
+                        divisions.find(
+                          (d) =>
+                            d.name ===
+                            selectedUser.profile.service_area_division,
+                        )?.id || ""
+                      }
+                      onChange={(e) => handleDivisionChange(e.target.value)}
+                    >
+                      <option value="">Select Division</option>
+                      {divisions.map((division) => (
+                        <option key={division.id} value={division.id}>
+                          {division.name}
+                        </option>
+                      ))}
+                    </select>
+>>>>>>> a7ec3f6 (added many of things.)
                   </div>
 
                   <div>
                     <label className="block text-gray-700 text-sm font-bold mb-2">
                       Service Area District
                     </label>
+<<<<<<< HEAD
                     <input
                       type="text"
                       className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
@@ -905,12 +1163,34 @@ export default function ManageUsers() {
                         })
                       }
                     />
+=======
+                    <select
+                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                      value={
+                        districts.find(
+                          (d) =>
+                            d.name ===
+                            selectedUser.profile.service_area_district,
+                        )?.id || ""
+                      }
+                      onChange={(e) => handleDistrictChange(e.target.value)}
+                      disabled={!selectedUser.profile.service_area_division}
+                    >
+                      <option value="">Select District</option>
+                      {filteredDistricts.map((district) => (
+                        <option key={district.id} value={district.id}>
+                          {district.name}
+                        </option>
+                      ))}
+                    </select>
+>>>>>>> a7ec3f6 (added many of things.)
                   </div>
 
                   <div>
                     <label className="block text-gray-700 text-sm font-bold mb-2">
                       Service Area Thana
                     </label>
+<<<<<<< HEAD
                     <input
                       type="text"
                       className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
@@ -925,6 +1205,26 @@ export default function ManageUsers() {
                         })
                       }
                     />
+=======
+                    <select
+                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                      value={
+                        thanas.find(
+                          (t) =>
+                            t.name === selectedUser.profile.service_area_thana,
+                        )?.id || ""
+                      }
+                      onChange={(e) => handleThanaChange(e.target.value)}
+                      disabled={!selectedUser.profile.service_area_district}
+                    >
+                      <option value="">Select Thana</option>
+                      {filteredThanas.map((thana) => (
+                        <option key={thana.id} value={thana.id}>
+                          {thana.name}
+                        </option>
+                      ))}
+                    </select>
+>>>>>>> a7ec3f6 (added many of things.)
                   </div>
 
                   <div className="md:col-span-2">
@@ -1072,13 +1372,23 @@ export default function ManageUsers() {
               <div className="mt-4 flex justify-end">
                 <button
                   onClick={() => setEditMode(false)}
+<<<<<<< HEAD
                   className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-medium py-2 px-4 rounded mr-2"
+=======
+                  className="bg-gray-300 hover:bg-gray-400 cursor-pointer text-gray-800 font-medium py-2 px-4 rounded mr-2"
+>>>>>>> a7ec3f6 (added many of things.)
                 >
                   Cancel
                 </button>
                 <button
+<<<<<<< HEAD
                   onClick={handleSaveUser}
                   className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded"
+=======
+                  type="button"
+                  onClick={handleSaveUser}
+                  className="bg-blue-600 hover:bg-blue-700 cursor-pointer text-white font-medium py-2 px-4 rounded"
+>>>>>>> a7ec3f6 (added many of things.)
                 >
                   Save Changes
                 </button>
@@ -1089,4 +1399,8 @@ export default function ManageUsers() {
       )}
     </div>
   );
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> a7ec3f6 (added many of things.)

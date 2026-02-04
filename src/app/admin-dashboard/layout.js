@@ -4,7 +4,6 @@ import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
-  // ... (keep all your existing imports)
   LogOut,
   User,
   HelpCircle,
@@ -38,13 +37,13 @@ import {
   Bell,
   Crown,
   Settings,
-  // ... (rest of your imports)
 } from "lucide-react";
 import { useFirebaseAuth } from "@/app/contexts/FirebaseAuthContext";
 import { toast } from "react-hot-toast";
 
 export default function AdminLayout({ children }) {
-  const { user, signOut } = useFirebaseAuth(); // Use Firebase auth context
+  const { user, signOut } = useFirebaseAuth();
+  console.log(user);
   const router = useRouter();
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -61,8 +60,8 @@ export default function AdminLayout({ children }) {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const [Loading, setLoading] = useState(true);
-  const [userRole, setUserRole] = useState(null); // Add state for user role
-  const [checkingRole, setCheckingRole] = useState(true); // Add state for role checking
+  const [userRole, setUserRole] = useState(null);
+  const [checkingRole, setCheckingRole] = useState(true);
 
   // New states for client account management
   const [showClientAccountModal, setShowClientAccountModal] = useState(false);
@@ -136,27 +135,34 @@ export default function AdminLayout({ children }) {
           },
         });
 
-        if (response.ok) {
-          const userData = await response.json();
-          const role = userData.profile?.role || "customer";
-          setUserRole(role);
+        const userData = await response.json();
+        const role = userData.profile?.role || "customer";
+        setUserRole(role);
+        console.log("user data", userData);
+        console.log("role", role);
 
-          // If user is not admin, logout and redirect
-          if (role !== "admin" && !userData.is_staff) {
-            console.log("User is not admin, logging out...");
-            await signOut();
-            toast.error(
-              "You don't have admin privileges. You have been logged out.",
-            );
-            router.push("/login");
-          }
-        } else {
-          // If we can't verify the role, assume no admin access
-          console.log("Could not verify user role, logging out...");
-          await signOut();
-          toast.error("Authentication failed. You have been logged out.");
-          router.push("/login");
-        }
+        // if (response.ok) {
+        //   const userData = await response.json();
+        //   const role = userData.profile?.role || "customer";
+        //   setUserRole(role);
+        //   console.log("user data", userData);
+
+        //   // If user is not admin, logout and redirect
+        //   // if (role !== "admin") {
+        //   //   console.log("User is not admin, logging out...");
+        //   //   await signOut();
+        //   //   toast.error(
+        //   //     "You don't have admin privileges. You have been logged out.",
+        //   //   );
+        //   //   router.push("/login");
+        //   // }
+        // } else {
+        //   // If we can't verify the role, assume no admin access
+        //   console.log("Could not verify user role, logging out...");
+        //   // await signOut();
+        //   toast.error("Authentication failed. You have been logged out.");
+        //   router.push("/login");
+        // }
       } catch (error) {
         console.error("Error checking user role:", error);
         // If there's an error, logout and redirect
@@ -171,7 +177,7 @@ export default function AdminLayout({ children }) {
     checkUserRole();
   }, [user, router, signOut]);
 
-  // Admin menu items - MOVED HERE BEFORE USAGE
+  // Admin menu items
   const adminMenuItems = [
     {
       title: "Dashboard",
@@ -179,7 +185,7 @@ export default function AdminLayout({ children }) {
       href: "/admin-dashboard",
       badge: null,
       color: "blue",
-      gradient: "from-blue-500 to-blue-600",
+      gradient: "from-blue-600 to-blue-700",
     },
     {
       title: "Manage Technicians",
@@ -187,23 +193,23 @@ export default function AdminLayout({ children }) {
       href: "/admin-dashboard/manage-technicians",
       badge: "12",
       color: "emerald",
-      gradient: "from-emerald-500 to-emerald-600",
+      gradient: "from-emerald-600 to-emerald-700",
     },
     {
       title: "Manage Users",
       icon: <Users className="w-5 h-5" />,
       href: "/admin-dashboard/manage-users",
       badge: null,
-      color: "cyan",
-      gradient: "from-cyan-500 to-cyan-600",
+      color: "purple",
+      gradient: "from-purple-600 to-purple-700",
     },
     {
       title: "Services",
       icon: <Briefcase className="w-5 h-5" />,
-      href: "/admin-dashboard/manage-services",
+      href: "/admin-dashboard/manage-services-and-support",
       badge: "4",
       color: "cyan",
-      gradient: "from-cyan-500 to-cyan-600",
+      gradient: "from-cyan-600 to-cyan-700",
     },
     {
       title: "Pricing",
@@ -211,7 +217,7 @@ export default function AdminLayout({ children }) {
       href: "/admin-dashboard/manage-pricing-card",
       badge: "12",
       color: "green",
-      gradient: "from-green-500 to-green-600",
+      gradient: "from-green-600 to-green-700",
     },
     {
       title: "Blogs",
@@ -219,7 +225,7 @@ export default function AdminLayout({ children }) {
       href: "/admin-dashboard/manage-and-post-blogs",
       badge: null,
       color: "teal",
-      gradient: "from-teal-500 to-teal-600",
+      gradient: "from-teal-600 to-teal-700",
     },
     {
       title: "Analytics",
@@ -227,15 +233,15 @@ export default function AdminLayout({ children }) {
       href: "/admin-dashboard/manage-analytics",
       badge: null,
       color: "orange",
-      gradient: "from-orange-500 to-orange-600",
+      gradient: "from-orange-600 to-orange-700",
     },
     {
       title: "Orders",
       icon: <ShoppingCart className="w-5 h-5" />,
       href: "/admin-dashboard/manage-orders",
       badge: "5",
-      color: "cyan",
-      gradient: "from-cyan-500 to-cyan-600",
+      color: "pink",
+      gradient: "from-pink-600 to-pink-700",
     },
     {
       title: "Messages",
@@ -243,7 +249,7 @@ export default function AdminLayout({ children }) {
       href: "/admin-dashboard/free-chat-support",
       badge: "3",
       color: "indigo",
-      gradient: "from-indigo-500 to-indigo-600",
+      gradient: "from-indigo-600 to-indigo-700",
     },
     {
       title: "Settings",
@@ -251,7 +257,7 @@ export default function AdminLayout({ children }) {
       href: "/admin-dashboard/manage-settings",
       badge: null,
       color: "gray",
-      gradient: "from-gray-500 to-gray-600",
+      gradient: "from-gray-600 to-gray-700",
       submenu: [
         { title: "General", href: "/settings/general" },
         { title: "Security", href: "/settings/security" },
@@ -395,13 +401,13 @@ export default function AdminLayout({ children }) {
   const getNotificationIcon = (type) => {
     switch (type) {
       case "success":
-        return <CheckSquare className="w-5 h-5 text-emerald-500" />;
+        return <CheckSquare className="w-5 h-5 text-emerald-400" />;
       case "warning":
-        return <AlertCircle className="w-5 h-5 text-amber-500" />;
+        return <AlertCircle className="w-5 h-5 text-amber-400" />;
       case "error":
-        return <AlertCircle className="w-5 h-5 text-red-500" />;
+        return <AlertCircle className="w-5 h-5 text-red-400" />;
       default:
-        return <Info className="w-5 h-5 text-blue-500" />;
+        return <Info className="w-5 h-5 text-blue-400" />;
     }
   };
 
@@ -409,44 +415,52 @@ export default function AdminLayout({ children }) {
     if (isActive) {
       switch (color) {
         case "blue":
-          return "text-blue-600 dark:text-blue-400 bg-gradient-to-r from-blue-50 to-blue-100/50 dark:from-blue-900/30 dark:to-blue-800/20 border-blue-200 dark:border-blue-700 shadow-lg shadow-blue-500/10";
+          return "text-blue-300 dark:text-blue-300 bg-gradient-to-r from-blue-900/50 to-blue-800/50 dark:from-blue-900/50 dark:to-blue-800/50 border-blue-700/50 dark:border-blue-700/50 shadow-lg shadow-blue-900/20";
+        case "purple":
+          return "text-purple-300 dark:text-purple-300 bg-gradient-to-r from-purple-900/50 to-purple-800/50 dark:from-purple-900/50 dark:to-purple-800/50 border-purple-700/50 dark:border-purple-700/50 shadow-lg shadow-purple-900/20";
         case "cyan":
-          return "text-cyan-600 dark:text-cyan-400 bg-gradient-to-r from-cyan-50 to-cyan-100/50 dark:from-cyan-900/30 dark:to-cyan-800/20 border-cyan-200 dark:border-cyan-700 shadow-lg shadow-cyan-500/10";
+          return "text-cyan-300 dark:text-cyan-300 bg-gradient-to-r from-cyan-900/50 to-cyan-800/50 dark:from-cyan-900/50 dark:to-cyan-800/50 border-cyan-700/50 dark:border-cyan-700/50 shadow-lg shadow-cyan-900/20";
         case "green":
-          return "text-green-600 dark:text-green-400 bg-gradient-to-r from-green-50 to-green-100/50 dark:from-green-900/30 dark:to-green-800/20 border-green-200 dark:border-green-700 shadow-lg shadow-green-500/10";
+          return "text-green-300 dark:text-green-300 bg-gradient-to-r from-green-900/50 to-green-800/50 dark:from-green-900/50 dark:to-green-800/50 border-green-700/50 dark:border-green-700/50 shadow-lg shadow-green-900/20";
         case "teal":
-          return "text-teal-600 dark:text-teal-400 bg-gradient-to-r from-teal-50 to-teal-100/50 dark:from-teal-900/30 dark:to-teal-800/20 border-teal-200 dark:border-teal-700 shadow-lg shadow-teal-500/10";
+          return "text-teal-300 dark:text-teal-300 bg-gradient-to-r from-teal-900/50 to-teal-800/50 dark:from-teal-900/50 dark:to-teal-800/50 border-teal-700/50 dark:border-teal-700/50 shadow-lg shadow-teal-900/20";
         case "orange":
-          return "text-orange-600 dark:text-orange-400 bg-gradient-to-r from-orange-50 to-orange-100/50 dark:from-orange-900/30 dark:to-orange-800/20 border-orange-200 dark:border-orange-700 shadow-lg shadow-orange-500/10";
+          return "text-orange-300 dark:text-orange-300 bg-gradient-to-r from-orange-900/50 to-orange-800/50 dark:from-orange-900/50 dark:to-orange-800/50 border-orange-700/50 dark:border-orange-700/50 shadow-lg shadow-orange-900/20";
         case "indigo":
-          return "text-indigo-600 dark:text-indigo-400 bg-gradient-to-r from-indigo-50 to-indigo-100/50 dark:from-indigo-900/30 dark:to-indigo-800/20 border-indigo-200 dark:border-indigo-700 shadow-lg shadow-indigo-500/10";
+          return "text-indigo-300 dark:text-indigo-300 bg-gradient-to-r from-indigo-900/50 to-indigo-800/50 dark:from-indigo-900/50 dark:to-indigo-800/50 border-indigo-700/50 dark:border-indigo-700/50 shadow-lg shadow-indigo-900/20";
         case "emerald":
-          return "text-emerald-600 dark:text-emerald-400 bg-gradient-to-r from-emerald-50 to-emerald-100/50 dark:from-emerald-900/30 dark:to-emerald-800/20 border-emerald-200 dark:border-emerald-700 shadow-lg shadow-emerald-500/10";
+          return "text-emerald-300 dark:text-emerald-300 bg-gradient-to-r from-emerald-900/50 to-emerald-800/50 dark:from-emerald-900/50 dark:to-emerald-800/50 border-emerald-700/50 dark:border-emerald-700/50 shadow-lg shadow-emerald-900/20";
         case "amber":
-          return "text-amber-600 dark:text-amber-400 bg-gradient-to-r from-amber-50 to-amber-100/50 dark:from-amber-900/30 dark:to-amber-800/20 border-amber-200 dark:border-amber-700 shadow-lg shadow-amber-500/10";
+          return "text-amber-300 dark:text-amber-300 bg-gradient-to-r from-amber-900/50 to-amber-800/50 dark:from-amber-900/50 dark:to-amber-800/50 border-amber-700/50 dark:border-amber-700/50 shadow-lg shadow-amber-900/20";
+        case "pink":
+          return "text-pink-300 dark:text-pink-300 bg-gradient-to-r from-pink-900/50 to-pink-800/50 dark:from-pink-900/50 dark:to-pink-800/50 border-pink-700/50 dark:border-pink-700/50 shadow-lg shadow-pink-900/20";
         default:
-          return "text-gray-600 dark:text-gray-400 bg-gradient-to-r from-gray-50 to-gray-100/50 dark:from-gray-900/30 dark:to-gray-800/20 border-gray-200 dark:border-gray-700 shadow-lg shadow-gray-500/10";
+          return "text-gray-300 dark:text-gray-300 bg-gradient-to-r from-gray-900/50 to-gray-800/50 dark:from-gray-900/50 dark:to-gray-800/50 border-gray-700/50 dark:border-gray-700/50 shadow-lg shadow-gray-900/20";
       }
     } else {
       switch (color) {
         case "blue":
-          return "text-slate-300 dark:text-slate-400 hover:text-blue-400 hover:bg-blue-500/10 dark:hover:bg-blue-900/20 hover:border-blue-500/30 dark:hover:border-blue-700";
+          return "text-gray-400 dark:text-gray-400 hover:text-blue-300 hover:bg-blue-900/20 dark:hover:bg-blue-900/20 hover:border-blue-800/30 dark:hover:border-blue-800/30";
+        case "purple":
+          return "text-gray-400 dark:text-gray-400 hover:text-purple-300 hover:bg-purple-900/20 dark:hover:bg-purple-900/20 hover:border-purple-800/30 dark:hover:border-purple-800/30";
         case "cyan":
-          return "text-slate-300 dark:text-slate-400 hover:text-cyan-400 hover:bg-cyan-500/10 dark:hover:bg-cyan-900/20 hover:border-cyan-500/30 dark:hover:border-cyan-700";
+          return "text-gray-400 dark:text-gray-400 hover:text-cyan-300 hover:bg-cyan-900/20 dark:hover:bg-cyan-900/20 hover:border-cyan-800/30 dark:hover:border-cyan-800/30";
         case "green":
-          return "text-slate-300 dark:text-slate-400 hover:text-green-400 hover:bg-green-500/10 dark:hover:bg-green-900/20 hover:border-green-500/30 dark:hover:border-green-700";
+          return "text-gray-400 dark:text-gray-400 hover:text-green-300 hover:bg-green-900/20 dark:hover:bg-green-900/20 hover:border-green-800/30 dark:hover:border-green-800/30";
         case "teal":
-          return "text-slate-300 dark:text-slate-400 hover:text-teal-400 hover:bg-teal-500/10 dark:hover:bg-teal-900/20 hover:border-teal-500/30 dark:hover:border-teal-700";
+          return "text-gray-400 dark:text-gray-400 hover:text-teal-300 hover:bg-teal-900/20 dark:hover:bg-teal-900/20 hover:border-teal-800/30 dark:hover:border-teal-800/30";
         case "orange":
-          return "text-slate-300 dark:text-slate-400 hover:text-orange-400 hover:bg-orange-500/10 dark:hover:bg-orange-900/20 hover:border-orange-500/30 dark:hover:border-orange-700";
+          return "text-gray-400 dark:text-gray-400 hover:text-orange-300 hover:bg-orange-900/20 dark:hover:bg-orange-900/20 hover:border-orange-800/30 dark:hover:border-orange-800/30";
         case "indigo":
-          return "text-slate-300 dark:text-slate-400 hover:text-indigo-400 hover:bg-indigo-500/10 dark:hover:bg-indigo-900/20 hover:border-indigo-500/30 dark:hover:border-indigo-700";
+          return "text-gray-400 dark:text-gray-400 hover:text-indigo-300 hover:bg-indigo-900/20 dark:hover:bg-indigo-900/20 hover:border-indigo-800/30 dark:hover:border-indigo-800/30";
         case "emerald":
-          return "text-slate-300 dark:text-slate-400 hover:text-emerald-400 hover:bg-emerald-500/10 dark:hover:bg-emerald-900/20 hover:border-emerald-500/30 dark:hover:border-emerald-700";
+          return "text-gray-400 dark:text-gray-400 hover:text-emerald-300 hover:bg-emerald-900/20 dark:hover:bg-emerald-900/20 hover:border-emerald-800/30 dark:hover:border-emerald-800/30";
         case "amber":
-          return "text-slate-300 dark:text-slate-400 hover:text-amber-400 hover:bg-amber-500/10 dark:hover:bg-amber-900/20 hover:border-amber-500/30 dark:hover:border-amber-700";
+          return "text-gray-400 dark:text-gray-400 hover:text-amber-300 hover:bg-amber-900/20 dark:hover:bg-amber-900/20 hover:border-amber-800/30 dark:hover:border-amber-800/30";
+        case "pink":
+          return "text-gray-400 dark:text-gray-400 hover:text-pink-300 hover:bg-pink-900/20 dark:hover:bg-pink-900/20 hover:border-pink-800/30 dark:hover:border-pink-800/30";
         default:
-          return "text-slate-300 dark:text-slate-400 hover:text-gray-400 hover:bg-gray-500/10 dark:hover:bg-gray-900/20 hover:border-gray-500/30 dark:hover:border-gray-700";
+          return "text-gray-400 dark:text-gray-400 hover:text-gray-300 hover:bg-gray-900/20 dark:hover:bg-gray-900/20 hover:border-gray-800/30 dark:hover:border-gray-800/30";
       }
     }
   };
@@ -457,9 +471,9 @@ export default function AdminLayout({ children }) {
       return "Workers Management";
     if (pathname.startsWith("/admin-dashboard/manage-workers/"))
       return "Worker Details";
-    if (pathname === "/admin-dashboard/manage-services")
+    if (pathname === "/admin-dashboard/manage-services-and-support")
       return "Services Management";
-    if (pathname.startsWith("/admin-dashboard/manage-services/"))
+    if (pathname.startsWith("/admin-dashboard/manage-services-and-support/"))
       return "Service Details";
     if (pathname === "/admin-dashboard/manage-pricing-card")
       return "Pricing Plans";
@@ -489,58 +503,122 @@ export default function AdminLayout({ children }) {
     return breadcrumbs;
   };
 
+  // Handle search
+  const handleSearch = (query) => {
+    setSearchQuery(query);
+
+    if (query.trim() === "") {
+      setSearchResults([]);
+      return;
+    }
+
+    // Filter menu items based on search query
+    const filteredItems = adminMenuItems
+      .filter(
+        (item) =>
+          item.title.toLowerCase().includes(query.toLowerCase()) ||
+          (item.submenu &&
+            item.submenu.some((sub) =>
+              sub.title.toLowerCase().includes(query.toLowerCase()),
+            )),
+      )
+      .map((item) => ({
+        title: item.title,
+        description: `Navigate to ${item.title}`,
+        icon: item.icon,
+        action: () => {
+          router.push(item.href);
+          setSearchFocused(false);
+          setSearchQuery("");
+          // Add to search history
+          if (!searchHistory.includes(query)) {
+            setSearchHistory([query, ...searchHistory.slice(0, 4)]);
+          }
+        },
+      }));
+
+    // Add submenu items if they match
+    adminMenuItems.forEach((item) => {
+      if (item.submenu) {
+        item.submenu.forEach((subitem) => {
+          if (subitem.title.toLowerCase().includes(query.toLowerCase())) {
+            filteredItems.push({
+              title: subitem.title,
+              description: `Navigate to ${subitem.title}`,
+              icon: <ChevronRightIcon className="w-4 h-4" />,
+              action: () => {
+                router.push(subitem.href);
+                setSearchFocused(false);
+                setSearchQuery("");
+                // Add to search history
+                if (!searchHistory.includes(query)) {
+                  setSearchHistory([query, ...searchHistory.slice(0, 4)]);
+                }
+              },
+            });
+          }
+        });
+      }
+    });
+
+    setSearchResults(filteredItems);
+  };
+
+  // Clear search history
+  const clearSearchHistory = () => {
+    setSearchHistory([]);
+  };
+
   // Show loading spinner while checking user role
   if (checkingRole) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900">
+      <div className="min-h-screen flex items-center justify-center bg-gray-900">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-cyan-500 mx-auto"></div>
-          <p className="mt-4 text-gray-600 dark:text-gray-400">
-            Verifying access...
-          </p>
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500 mx-auto"></div>
+          <p className="mt-4 text-gray-400">Verifying access...</p>
         </div>
       </div>
     );
   }
 
-  if (userRole && userRole !== "admin") {
-    return (
-      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-        <div className="bg-white p-8 rounded-lg shadow-md max-w-md w-full">
-          <div className="text-center">
-            <svg
-              className="mx-auto h-12 w-12 text-red-500"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 15.5c-.77.833.192 2.5 1.732 2.5z"
-              />
-            </svg>
-            <h3 className="mt-4 text-lg font-medium text-gray-900">
-              Access Denied
-            </h3>
-            <p className="mt-2 text-sm text-gray-500">
-              You do not have permission to access this page. Admin access
-              required.
-            </p>
-            <div className="mt-6">
-              <button
-                onClick={() => router.push("/dashboard")}
-                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-              >
-                Go to Dashboard
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  // if (userRole && userRole !== "admin") {
+  //   return (
+  //     <div className="min-h-screen bg-gray-900 flex items-center justify-center">
+  //       <div className="bg-gray-800 p-8 rounded-lg shadow-md max-w-md w-full">
+  //         <div className="text-center">
+  //           <svg
+  //             className="mx-auto h-12 w-12 text-red-500"
+  //             fill="none"
+  //             viewBox="0 0 24 24"
+  //             stroke="currentColor"
+  //           >
+  //             <path
+  //               strokeLinecap="round"
+  //               strokeLinejoin="round"
+  //               strokeWidth={2}
+  //               d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 15.5c-.77.833.192 2.5 1.732 2.5z"
+  //             />
+  //           </svg>
+  //           <h3 className="mt-4 text-lg font-medium text-gray-100">
+  //             Access Denied
+  //           </h3>
+  //           <p className="mt-2 text-sm text-gray-400">
+  //             You do not have permission to access this page. Admin access
+  //             required.
+  //           </p>
+  //           <div className="mt-6">
+  //             <button
+  //               onClick={() => router.push("/dashboard")}
+  //               className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+  //             >
+  //               Go to Dashboard
+  //             </button>
+  //           </div>
+  //         </div>
+  //       </div>
+  //     </div>
+  //   );
+  // }
 
   // Special handling for chat support page - render without dashboard layout
   if (pathname === "/dashboard/free-chat-support") {
@@ -549,7 +627,7 @@ export default function AdminLayout({ children }) {
 
   return (
     <div
-      className={`flex min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 ${darkMode ? "dark" : ""}`}
+      className={`flex min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 ${darkMode ? "dark" : ""}`}
     >
       {/* Sidebar Overlay for Mobile */}
       {sidebarOpen && screenSize !== "xl" && (
@@ -568,9 +646,9 @@ export default function AdminLayout({ children }) {
             onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
             className={`group relative flex items-center justify-center w-11 h-11 rounded-xl shadow-xl transition-all duration-300 transform hover:scale-110 hover:shadow-2xl ${
               sidebarCollapsed
-                ? "bg-gradient-to-br from-blue-500 via-blue-600 to-cyan-600 hover:from-blue-400 hover:via-blue-500 hover:to-cyan-500"
-                : "bg-gradient-to-br from-cyan-500 via-cyan-600 to-cyan-600 hover:from-cyan-400 hover:via-cyan-500 hover:to-cyan-500"
-            } text-white border-2 border-white/20 backdrop-blur-sm`}
+                ? "bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 hover:from-blue-500 hover:via-blue-600 hover:to-blue-700"
+                : "bg-gradient-to-br from-gray-700 via-gray-800 to-gray-900 hover:from-gray-600 hover:via-gray-700 hover:to-gray-800"
+            } text-white border border-gray-700 backdrop-blur-sm`}
             title={sidebarCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
           >
             <div
@@ -589,20 +667,20 @@ export default function AdminLayout({ children }) {
 
       {/* Enhanced Sidebar */}
       <aside
-        className={`${sidebarOpen ? "translate-x-0" : "-translate-x-full"} ${sidebarCollapsed ? "w-16" : "w-72"} fixed top-0 left-0 h-screen bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 border-r border-slate-700/50 backdrop-blur-xl transition-all duration-500 ease-in-out z-50 flex flex-col shadow-2xl`}
+        className={`${sidebarOpen ? "translate-x-0" : "-translate-x-full"} ${sidebarCollapsed ? "w-16" : "w-72"} fixed top-0 left-0 h-screen bg-gradient-to-b from-gray-800 via-gray-900 to-black border-r border-gray-700 backdrop-blur-xl transition-all duration-500 ease-in-out z-50 flex flex-col shadow-2xl`}
         onMouseEnter={() => setIsHovering(true)}
         onMouseLeave={() => setIsHovering(false)}
       >
         {/* Logo Section */}
-        <div className="p-6 border-b border-slate-700/50 bg-gradient-to-r from-slate-800/50 to-slate-900/50 backdrop-blur-sm">
+        <div className="p-6 border-b border-gray-700 bg-gradient-to-r from-gray-800/50 to-gray-900/50 backdrop-blur-sm">
           <div
             className={`flex items-center ${sidebarCollapsed ? "justify-center" : ""} transition-all duration-300`}
           >
             <div className="relative group">
               <div
-                className={`w-12 h-12 rounded-2xl flex items-center justify-center text-white font-bold text-lg shadow-lg transition-transform duration-300 group-hover:scale-110 group-hover:shadow-xl bg-gradient-to-br from-blue-500 via-cyan-500 to-cyan-500 shadow-cyan-500/50 group-hover:shadow-cyan-500/70`}
+                className={`w-12 h-12 rounded-2xl flex items-center justify-center text-white font-bold text-lg shadow-lg transition-transform duration-300 group-hover:scale-110 group-hover:shadow-xl bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 shadow-blue-600/50 group-hover:shadow-blue-600/70`}
               >
-                <Sparkles className="absolute -top-1 -right-1 w-5 h-5 text-yellow-300 animate-pulse" />
+                <Sparkles className="absolute -top-1 -right-1 w-5 h-5 text-yellow-400 animate-pulse" />
                 <span className="relative z-10">AD</span>
                 <div className="absolute inset-0 rounded-2xl bg-white/0 group-hover:bg-white/10 transition-all duration-300"></div>
               </div>
@@ -612,7 +690,7 @@ export default function AdminLayout({ children }) {
                 <span className="text-xl font-bold text-white block">
                   Admin Panel
                 </span>
-                <span className="text-xs text-slate-400 font-medium">
+                <span className="text-xs text-gray-400 font-medium">
                   Control Center
                 </span>
               </div>
@@ -655,7 +733,7 @@ export default function AdminLayout({ children }) {
                         <div className="flex items-center gap-2 relative z-10">
                           {item.badge && !sidebarCollapsed && (
                             <span
-                              className={`px-2.5 py-0.5 text-xs font-bold rounded-full bg-gradient-to-r ${item.gradient} text-white shadow-lg shadow-${item.color}-500/30`}
+                              className={`px-2.5 py-0.5 text-xs font-bold rounded-full bg-gradient-to-r ${item.gradient} text-white shadow-lg shadow-${item.color}-600/30`}
                             >
                               {item.badge}
                             </span>
@@ -697,7 +775,7 @@ export default function AdminLayout({ children }) {
                         <div className="flex items-center gap-2 relative z-10">
                           {item.badge && !sidebarCollapsed && (
                             <span
-                              className={`px-2.5 py-0.5 text-xs font-bold rounded-full bg-gradient-to-r ${item.gradient} text-white shadow-lg shadow-${item.color}-500/30`}
+                              className={`px-2.5 py-0.5 text-xs font-bold rounded-full bg-gradient-to-r ${item.gradient} text-white shadow-lg shadow-${item.color}-600/30`}
                             >
                               {item.badge}
                             </span>
@@ -707,7 +785,7 @@ export default function AdminLayout({ children }) {
                               className={`w-4 h-4 transition-all duration-300 ${
                                 activeSubmenu === item.title
                                   ? "rotate-180 text-blue-400"
-                                  : "text-slate-400 group-hover:text-slate-300"
+                                  : "text-gray-400 group-hover:text-gray-300"
                               }`}
                             />
                           )}
@@ -735,7 +813,7 @@ export default function AdminLayout({ children }) {
                                       ? "opacity-50 cursor-not-allowed"
                                       : pathname === subitem.href
                                         ? `${getColorClasses(item.color, true)} shadow-md`
-                                        : "text-slate-300 hover:text-white hover:bg-slate-800/50"
+                                        : "text-gray-400 hover:text-white hover:bg-gray-800/50"
                                   }`}
                                   style={{
                                     animationDelay: `${subIndex * 30}ms`,
@@ -762,10 +840,10 @@ export default function AdminLayout({ children }) {
         </nav>
 
         {/* Dark Mode Toggle */}
-        <div className="p-4 border-t border-slate-700/50 mt-auto bg-gradient-to-r from-slate-800/50 to-slate-900/50 backdrop-blur-sm">
+        <div className="p-4 border-t border-gray-700 mt-auto bg-gradient-to-r from-gray-800/50 to-gray-900/50 backdrop-blur-sm">
           <button
             onClick={() => setDarkMode(!darkMode)}
-            className="group w-full flex items-center justify-center p-3.5 rounded-xl bg-slate-800/50 hover:bg-slate-700/50 backdrop-blur-sm transition-all duration-300 text-slate-300 hover:text-white border border-slate-700/50 hover:border-slate-600/50 hover:shadow-lg"
+            className="group w-full flex items-center justify-center p-3.5 rounded-xl bg-gray-800/50 hover:bg-gray-700/50 backdrop-blur-sm transition-all duration-300 text-gray-400 hover:text-white border border-gray-700 hover:border-gray-600 hover:shadow-lg"
           >
             <div className="relative">
               {darkMode ? (
@@ -788,15 +866,15 @@ export default function AdminLayout({ children }) {
         className={`flex-1 flex flex-col min-h-screen transition-all duration-500 ${sidebarOpen ? (sidebarCollapsed ? "ml-16" : "ml-72") : "ml-0"}`}
       >
         {/* Enhanced Header */}
-        <header className="sticky top-0 z-30 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-b border-slate-200/50 dark:border-slate-700/50 shadow-sm">
+        <header className="sticky top-0 z-30 bg-gray-800/80 backdrop-blur-xl border-b border-gray-700 shadow-sm">
           <div className="px-4 sm:px-6 lg:px-8 py-4">
             <div className="flex items-center justify-between">
               {/* Mobile Menu Button */}
               <button
                 onClick={() => setSidebarOpen(!sidebarOpen)}
-                className="p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 lg:hidden transition-all duration-200 border border-slate-200 dark:border-slate-700"
+                className="p-2 rounded-xl hover:bg-gray-700 lg:hidden transition-all duration-200 border border-gray-700"
               >
-                <Menu className="w-5 h-5 text-slate-600 dark:text-slate-300" />
+                <Menu className="w-5 h-5 text-gray-300" />
               </button>
 
               {/* Breadcrumbs */}
@@ -804,14 +882,14 @@ export default function AdminLayout({ children }) {
                 {getBreadcrumbs().map((crumb, index) => (
                   <div key={crumb.href} className="flex items-center">
                     {index > 0 && (
-                      <ChevronRightIcon className="w-4 h-4 text-slate-400 mx-2" />
+                      <ChevronRightIcon className="w-4 h-4 text-gray-500 mx-2" />
                     )}
                     <Link
                       href={crumb.href}
                       className={`font-medium transition-colors ${
                         index === getBreadcrumbs().length - 1
-                          ? "text-slate-900 dark:text-white"
-                          : "text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300"
+                          ? "text-gray-100"
+                          : "text-gray-400 hover:text-gray-200"
                       }`}
                     >
                       {crumb.name}
@@ -827,7 +905,7 @@ export default function AdminLayout({ children }) {
               >
                 <div className="relative w-full group">
                   <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                    <Search className="w-5 h-5 text-slate-400 group-focus-within:text-blue-500 transition-colors" />
+                    <Search className="w-5 h-5 text-gray-400 group-focus-within:text-blue-400 transition-colors" />
                   </div>
                   <input
                     id="global-search"
@@ -841,27 +919,27 @@ export default function AdminLayout({ children }) {
                         searchResults[0].action();
                       }
                     }}
-                    className="w-full pl-12 pr-10 py-3 border border-slate-200 dark:border-slate-700 rounded-xl bg-slate-50 dark:bg-slate-800/50 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all duration-200 shadow-sm hover:shadow-md focus:shadow-lg"
+                    className="w-full pl-12 pr-10 py-3 border border-gray-700 rounded-xl bg-gray-800/50 text-gray-100 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all duration-200 shadow-sm hover:shadow-md focus:shadow-lg"
                   />
                   <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
-                    <kbd className="hidden sm:inline-flex items-center justify-center px-2 py-1 text-xs font-sans font-semibold text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-700 rounded border border-slate-200 dark:border-slate-600">
+                    <kbd className="hidden sm:inline-flex items-center justify-center px-2 py-1 text-xs font-sans font-semibold text-gray-400 bg-gray-700 rounded border border-gray-600">
                       <Command className="w-3 h-3 mr-1" />K
                     </kbd>
                   </div>
 
                   {/* Enhanced Search Results Dropdown */}
                   {searchFocused && (
-                    <div className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-slate-800 rounded-xl shadow-2xl border border-slate-200 dark:border-slate-700 z-50 overflow-hidden backdrop-blur-xl max-h-96 overflow-y-auto">
+                    <div className="absolute top-full left-0 right-0 mt-2 bg-gray-800 rounded-xl shadow-2xl border border-gray-700 z-50 overflow-hidden backdrop-blur-xl max-h-96 overflow-y-auto">
                       {/* Search History */}
                       {searchQuery === "" && searchHistory.length > 0 && (
-                        <div className="p-4 border-b border-slate-200 dark:border-slate-700">
+                        <div className="p-4 border-b border-gray-700">
                           <div className="flex items-center justify-between mb-2">
-                            <h3 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                            <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
                               Recent Searches
                             </h3>
                             <button
                               onClick={clearSearchHistory}
-                              className="text-xs text-slate-500 dark:text-slate-400 hover:text-red-500 dark:hover:text-red-400 transition-colors"
+                              className="text-xs text-gray-400 hover:text-red-400 transition-colors"
                             >
                               Clear
                             </button>
@@ -874,10 +952,10 @@ export default function AdminLayout({ children }) {
                                     setSearchQuery(query);
                                     handleSearch(query);
                                   }}
-                                  className="flex items-center w-full p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors text-left"
+                                  className="flex items-center w-full p-2 rounded-lg hover:bg-gray-700 transition-colors text-left"
                                 >
-                                  <ClockIcon className="w-4 h-4 text-slate-400 mr-2" />
-                                  <span className="text-sm text-slate-700 dark:text-slate-300">
+                                  <ClockIcon className="w-4 h-4 text-gray-400 mr-2" />
+                                  <span className="text-sm text-gray-300">
                                     {query}
                                   </span>
                                 </button>
@@ -894,21 +972,21 @@ export default function AdminLayout({ children }) {
                             <li key={index}>
                               <button
                                 onClick={result.action}
-                                className="flex items-center w-full p-3 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors text-left group"
+                                className="flex items-center w-full p-3 hover:bg-gray-700 transition-colors text-left group"
                               >
-                                <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-slate-100 dark:bg-slate-700 flex items-center justify-center mr-3 text-slate-600 dark:text-slate-300 group-hover:text-blue-500 group-hover:bg-blue-50 dark:group-hover:bg-blue-900/20 transition-colors">
+                                <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-gray-700 flex items-center justify-center mr-3 text-gray-300 group-hover:text-blue-400 group-hover:bg-blue-900/20 transition-colors">
                                   {result.icon}
                                 </div>
                                 <div className="flex-1 min-w-0">
-                                  <p className="text-sm font-medium text-slate-900 dark:text-white truncate">
+                                  <p className="text-sm font-medium text-gray-100 truncate">
                                     {result.title}
                                   </p>
-                                  <p className="text-xs text-slate-500 dark:text-slate-400 truncate">
+                                  <p className="text-xs text-gray-400 truncate">
                                     {result.description}
                                   </p>
                                 </div>
                                 {result.type === "url" && (
-                                  <ExternalLink className="w-4 h-4 text-slate-400 ml-2" />
+                                  <ExternalLink className="w-4 h-4 text-gray-400 ml-2" />
                                 )}
                               </button>
                             </li>
@@ -919,13 +997,13 @@ export default function AdminLayout({ children }) {
                       {/* No Results */}
                       {searchQuery !== "" && searchResults.length === 0 && (
                         <div className="p-6 text-center">
-                          <div className="w-12 h-12 bg-slate-100 dark:bg-slate-700 rounded-full flex items-center justify-center mx-auto mb-3">
-                            <Search className="w-6 h-6 text-slate-400" />
+                          <div className="w-12 h-12 bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-3">
+                            <Search className="w-6 h-6 text-gray-400" />
                           </div>
-                          <p className="text-sm text-slate-500 dark:text-slate-400">
+                          <p className="text-sm text-gray-400">
                             No results found for `{searchQuery}`
                           </p>
-                          <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">
+                          <p className="text-xs text-gray-500 mt-1">
                             Try searching for a different term or enter a URL
                           </p>
                         </div>
@@ -933,23 +1011,23 @@ export default function AdminLayout({ children }) {
 
                       {/* Search Tips */}
                       {searchQuery === "" && (
-                        <div className="p-4 border-t border-slate-200 dark:border-slate-700">
-                          <h3 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">
+                        <div className="p-4 border-t border-gray-700">
+                          <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">
                             Search Tips
                           </h3>
-                          <ul className="space-y-1 text-xs text-slate-600 dark:text-slate-400">
+                          <ul className="space-y-1 text-xs text-gray-400">
                             <li className="flex items-start">
-                              <span className="text-blue-500 mr-2">•</span>
+                              <span className="text-blue-400 mr-2">•</span>
                               Type a URL to navigate directly to a website
                             </li>
                             <li className="flex items-start">
-                              <span className="text-blue-500 mr-2">•</span>
+                              <span className="text-blue-400 mr-2">•</span>
                               Search for pages, settings, or features
                             </li>
                             <li className="flex items-start">
-                              <span className="text-blue-500 mr-2">•</span>
+                              <span className="text-blue-400 mr-2">•</span>
                               Use{" "}
-                              <kbd className="px-1 py-0.5 text-xs bg-slate-100 dark:bg-slate-700 rounded border border-slate-200 dark:border-slate-600">
+                              <kbd className="px-1 py-0.5 text-xs bg-gray-700 rounded border border-gray-600">
                                 Ctrl+K
                               </kbd>{" "}
                               to quickly open search
@@ -968,20 +1046,20 @@ export default function AdminLayout({ children }) {
                 <div className="relative" ref={notificationsRef}>
                   <button
                     onClick={() => setNotificationsOpen(!notificationsOpen)}
-                    className="relative p-2.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-all duration-200 border border-transparent hover:border-slate-200 dark:hover:border-slate-700 group"
+                    className="relative p-2.5 rounded-xl hover:bg-gray-700 transition-all duration-200 border border-transparent hover:border-gray-600 group"
                   >
-                    <Bell className="w-5 h-5 text-slate-600 dark:text-slate-300 group-hover:text-blue-500 transition-colors" />
+                    <Bell className="w-5 h-5 text-gray-300 group-hover:text-blue-400 transition-colors" />
                     {unreadNotifications > 0 && (
-                      <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white dark:border-slate-900 animate-pulse"></span>
+                      <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-gray-800 animate-pulse"></span>
                     )}
                   </button>
 
                   {/* Enhanced Notifications Dropdown */}
                   {notificationsOpen && (
-                    <div className="absolute right-0 mt-2 w-96 bg-white dark:bg-slate-800 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 z-50 overflow-hidden backdrop-blur-xl">
-                      <div className="p-5 border-b border-slate-200 dark:border-slate-700 bg-gradient-to-r from-slate-50 to-white dark:from-slate-800 dark:to-slate-900">
+                    <div className="absolute right-0 mt-2 w-96 bg-gray-800 rounded-2xl shadow-2xl border border-gray-700 z-50 overflow-hidden backdrop-blur-xl">
+                      <div className="p-5 border-b border-gray-700 bg-gradient-to-r from-gray-800 to-gray-900">
                         <div className="flex items-center justify-between">
-                          <h3 className="font-bold text-lg text-slate-900 dark:text-white">
+                          <h3 className="font-bold text-lg text-gray-100">
                             Notifications
                           </h3>
                           {unreadNotifications > 0 && (
@@ -995,10 +1073,8 @@ export default function AdminLayout({ children }) {
                         {notifications.map((notification) => (
                           <div
                             key={notification.id}
-                            className={`p-4 border-b border-slate-100 dark:border-slate-700/50 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors cursor-pointer ${
-                              !notification.read
-                                ? "bg-blue-50/50 dark:bg-blue-900/10"
-                                : ""
+                            className={`p-4 border-b border-gray-700 hover:bg-gray-700/50 transition-colors cursor-pointer ${
+                              !notification.read ? "bg-blue-900/10" : ""
                             }`}
                           >
                             <div className="flex items-start gap-3">
@@ -1006,25 +1082,25 @@ export default function AdminLayout({ children }) {
                                 {getNotificationIcon(notification.type)}
                               </div>
                               <div className="flex-1 min-w-0">
-                                <p className="font-semibold text-sm text-slate-900 dark:text-white">
+                                <p className="font-semibold text-sm text-gray-100">
                                   {notification.title}
                                 </p>
-                                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                                <p className="text-xs text-gray-400 mt-1">
                                   {notification.description}
                                 </p>
-                                <p className="text-xs text-slate-400 dark:text-slate-500 mt-2">
+                                <p className="text-xs text-gray-500 mt-2">
                                   {notification.time}
                                 </p>
                               </div>
                               {!notification.read && (
-                                <div className="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0 mt-2"></div>
+                                <div className="w-2 h-2 bg-blue-400 rounded-full flex-shrink-0 mt-2"></div>
                               )}
                             </div>
                           </div>
                         ))}
                       </div>
-                      <div className="p-3 border-t border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/50">
-                        <button className="w-full text-center text-sm font-semibold text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors">
+                      <div className="p-3 border-t border-gray-700 bg-gray-900/50">
+                        <button className="w-full text-center text-sm font-semibold text-blue-400 hover:text-blue-300 transition-colors">
                           View all notifications
                         </button>
                       </div>
@@ -1036,35 +1112,35 @@ export default function AdminLayout({ children }) {
                 <div className="relative" ref={profileRef}>
                   <button
                     onClick={() => setProfileOpen(!profileOpen)}
-                    className="flex items-center space-x-2 p-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-all duration-200 border border-transparent hover:border-slate-200 dark:hover:border-slate-700 group"
+                    className="flex items-center space-x-2 p-1.5 rounded-xl hover:bg-gray-700 transition-all duration-200 border border-transparent hover:border-gray-600 group"
                   >
-                    <div className="w-9 h-9 rounded-xl flex items-center justify-center text-white font-bold text-sm shadow-lg group-hover:shadow-xl group-hover:shadow-opacity-50 transition-all duration-300 bg-gradient-to-br from-blue-500 via-cyan-500 to-cyan-500 shadow-cyan-500/30 group-hover:shadow-cyan-500/50">
+                    <div className="w-9 h-9 rounded-xl flex items-center justify-center text-white font-bold text-sm shadow-lg group-hover:shadow-xl group-hover:shadow-opacity-50 transition-all duration-300 bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 shadow-blue-600/30 group-hover:shadow-blue-600/50">
                       {getUserInitials()}
                     </div>
                     <ChevronDown
-                      className={`w-4 h-4 text-slate-600 dark:text-slate-300 hidden sm:block transition-transform duration-200 ${profileOpen ? "rotate-180" : ""}`}
+                      className={`w-4 h-4 text-gray-300 hidden sm:block transition-transform duration-200 ${profileOpen ? "rotate-180" : ""}`}
                     />
                   </button>
 
                   {/* Enhanced Profile Dropdown with Working Logout */}
                   {profileOpen && (
-                    <div className="absolute right-0 mt-2 w-64 bg-white dark:bg-slate-800 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 z-50 overflow-hidden backdrop-blur-xl">
-                      <div className="p-5 border-b border-slate-200 dark:border-slate-700 bg-gradient-to-r from-blue-50 to-cyan-50 dark:from-slate-800 dark:to-slate-900">
+                    <div className="absolute right-0 mt-2 w-64 bg-gray-800 rounded-2xl shadow-2xl border border-gray-700 z-50 overflow-hidden backdrop-blur-xl">
+                      <div className="p-5 border-b border-gray-700 bg-gradient-to-r from-blue-900/20 to-gray-900">
                         <div className="flex items-center gap-3">
-                          <div className="w-12 h-12 rounded-xl flex items-center justify-center text-white font-bold text-lg shadow-lg bg-gradient-to-br from-blue-500 via-cyan-500 to-cyan-500">
+                          <div className="w-12 h-12 rounded-xl flex items-center justify-center text-white font-bold text-lg shadow-lg bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800">
                             {getUserInitials()}
                           </div>
                           <div>
-                            <p className="font-bold text-slate-900 dark:text-white">
+                            <p className="font-bold text-gray-100">
                               {user?.displayName || "Admin User"}
                             </p>
-                            <p className="text-xs text-slate-500 dark:text-slate-400">
+                            <p className="text-xs text-gray-400">
                               {user?.email || "admin@example.com"}
                             </p>
                             <div className="flex items-center mt-1">
-                              <Crown className="w-3 h-3 text-amber-500 mr-1" />
-                              <span className="text-xs font-medium text-cyan-600 dark:text-cyan-400 capitalize">
-                                {userRole || "Admin"}
+                              <Crown className="w-3 h-3 text-yellow-400 mr-1" />
+                              <span className="text-xs font-medium text-blue-400 capitalize">
+                                {userRole}
                               </span>
                             </div>
                           </div>
@@ -1073,38 +1149,38 @@ export default function AdminLayout({ children }) {
                       <div className="p-2">
                         <Link
                           href="/profile"
-                          className="flex items-center p-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors group"
+                          className="flex items-center p-3 rounded-xl hover:bg-gray-700 transition-colors group"
                         >
-                          <User className="w-4 h-4 mr-3 text-slate-600 dark:text-slate-300 group-hover:text-blue-500 transition-colors" />
-                          <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                          <User className="w-4 h-4 mr-3 text-gray-400 group-hover:text-blue-400 transition-colors" />
+                          <span className="text-sm font-medium text-gray-300">
                             Profile
                           </span>
                         </Link>
                         <Link
                           href="/settings"
-                          className="flex items-center p-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors group"
+                          className="flex items-center p-3 rounded-xl hover:bg-gray-700 transition-colors group"
                         >
-                          <Settings className="w-4 h-4 mr-3 text-slate-600 dark:text-slate-300 group-hover:text-blue-500 transition-colors" />
-                          <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                          <Settings className="w-4 h-4 mr-3 text-gray-400 group-hover:text-blue-400 transition-colors" />
+                          <span className="text-sm font-medium text-gray-300">
                             Settings
                           </span>
                         </Link>
                         <Link
                           href="/help"
-                          className="flex items-center p-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors group"
+                          className="flex items-center p-3 rounded-xl hover:bg-gray-700 transition-colors group"
                         >
-                          <HelpCircle className="w-4 h-4 mr-3 text-slate-600 dark:text-slate-300 group-hover:text-blue-500 transition-colors" />
-                          <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                          <HelpCircle className="w-4 h-4 mr-3 text-gray-400 group-hover:text-blue-400 transition-colors" />
+                          <span className="text-sm font-medium text-gray-300">
                             Help & Support
                           </span>
                         </Link>
-                        <div className="my-1 h-px bg-slate-200 dark:bg-slate-700"></div>
+                        <div className="my-1 h-px bg-gray-700"></div>
                         <button
                           onClick={showLogoutConfirmation}
-                          className="flex items-center w-full p-3 rounded-xl hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors group"
+                          className="flex items-center w-full p-3 rounded-xl hover:bg-red-900/20 transition-colors group"
                         >
-                          <LogOut className="w-4 h-4 mr-3 text-red-600 dark:text-red-400" />
-                          <span className="text-sm font-medium text-red-600 dark:text-red-400">
+                          <LogOut className="w-4 h-4 mr-3 text-red-400" />
+                          <span className="text-sm font-medium text-red-400">
                             Logout
                           </span>
                         </button>
@@ -1118,13 +1194,13 @@ export default function AdminLayout({ children }) {
         </header>
 
         {/* Page Content */}
-        <main className="flex-1 overflow-y-auto bg-gradient-to-br from-slate-50 via-white to-slate-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
+        <main className="flex-1 overflow-y-auto bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
           <div className="p-4 sm:p-6 lg:p-8">
             <div className="mb-6">
-              <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2 bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-300 bg-clip-text text-transparent">
+              <h1 className="text-3xl font-bold text-gray-100 mb-2 bg-gradient-to-r from-gray-100 to-gray-300 bg-clip-text text-transparent">
                 {getPageTitle()}
               </h1>
-              <p className="text-slate-600 dark:text-slate-400 text-sm">
+              <p className="text-gray-400 text-sm">
                 Manage and monitor your dashboard activities
               </p>
             </div>
@@ -1136,20 +1212,20 @@ export default function AdminLayout({ children }) {
       {/* Logout Confirmation Dialog with Enhanced Design */}
       {showLogoutConfirm && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center">
-          <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 p-6 max-w-sm w-full mx-4 logout-confirm-dialog transform transition-all">
-            <div className="flex items-center justify-center w-16 h-16 bg-red-100 dark:bg-red-900/20 rounded-full mx-auto mb-4">
-              <LogOut className="w-8 h-8 text-red-600 dark:text-red-400" />
+          <div className="bg-gray-800 rounded-2xl shadow-2xl border border-gray-700 p-6 max-w-sm w-full mx-4 logout-confirm-dialog transform transition-all">
+            <div className="flex items-center justify-center w-16 h-16 bg-red-900/20 rounded-full mx-auto mb-4">
+              <LogOut className="w-8 h-8 text-red-400" />
             </div>
-            <h3 className="text-xl font-bold text-center text-slate-900 dark:text-white mb-2">
+            <h3 className="text-xl font-bold text-center text-gray-100 mb-2">
               Confirm Logout
             </h3>
-            <p className="text-slate-600 dark:text-slate-400 text-center mb-6">
+            <p className="text-gray-400 text-center mb-6">
               Are you sure you want to logout? Any unsaved changes will be lost.
             </p>
             <div className="flex space-x-3">
               <button
                 onClick={() => setShowLogoutConfirm(false)}
-                className="flex-1 px-4 py-3 bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200 rounded-xl hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors font-medium"
+                className="flex-1 px-4 py-3 bg-gray-700 text-gray-200 rounded-xl hover:bg-gray-600 transition-colors font-medium"
                 disabled={isLoggingOut}
               >
                 Cancel
@@ -1201,11 +1277,11 @@ export default function AdminLayout({ children }) {
           background: transparent;
         }
         .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: rgba(148, 163, 184, 0.3);
+          background: rgba(107, 114, 128, 0.5);
           border-radius: 3px;
         }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-          background: rgba(148, 163, 184, 0.5);
+          background: rgba(107, 114, 128, 0.7);
         }
       `}</style>
     </div>

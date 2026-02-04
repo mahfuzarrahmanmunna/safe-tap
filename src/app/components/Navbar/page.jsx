@@ -9,7 +9,6 @@ import {
   ChevronDown,
   Phone,
   Mail,
-  Droplet,
   Home,
   Info,
   Package,
@@ -38,8 +37,12 @@ import {
 import { Target } from "lucide-react";
 import { useTheme } from "@/app/contexts/ThemeContext";
 import { usePathname, useRouter } from "next/navigation";
-import ServiceModal from "../ServiceModal";
 import { useAuth } from "@/app/contexts/AuthContext";
+import { useFirebaseAuth } from "@/app/contexts/FirebaseAuthContext";
+import ProfileModal from "./ProfileModal";
+import ProfilePicture from "./ProfilePicture";
+import { Droplet } from "lucide-react";
+import { Droplets } from "lucide-react";
 
 /* ------------------ DATA ------------------ */
 const navigationItems = [
@@ -56,7 +59,6 @@ const navigationItems = [
     ],
   },
   { name: "Products", href: "/products", icon: Package, isModal: true },
-  { name: "Services", onClick: () => null, icon: Wrench }, // Will be updated dynamically
   { name: "Blog", href: "pages/blogs", icon: FileText },
   { name: "Contact", href: "/pages/contact", icon: Contact },
 ];
@@ -115,10 +117,111 @@ const searchSuggestions = [
   "Mobile App Features",
 ];
 
+// Custom hook for user profile management
+const useUserProfile = () => {
+  const [userProfile, setUserProfile] = useState(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const { user } = useFirebaseAuth();
+
+  // Check if user is logged in on component mount
+  useEffect(() => {
+    const checkAuthStatus = () => {
+      // Check for token in localStorage
+      const token = localStorage.getItem("accessToken");
+      const user = localStorage.getItem("user");
+
+      if (token && user) {
+        try {
+          const userData = JSON.parse(user);
+          setIsLoggedIn(true);
+          setUserProfile(userData);
+        } catch (error) {
+          console.error("Error parsing user data:", error);
+          setIsLoggedIn(false);
+        }
+      } else {
+        setIsLoggedIn(false);
+      }
+      setLoading(false);
+    };
+
+    checkAuthStatus();
+
+    // Listen for storage changes (in case user logs in/out in another tab)
+    const handleStorageChange = () => {
+      checkAuthStatus();
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+    return () => window.removeEventListener("storage", handleStorageChange);
+  }, []);
+
+  // Fetch user profile data
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      if (!user) return;
+
+      try {
+        setLoading(true);
+        const token = await user.getIdToken();
+        const response = await fetch("http://127.0.0.1:8000/api/auth/me/", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          credentials: "include",
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setUserProfile(data);
+          setIsLoggedIn(true);
+        }
+      } catch (error) {
+        console.error("Error fetching user profile:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (user) {
+      fetchUserProfile();
+    }
+  }, [user]);
+
+  // Get user role safely
+  const getUserRole = () => {
+    if (!userProfile) return null;
+    return userProfile.profile?.role || userProfile.role || null;
+  };
+
+  // Get user ID safely
+  const getUserId = () => {
+    if (!userProfile) return null;
+    return userProfile.id || null;
+  };
+
+  // Get user display name safely
+  const getUserDisplayName = () => {
+    if (!userProfile) return "User";
+    return userProfile.first_name || userProfile.username || "User";
+  };
+
+  return {
+    userProfile,
+    isLoggedIn,
+    loading,
+    getUserRole,
+    getUserId,
+    getUserDisplayName,
+  };
+};
+
 // Product Modal Component
 const ProductModal = ({ isOpen, onClose, theme }) => {
   const router = useRouter();
-  const [isServiceModalOpen, setIsServiceModalOpen] = useState(false);
   const handleCityClick = (city) => {
     const slug = city.toLowerCase().replace(/\s+/g, "-");
     router.push(`/products/${slug}`);
@@ -470,129 +573,9 @@ const MobileThemeToggle = ({ theme, toggleTheme }) => {
   );
 };
 
-// User Dropdown Component
-const UserDropdown = ({ theme, userName, onLogout }) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const dropdownRef = useRef(null);
-  const router = useRouter();
-
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setIsOpen(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
-
-  const handleLogout = () => {
-    onLogout();
-    setIsOpen(false);
-  };
-
-  const navigateToDashboard = () => {
-    router.push("/dashboard");
-    setIsOpen(false);
-  };
-
-  return (
-    <div className="relative" ref={dropdownRef}>
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className={`flex items-center space-x-2 ${
-          theme === "dark"
-            ? "text-gray-200 hover:text-white"
-            : "text-cyan-700 hover:text-cyan-900"
-        } transition-colors p-2 rounded-lg ${
-          theme === "dark" ? "hover:bg-gray-800/50" : "hover:bg-cyan-50/50"
-        } backdrop-blur-sm`}
-      >
-        <div
-          className={`w-8 h-8 rounded-full bg-gradient-to-r ${
-            theme === "dark"
-              ? "from-cyan-600 to-cyan-500"
-              : "from-cyan-700 to-cyan-600"
-          } flex items-center justify-center text-white font-semibold`}
-        >
-          {userName ? userName.charAt(0).toUpperCase() : "U"}
-        </div>
-        <ChevronDown
-          className={`w-4 h-4 transition-transform ${
-            isOpen ? "rotate-180" : ""
-          }`}
-        />
-      </button>
-
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 10 }}
-            transition={{ duration: 0.2 }}
-            className={`absolute right-0 mt-2 w-48 ${
-              theme === "dark" ? "bg-gray-800/90" : "bg-white/90"
-            } backdrop-blur-lg rounded-xl shadow-2xl border ${
-              theme === "dark" ? "border-gray-700/50" : "border-cyan-200/50"
-            } overflow-hidden z-50`}
-          >
-            <div
-              className={`p-3 border-b ${
-                theme === "dark" ? "border-gray-700/50" : "border-cyan-200/50"
-              }`}
-            >
-              <p
-                className={`text-sm font-medium ${
-                  theme === "dark" ? "text-gray-200" : "text-cyan-900"
-                }`}
-              >
-                Welcome, {userName}
-              </p>
-            </div>
-            <button
-              onClick={navigateToDashboard}
-              className={`w-full text-left px-4 py-3 flex items-center space-x-3 ${
-                theme === "dark"
-                  ? "hover:bg-gray-700/50"
-                  : "hover:bg-cyan-50/50"
-              } transition-colors`}
-            >
-              <User className="w-4 h-4 text-cyan-500" />
-              <span
-                className={theme === "dark" ? "text-gray-200" : "text-cyan-900"}
-              >
-                Dashboard
-              </span>
-            </button>
-            <button
-              onClick={handleLogout}
-              className={`w-full text-left px-4 py-3 flex items-center space-x-3 ${
-                theme === "dark"
-                  ? "hover:bg-gray-700/50"
-                  : "hover:bg-cyan-50/50"
-              } transition-colors`}
-            >
-              <LogOut className="w-4 h-4 text-red-500" />
-              <span
-                className={theme === "dark" ? "text-gray-200" : "text-cyan-900"}
-              >
-                Logout
-              </span>
-            </button>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
-  );
-};
-
 export default function Navbar() {
   const { theme, toggleTheme } = useTheme();
-  const { logout } = useAuth(); // Use the logout function from AuthContext
+  const { logout } = useAuth();
   const [scrolled, setScrolled] = useState(false);
   const [openDropdown, setOpenDropdown] = useState(null);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -602,57 +585,46 @@ export default function Navbar() {
   const [selectedSuggestionIndex, setSelectedSuggestionIndex] = useState(-1);
   const [showQuickContact, setShowQuickContact] = useState(false);
   const [showProductModal, setShowProductModal] = useState(false);
-  const [isServiceModalOpen, setIsServiceModalOpen] = useState(false);
   const [activeNavItem, setActiveNavItem] = useState("");
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [userName, setUserName] = useState("");
+  const [showProfileModal, setShowProfileModal] = useState(false);
   const pathname = usePathname();
   const searchInputRef = useRef(null);
   const quickContactRef = useRef(null);
   const dropdownRefs = useRef({});
   const router = useRouter();
 
+  // Use our custom hook for user profile management
+  const {
+    userProfile,
+    isLoggedIn,
+    loading,
+    getUserRole,
+    getUserId,
+    getUserDisplayName,
+  } = useUserProfile();
+
   const isCommercial = pathname === "/commercial";
+  const userRole = getUserRole();
+  const userId = getUserId();
 
-  // Check if user is logged in on component mount
-  useEffect(() => {
-    const checkAuthStatus = () => {
-      // Check for token in localStorage
-      const token = localStorage.getItem("accessToken");
-      const user = localStorage.getItem("user");
+  // Update navigationItems to include the correct href for Services
+  const getNavigationItems = () => {
+    const items = [...navigationItems];
 
-      if (token && user) {
-        try {
-          const userData = JSON.parse(user);
-          setIsLoggedIn(true);
-          setUserName(userData.first_name || userData.username || "User");
-        } catch (error) {
-          console.error("Error parsing user data:", error);
-          setIsLoggedIn(false);
-        }
-      } else {
-        setIsLoggedIn(false);
-      }
-    };
-
-    checkAuthStatus();
-
-    // Listen for storage changes (in case user logs in/out in another tab)
-    const handleStorageChange = () => {
-      checkAuthStatus();
-    };
-
-    window.addEventListener("storage", handleStorageChange);
-    return () => window.removeEventListener("storage", handleStorageChange);
-  }, []);
-
-  // Update navigationItems to include the correct onClick for Services
-  const updatedNavigationItems = navigationItems.map((item) => {
-    if (item.name === "Services") {
-      return { ...item, onClick: () => setIsServiceModalOpen(true) };
+    // Add Services link for customers
+    if (userId) {
+      // Insert Services link after Products (index 2)
+      items.splice(3, 0, {
+        name: "Services",
+        href: `/support/${userId}`,
+        icon: Wrench,
+      });
     }
-    return item;
-  });
+
+    return items;
+  };
+
+  const finalNavigationItems = getNavigationItems();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 50);
@@ -710,12 +682,22 @@ export default function Navbar() {
     // Use the logout function from AuthContext
     logout();
 
-    // Update local state
-    setIsLoggedIn(false);
-    setUserName("");
-
     // Redirect to home page
     router.push("/");
+  };
+
+  // Get role display name
+  const getRoleDisplayName = (role) => {
+    switch (role) {
+      case "admin":
+        return "Administrator";
+      case "servicer":
+        return "Service Provider";
+      case "customer":
+        return "Customer";
+      default:
+        return "User";
+    }
   };
 
   return (
@@ -856,7 +838,7 @@ export default function Navbar() {
 
             {/* Desktop Navigation */}
             <div className="hidden lg:flex items-center space-x-1">
-              {updatedNavigationItems.map((item) => {
+              {finalNavigationItems.map((item) => {
                 if (item.isModal) {
                   return (
                     <button
@@ -999,30 +981,6 @@ export default function Navbar() {
                       </AnimatePresence>
                     </div>
                   );
-                } else if (item.onClick) {
-                  // Handle Services button with onClick
-                  return (
-                    <button
-                      key={item.name}
-                      onClick={item.onClick}
-                      className={`flex items-center space-x-1 ${
-                        scrolled ? "px-3 py-4" : "px-5 py-6"
-                      } font-semibold ${
-                        theme === "dark"
-                          ? "text-gray-200 hover:text-white"
-                          : "text-cyan-700 hover:text-cyan-900"
-                      } transition-colors relative group`}
-                    >
-                      <span>{item.name}</span>
-                      <span
-                        className={`absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r ${
-                          theme === "dark"
-                            ? "from-cyan-400 to-cyan-500"
-                            : "from-cyan-400 to-cyan-600"
-                        } transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left`}
-                      />
-                    </button>
-                  );
                 }
                 return (
                   <Link key={item.name} href={item.href}>
@@ -1086,12 +1044,12 @@ export default function Navbar() {
                 <Headphones className="w-5 h-5 group-hover:text-cyan-500 transition-colors" />
               </motion.button>
 
-              {/* User Dropdown or Login Button */}
-              {isLoggedIn ? (
-                <UserDropdown
+              {/* Profile Picture or Login Button */}
+              {isLoggedIn && userProfile ? (
+                <ProfilePicture
                   theme={theme}
-                  userName={userName}
-                  onLogout={handleLogout}
+                  userProfile={userProfile}
+                  onClick={() => setShowProfileModal(true)}
                 />
               ) : (
                 <Link href="/login">
@@ -1124,7 +1082,7 @@ export default function Navbar() {
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                 >
-                  <Droplet className="w-4 h-4" />
+                  <Droplets className="w-4 h-4" />
                   <span>{isCommercial ? "For Household" : "For Business"}</span>
                   <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </motion.button>
@@ -1379,7 +1337,7 @@ export default function Navbar() {
                 <MobileThemeToggle theme={theme} toggleTheme={toggleTheme} />
 
                 {/* User Section in Mobile Menu */}
-                {isLoggedIn ? (
+                {isLoggedIn && userProfile ? (
                   <div
                     className={`p-4 rounded-lg ${
                       theme === "dark" ? "bg-gray-700/50" : "bg-cyan-50/50"
@@ -1393,7 +1351,9 @@ export default function Navbar() {
                             : "from-cyan-700 to-cyan-600"
                         } flex items-center justify-center text-white font-semibold`}
                       >
-                        {userName ? userName.charAt(0).toUpperCase() : "U"}
+                        {userProfile?.first_name?.charAt(0) ||
+                          userProfile?.username?.charAt(0) ||
+                          "U"}
                       </div>
                       <div>
                         <p
@@ -1401,28 +1361,38 @@ export default function Navbar() {
                             theme === "dark" ? "text-gray-100" : "text-cyan-900"
                           }`}
                         >
-                          Welcome, {userName}
+                          {userProfile?.first_name} {userProfile?.last_name}
+                        </p>
+                        <p
+                          className={`text-sm ${
+                            theme === "dark" ? "text-gray-400" : "text-cyan-600"
+                          }`}
+                        >
+                          {getRoleDisplayName(userRole)}
                         </p>
                       </div>
                     </div>
-                    <Link
-                      href="/admin-dashboard"
-                      onClick={closeMobileMenu}
-                      className={`w-full flex items-center space-x-2 p-3 rounded-lg ${
-                        theme === "dark"
-                          ? "hover:bg-gray-700/50"
-                          : "hover:bg-cyan-50/50"
-                      } transition-colors`}
-                    >
-                      <User className="w-4 h-4 text-cyan-500" />
-                      <span
-                        className={
-                          theme === "dark" ? "text-gray-200" : "text-cyan-900"
-                        }
+                    {/* Dashboard - Only show for non-customer users */}
+                    {userRole !== "customer" && (
+                      <Link
+                        href="/admin-dashboard"
+                        onClick={closeMobileMenu}
+                        className={`w-full flex items-center space-x-2 p-3 rounded-lg ${
+                          theme === "dark"
+                            ? "hover:bg-gray-700/50"
+                            : "hover:bg-cyan-50/50"
+                        } transition-colors`}
                       >
-                        Dashboard
-                      </span>
-                    </Link>
+                        <User className="w-4 h-4 text-cyan-500" />
+                        <span
+                          className={
+                            theme === "dark" ? "text-gray-200" : "text-cyan-900"
+                          }
+                        >
+                          Dashboard
+                        </span>
+                      </Link>
+                    )}
                     <button
                       onClick={() => {
                         handleLogout();
@@ -1464,7 +1434,7 @@ export default function Navbar() {
                   </Link>
                 )}
 
-                {updatedNavigationItems.map((item) => {
+                {finalNavigationItems.map((item) => {
                   if (item.isModal) {
                     return (
                       <button
@@ -1553,31 +1523,6 @@ export default function Navbar() {
                           )}
                         </AnimatePresence>
                       </div>
-                    );
-                  } else if (item.onClick) {
-                    return (
-                      <button
-                        key={item.name}
-                        onClick={() => {
-                          item.onClick();
-                          closeMobileMenu();
-                        }}
-                        className={`w-full flex items-center justify-between p-4 rounded-lg ${
-                          theme === "dark"
-                            ? "hover:bg-gray-700/50"
-                            : "hover:bg-cyan-50/50"
-                        } transition-colors font-semibold ${
-                          theme === "dark" ? "text-gray-200" : "text-cyan-700"
-                        } backdrop-blur-sm`}
-                      >
-                        <div className="flex items-center space-x-2">
-                          {item.icon && (
-                            <item.icon className="w-5 h-5 text-cyan-500" />
-                          )}
-                          <span>{item.name}</span>
-                        </div>
-                        <ArrowRight className="w-5 h-5" />
-                      </button>
                     );
                   }
                   return (
@@ -1706,11 +1651,13 @@ export default function Navbar() {
         theme={theme}
       />
 
-      {/* Service Modal */}
-      <ServiceModal
-        isOpen={isServiceModalOpen}
-        onClose={() => setIsServiceModalOpen(false)}
+      {/* Profile Modal */}
+      <ProfileModal
+        isOpen={showProfileModal}
+        onClose={() => setShowProfileModal(false)}
         theme={theme}
+        userProfile={userProfile}
+        onLogout={handleLogout}
       />
     </>
   );

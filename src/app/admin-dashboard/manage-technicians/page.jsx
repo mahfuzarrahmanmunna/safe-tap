@@ -66,7 +66,7 @@ function ManageTechnicians() {
     estimated_cost: "",
     admin_notes: "",
   });
-
+  console.log(user);
   // Fetch data
   useEffect(() => {
     if (user) {
@@ -154,7 +154,7 @@ function ManageTechnicians() {
       console.error("Fetch technicians error:", error);
       toast.error("Failed to fetch technicians");
     } finally {
-      setLoading(false);
+      // setLoading(false);
     }
   };
 
@@ -340,13 +340,13 @@ function ManageTechnicians() {
     return matchesStatus;
   });
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-      </div>
-    );
-  }
+  // if (loading) {
+  //   return (
+  //     <div className="flex items-center justify-center h-64">
+  //       <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+  //     </div>
+  //   );
+  // }
 
   return (
     <div className="space-y-6">

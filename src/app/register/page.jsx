@@ -261,9 +261,10 @@ const RegisterPage = () => {
   const fetchDivisions = async () => {
     try {
       const response = await axios.get(`${API_BASE_URL}/api/divisions/`);
-      setDivisions(response.data);
-      console.log("Divisions loaded:", response.data);
-      return response.data;
+      // Fix: Access the results property of the response
+      setDivisions(response.data.results || []);
+      console.log("Divisions loaded:", response.data.results);
+      return response.data.results || [];
     } catch (err) {
       console.error("Failed to fetch divisions", err);
       return [];
@@ -276,9 +277,10 @@ const RegisterPage = () => {
       const response = await axios.get(
         `${API_BASE_URL}/api/districts/?division_id=${divisionId}`,
       );
-      setDistricts(response.data);
-      console.log("Districts loaded:", response.data);
-      return response.data;
+      // Fix: Access the results property of the response
+      setDistricts(response.data.results || []);
+      console.log("Districts loaded:", response.data.results);
+      return response.data.results || [];
     } catch (err) {
       console.error("Failed to fetch districts", err);
       return [];
@@ -291,9 +293,10 @@ const RegisterPage = () => {
       const response = await axios.get(
         `${API_BASE_URL}/api/thanas/?district_id=${districtId}`,
       );
-      setThanas(response.data);
-      console.log("Thanas loaded:", response.data);
-      return response.data;
+      // Fix: Access the results property of the response
+      setThanas(response.data.results || []);
+      console.log("Thanas loaded:", response.data.results);
+      return response.data.results || [];
     } catch (err) {
       console.error("Failed to fetch thanas", err);
       return [];
@@ -379,7 +382,7 @@ const RegisterPage = () => {
       if (result.success) {
         setFirebaseUser(result.user);
         setAuthMethod("google");
-        setFormStep(2);
+        setFormStep(3); // Changed to step 3 (security)
         fetchDivisions();
 
         // Pre-fill form with Google user data
@@ -414,7 +417,7 @@ const RegisterPage = () => {
       if (result.success) {
         setFirebaseUser(result.user);
         setAuthMethod("facebook");
-        setFormStep(2);
+        setFormStep(3); // Changed to step 3 (security)
         fetchDivisions();
 
         // Pre-fill form with Facebook user data
@@ -1004,6 +1007,11 @@ const RegisterPage = () => {
         newErrors.phoneVerification = "Please verify your phone number";
       }
     } else if (formStep === 2) {
+      if (!formData.division) newErrors.division = "Select a division";
+      if (!formData.district) newErrors.district = "Select a district";
+      if (!formData.thana) newErrors.thana = "Select a thana";
+      if (!formData.address.trim()) newErrors.address = "Address is required";
+    } else if (formStep === 3) {
       if (!formData.pin) {
         newErrors.pin = "PIN is required";
       } else if (formData.pin.length < 4) {
@@ -1014,11 +1022,6 @@ const RegisterPage = () => {
       } else if (formData.pin !== formData.confirmPin) {
         newErrors.confirmPin = "PINs do not match";
       }
-    } else if (formStep === 3) {
-      if (!formData.division) newErrors.division = "Select a division";
-      if (!formData.district) newErrors.district = "Select a district";
-      if (!formData.thana) newErrors.thana = "Select a thana";
-      if (!formData.address.trim()) newErrors.address = "Address is required";
     }
 
     setErrors(newErrors);
@@ -1201,14 +1204,14 @@ const RegisterPage = () => {
                       isDark ? "text-gray-400" : "text-gray-600"
                     }`}
                   >
-                    Security
+                    Location
                   </span>
                   <span
                     className={`text-xs ${
                       isDark ? "text-gray-400" : "text-gray-600"
                     }`}
                   >
-                    Location
+                    Security
                   </span>
                 </div>
               </div>
@@ -1268,60 +1271,6 @@ const RegisterPage = () => {
                       transition={{ duration: 0.3 }}
                       className="space-y-4"
                     >
-                      {/* Auth method selection */}
-                      {authMethod === "email" && (
-                        <div className="mb-4">
-                          <div className="grid grid-cols-2 gap-4">
-                            <button
-                              type="button"
-                              onClick={handleGoogleSignIn}
-                              className={`flex items-center justify-center gap-2 py-2 px-4 rounded-lg border ${
-                                isDark
-                                  ? "border-gray-600 hover:bg-gray-700 text-white"
-                                  : "border-gray-300 hover:bg-gray-50 text-gray-700"
-                              }`}
-                            >
-                              <FaGoogle className="text-red-500" size={18} />
-                              <span>Google</span>
-                            </button>
-                            <button
-                              type="button"
-                              onClick={handleFacebookSignIn}
-                              className={`flex items-center justify-center gap-2 py-2 px-4 rounded-lg border ${
-                                isDark
-                                  ? "border-gray-600 hover:bg-gray-700 text-white"
-                                  : "border-gray-300 hover:bg-gray-50 text-gray-700"
-                              }`}
-                            >
-                              <FaFacebook className="text-blue-600" size={18} />
-                              <span>Facebook</span>
-                            </button>
-                          </div>
-                          <div className="relative my-4">
-                            <div
-                              className={`absolute inset-0 flex items-center ${
-                                isDark ? "text-gray-600" : "text-gray-400"
-                              }`}
-                            >
-                              <div className="w-full border-t"></div>
-                            </div>
-                            <div
-                              className={`relative flex justify-center text-sm ${
-                                isDark ? "text-gray-400" : "text-gray-500"
-                              }`}
-                            >
-                              <span
-                                className={`px-2 ${
-                                  isDark ? "bg-gray-800" : "bg-white"
-                                }`}
-                              >
-                                OR
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                      )}
-
                       {/* Full Name field */}
                       <div className="relative">
                         <FaUser
@@ -1335,14 +1284,11 @@ const RegisterPage = () => {
                           placeholder="Full Name"
                           value={formData.fullName}
                           onChange={handleInputChange}
-                          disabled={authMethod !== "email"}
                           className={`w-full pl-10 pr-4 py-3 rounded-lg border ${
                             isDark
                               ? "bg-gray-700 border-gray-600 text-white"
                               : "bg-gray-50 border-gray-200 text-gray-800"
-                          } focus:outline-none focus:ring-2 focus:ring-cyan-500 ${
-                            authMethod !== "email" ? "opacity-75" : ""
-                          }`}
+                          } focus:outline-none focus:ring-2 focus:ring-cyan-500`}
                         />
                         {errors.fullName && (
                           <p className="text-red-500 text-xs mt-1 flex items-center">
@@ -1392,14 +1338,11 @@ const RegisterPage = () => {
                           placeholder="Email Address"
                           value={formData.email}
                           onChange={handleInputChange}
-                          disabled={authMethod !== "email"}
                           className={`w-full pl-10 pr-4 py-3 rounded-lg border ${
                             isDark
                               ? "bg-gray-700 border-gray-600 text-white"
                               : "bg-gray-50 border-gray-200 text-gray-800"
-                          } focus:outline-none focus:ring-2 focus:ring-cyan-500 ${
-                            authMethod !== "email" ? "opacity-75" : ""
-                          }`}
+                          } focus:outline-none focus:ring-2 focus:ring-cyan-500`}
                         />
                         {errors.email && (
                           <p className="text-red-500 text-xs mt-1 flex items-center">
@@ -1579,214 +1522,6 @@ const RegisterPage = () => {
                   {formStep === 2 && (
                     <motion.div
                       key="step2"
-                      initial={{
-                        opacity: 0,
-                        x: animationDirection > 0 ? 50 : -50,
-                      }}
-                      animate={{ opacity: 1, x: 0 }}
-                      exit={{
-                        opacity: 0,
-                        x: animationDirection > 0 ? -50 : 50,
-                      }}
-                      transition={{ duration: 0.3 }}
-                      className="space-y-4"
-                    >
-                      {/* Show user info if using social auth */}
-                      {authMethod !== "email" && firebaseUser && (
-                        <div
-                          className={`p-4 rounded-lg ${
-                            isDark ? "bg-gray-700" : "bg-gray-100"
-                          }`}
-                        >
-                          <div className="flex items-center gap-3">
-                            {firebaseUser.photoURL && (
-                              <img
-                                src={firebaseUser.photoURL}
-                                alt="Profile"
-                                className="w-12 h-12 rounded-full"
-                              />
-                            )}
-                            <div>
-                              <p
-                                className={`font-medium ${
-                                  isDark ? "text-white" : "text-gray-800"
-                                }`}
-                              >
-                                {firebaseUser.displayName || "User"}
-                              </p>
-                              <p
-                                className={`text-sm ${
-                                  isDark ? "text-gray-400" : "text-gray-600"
-                                }`}
-                              >
-                                {firebaseUser.email}
-                              </p>
-                              <p
-                                className={`text-xs ${
-                                  isDark ? "text-gray-500" : "text-gray-500"
-                                }`}
-                              >
-                                Signed in with{" "}
-                                {authMethod === "google"
-                                  ? "Google"
-                                  : "Facebook"}
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-                      )}
-
-                      {/* PIN field - only show for email auth */}
-                      {authMethod === "email" && (
-                        <div className="relative">
-                          <FaLock
-                            className={`absolute left-3 top-1/2 -translate-y-1/2 ${
-                              isDark ? "text-gray-400" : "text-gray-500"
-                            }`}
-                          />
-                          <input
-                            type={showPin ? "text" : "password"}
-                            name="pin"
-                            placeholder="Set PIN (min. 4 characters)"
-                            value={formData.pin}
-                            onChange={handleInputChange}
-                            className={`w-full pl-10 pr-12 py-3 rounded-lg border ${
-                              isDark
-                                ? "bg-gray-700 border-gray-600 text-white"
-                                : "bg-gray-50 border-gray-200 text-gray-800"
-                            } focus:outline-none focus:ring-2 focus:ring-cyan-500`}
-                          />
-                          <button
-                            type="button"
-                            onClick={() => setShowPin(!showPin)}
-                            className={`absolute right-3 top-1/2 -translate-y-1/2 ${
-                              isDark ? "text-gray-400" : "text-gray-500"
-                            }`}
-                          >
-                            {showPin ? (
-                              <FaEyeSlash size={18} />
-                            ) : (
-                              <FaEye size={18} />
-                            )}
-                          </button>
-                          {errors.pin && (
-                            <p className="text-red-500 text-xs mt-1 flex items-center">
-                              <FaExclamationTriangle
-                                className="mr-1"
-                                size={10}
-                              />
-                              {errors.pin}
-                            </p>
-                          )}
-
-                          {/* PIN strength indicator */}
-                          {formData.pin && (
-                            <div className="mt-2">
-                              <div className="flex items-center justify-between mb-1">
-                                <span
-                                  className={`text-xs ${
-                                    isDark ? "text-gray-400" : "text-gray-600"
-                                  }`}
-                                >
-                                  PIN Strength
-                                </span>
-                                <span
-                                  className={`text-xs ${
-                                    isDark ? "text-gray-400" : "text-gray-600"
-                                  }`}
-                                >
-                                  {pinStrengthInfo.text}
-                                </span>
-                              </div>
-                              <div
-                                className={`h-1 w-full rounded-full ${
-                                  isDark ? "bg-gray-700" : "bg-gray-200"
-                                }`}
-                              >
-                                <div
-                                  className={`h-full rounded-full ${pinStrengthInfo.color} transition-all duration-300`}
-                                  style={{
-                                    width: `${(passwordStrength / 5) * 100}%`,
-                                  }}
-                                ></div>
-                              </div>
-                            </div>
-                          )}
-                        </div>
-                      )}
-
-                      {/* Confirm PIN field - only show for email auth */}
-                      {authMethod === "email" && (
-                        <div className="relative">
-                          <FaLock
-                            className={`absolute left-3 top-1/2 -translate-y-1/2 ${
-                              isDark ? "text-gray-400" : "text-gray-500"
-                            }`}
-                          />
-                          <input
-                            type={showConfirmPin ? "text" : "password"}
-                            name="confirmPin"
-                            placeholder="Confirm PIN"
-                            value={formData.confirmPin}
-                            onChange={handleInputChange}
-                            className={`w-full pl-10 pr-12 py-3 rounded-lg border ${
-                              isDark
-                                ? "bg-gray-700 border-gray-600 text-white"
-                                : "bg-gray-50 border-gray-200 text-gray-800"
-                            } focus:outline-none focus:ring-2 focus:ring-cyan-500`}
-                          />
-                          <button
-                            type="button"
-                            onClick={() => setShowConfirmPin(!showConfirmPin)}
-                            className={`absolute right-3 top-1/2 -translate-y-1/2 ${
-                              isDark ? "text-gray-400" : "text-gray-500"
-                            }`}
-                          >
-                            {showConfirmPin ? (
-                              <FaEyeSlash size={18} />
-                            ) : (
-                              <FaEye size={18} />
-                            )}
-                          </button>
-                          {errors.confirmPin && (
-                            <p className="text-red-500 text-xs mt-1 flex items-center">
-                              <FaExclamationTriangle
-                                className="mr-1"
-                                size={10}
-                              />
-                              {errors.confirmPin}
-                            </p>
-                          )}
-                        </div>
-                      )}
-
-                      <div className="flex justify-between">
-                        <button
-                          type="button"
-                          onClick={handlePrevStep}
-                          className={`px-6 py-2 ${
-                            isDark
-                              ? "bg-gray-700 hover:bg-gray-600"
-                              : "bg-gray-200 hover:bg-gray-300"
-                          } rounded-lg font-medium`}
-                        >
-                          Back
-                        </button>
-                        <button
-                          type="button"
-                          onClick={handleNextStep}
-                          className="px-6 py-2 bg-cyan-600 hover:bg-cyan-700 text-white rounded-lg font-medium flex items-center"
-                        >
-                          Next
-                          <FaArrowRight className="ml-2" size={14} />
-                        </button>
-                      </div>
-                    </motion.div>
-                  )}
-
-                  {formStep === 3 && (
-                    <motion.div
-                      key="step3"
                       initial={{
                         opacity: 0,
                         x: animationDirection > 0 ? 50 : -50,
@@ -1979,6 +1714,214 @@ const RegisterPage = () => {
                         ></textarea>
                       </div>
 
+                      <div className="flex justify-between">
+                        <button
+                          type="button"
+                          onClick={handlePrevStep}
+                          className={`px-6 py-2 ${
+                            isDark
+                              ? "bg-gray-700 hover:bg-gray-600"
+                              : "bg-gray-200 hover:bg-gray-300"
+                          } rounded-lg font-medium`}
+                        >
+                          Back
+                        </button>
+                        <button
+                          type="button"
+                          onClick={handleNextStep}
+                          className="px-6 py-2 bg-cyan-600 hover:bg-cyan-700 text-white rounded-lg font-medium flex items-center"
+                        >
+                          Next
+                          <FaArrowRight className="ml-2" size={14} />
+                        </button>
+                      </div>
+                    </motion.div>
+                  )}
+
+                  {formStep === 3 && (
+                    <motion.div
+                      key="step3"
+                      initial={{
+                        opacity: 0,
+                        x: animationDirection > 0 ? 50 : -50,
+                      }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{
+                        opacity: 0,
+                        x: animationDirection > 0 ? -50 : 50,
+                      }}
+                      transition={{ duration: 0.3 }}
+                      className="space-y-4"
+                    >
+                      {/* Show user info if using social auth */}
+                      {authMethod !== "email" && firebaseUser && (
+                        <div
+                          className={`p-4 rounded-lg ${
+                            isDark ? "bg-gray-700" : "bg-gray-100"
+                          }`}
+                        >
+                          <div className="flex items-center gap-3">
+                            {firebaseUser.photoURL && (
+                              <img
+                                src={firebaseUser.photoURL}
+                                alt="Profile"
+                                className="w-12 h-12 rounded-full"
+                              />
+                            )}
+                            <div>
+                              <p
+                                className={`font-medium ${
+                                  isDark ? "text-white" : "text-gray-800"
+                                }`}
+                              >
+                                {firebaseUser.displayName || "User"}
+                              </p>
+                              <p
+                                className={`text-sm ${
+                                  isDark ? "text-gray-400" : "text-gray-600"
+                                }`}
+                              >
+                                {firebaseUser.email}
+                              </p>
+                              <p
+                                className={`text-xs ${
+                                  isDark ? "text-gray-500" : "text-gray-500"
+                                }`}
+                              >
+                                Signed in with{" "}
+                                {authMethod === "google"
+                                  ? "Google"
+                                  : "Facebook"}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* PIN field - only show for email auth */}
+                      {authMethod === "email" && (
+                        <div className="relative">
+                          <FaLock
+                            className={`absolute left-3 top-1/2 -translate-y-1/2 ${
+                              isDark ? "text-gray-400" : "text-gray-500"
+                            }`}
+                          />
+                          <input
+                            type={showPin ? "text" : "password"}
+                            name="pin"
+                            placeholder="Set PIN (min. 4 characters)"
+                            value={formData.pin}
+                            onChange={handleInputChange}
+                            className={`w-full pl-10 pr-12 py-3 rounded-lg border ${
+                              isDark
+                                ? "bg-gray-700 border-gray-600 text-white"
+                                : "bg-gray-50 border-gray-200 text-gray-800"
+                            } focus:outline-none focus:ring-2 focus:ring-cyan-500`}
+                          />
+                          <button
+                            type="button"
+                            onClick={() => setShowPin(!showPin)}
+                            className={`absolute right-3 top-1/2 -translate-y-1/2 ${
+                              isDark ? "text-gray-400" : "text-gray-500"
+                            }`}
+                          >
+                            {showPin ? (
+                              <FaEyeSlash size={18} />
+                            ) : (
+                              <FaEye size={18} />
+                            )}
+                          </button>
+                          {errors.pin && (
+                            <p className="text-red-500 text-xs mt-1 flex items-center">
+                              <FaExclamationTriangle
+                                className="mr-1"
+                                size={10}
+                              />
+                              {errors.pin}
+                            </p>
+                          )}
+
+                          {/* PIN strength indicator */}
+                          {formData.pin && (
+                            <div className="mt-2">
+                              <div className="flex items-center justify-between mb-1">
+                                <span
+                                  className={`text-xs ${
+                                    isDark ? "text-gray-400" : "text-gray-600"
+                                  }`}
+                                >
+                                  PIN Strength
+                                </span>
+                                <span
+                                  className={`text-xs ${
+                                    isDark ? "text-gray-400" : "text-gray-600"
+                                  }`}
+                                >
+                                  {pinStrengthInfo.text}
+                                </span>
+                              </div>
+                              <div
+                                className={`h-1 w-full rounded-full ${
+                                  isDark ? "bg-gray-700" : "bg-gray-200"
+                                }`}
+                              >
+                                <div
+                                  className={`h-full rounded-full ${pinStrengthInfo.color} transition-all duration-300`}
+                                  style={{
+                                    width: `${(passwordStrength / 5) * 100}%`,
+                                  }}
+                                ></div>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      )}
+
+                      {/* Confirm PIN field - only show for email auth */}
+                      {authMethod === "email" && (
+                        <div className="relative">
+                          <FaLock
+                            className={`absolute left-3 top-1/2 -translate-y-1/2 ${
+                              isDark ? "text-gray-400" : "text-gray-500"
+                            }`}
+                          />
+                          <input
+                            type={showConfirmPin ? "text" : "password"}
+                            name="confirmPin"
+                            placeholder="Confirm PIN"
+                            value={formData.confirmPin}
+                            onChange={handleInputChange}
+                            className={`w-full pl-10 pr-12 py-3 rounded-lg border ${
+                              isDark
+                                ? "bg-gray-700 border-gray-600 text-white"
+                                : "bg-gray-50 border-gray-200 text-gray-800"
+                            } focus:outline-none focus:ring-2 focus:ring-cyan-500`}
+                          />
+                          <button
+                            type="button"
+                            onClick={() => setShowConfirmPin(!showConfirmPin)}
+                            className={`absolute right-3 top-1/2 -translate-y-1/2 ${
+                              isDark ? "text-gray-400" : "text-gray-500"
+                            }`}
+                          >
+                            {showConfirmPin ? (
+                              <FaEyeSlash size={18} />
+                            ) : (
+                              <FaEye size={18} />
+                            )}
+                          </button>
+                          {errors.confirmPin && (
+                            <p className="text-red-500 text-xs mt-1 flex items-center">
+                              <FaExclamationTriangle
+                                className="mr-1"
+                                size={10}
+                              />
+                              {errors.confirmPin}
+                            </p>
+                          )}
+                        </div>
+                      )}
+
                       {/* Terms and conditions */}
                       <div className="flex items-start">
                         <input
@@ -2066,6 +2009,56 @@ const RegisterPage = () => {
                   )}
                 </AnimatePresence>
               </form>
+
+              {/* Social login buttons - moved to bottom of form */}
+              <div className="mt-6">
+                <div className="relative my-4">
+                  <div
+                    className={`absolute inset-0 flex items-center ${
+                      isDark ? "text-gray-600" : "text-gray-400"
+                    }`}
+                  >
+                    <div className="w-full border-t"></div>
+                  </div>
+                  <div
+                    className={`relative flex justify-center text-sm ${
+                      isDark ? "text-gray-400" : "text-gray-500"
+                    }`}
+                  >
+                    <span
+                      className={`px-2 ${isDark ? "bg-gray-800" : "bg-white"}`}
+                    >
+                      OR SIGN UP WITH
+                    </span>
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <button
+                    type="button"
+                    onClick={handleGoogleSignIn}
+                    className={`flex items-center justify-center gap-2 py-2 px-4 rounded-lg border ${
+                      isDark
+                        ? "border-gray-600 hover:bg-gray-700 text-white"
+                        : "border-gray-300 hover:bg-gray-50 text-gray-700"
+                    }`}
+                  >
+                    <FaGoogle className="text-red-500" size={18} />
+                    <span>Google</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleFacebookSignIn}
+                    className={`flex items-center justify-center gap-2 py-2 px-4 rounded-lg border ${
+                      isDark
+                        ? "border-gray-600 hover:bg-gray-700 text-white"
+                        : "border-gray-300 hover:bg-gray-50 text-gray-700"
+                    }`}
+                  >
+                    <FaFacebook className="text-blue-600" size={18} />
+                    <span>Facebook</span>
+                  </button>
+                </div>
+              </div>
 
               {/* Login link */}
               <div
