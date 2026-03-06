@@ -19,19 +19,19 @@ const navigationItems = [
   { name: 'Home', href: '/', icon: Home },
   {
     name: 'About Us',
-    href: '/pages/about-us',
+    href: '/about-us',
     icon: Info,
-    dropdown: [
-      { name: 'Our Story', href: '/about/story', icon: FileText },
-      { name: 'Our Team', href: '/about/team', icon: Users },
-      { name: 'Mission & Vision', href: '/about/mission', icon: Target },
-      { name: 'Technology', href: '/about/technology', icon: Sparkles },
-    ],
+    // dropdown: [
+    //   { name: 'Our Story', href: '/about/story', icon: FileText },
+    //   { name: 'Our Team', href: '/about/team', icon: Users },
+    //   { name: 'Mission & Vision', href: '/about/mission', icon: Target },
+    //   { name: 'Technology', href: '/about/technology', icon: Sparkles },
+    // ],
   },
   { name: 'Products', href: '/products', icon: Package, isModal: true },
   { name: 'Services', onClick: () => null, icon: Wrench }, 
-  { name: 'Blog', href: 'pages/blogs', icon: FileText }, 
-  { name: 'Contact', href: '/pages/contact', icon: Contact },
+  { name: 'Blog', href: '/blog', icon: FileText }, 
+  { name: 'Contact', href: '/contact', icon: Contact },
 
 ];
 const socialLinks = [
@@ -101,7 +101,7 @@ const ProductModal = ({ isOpen, onClose, theme }) => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className={`fixed inset-0 ${theme === 'dark' ? 'bg-black/70' : 'bg-cyan-900/50'} backdrop-blur-sm z-50 flex items-center justify-center p-4`}
+            className={`fixed  inset-0 ${theme === 'dark' ? 'bg-black/70' : 'bg-cyan-900/50'} backdrop-blur-sm z-50 flex items-center justify-center p-4`}
           >
             <motion.div
               initial={{ opacity: 0, scale: 0.9, y: 20 }}

@@ -1,4 +1,4 @@
-'use client'
+
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { Calendar, User, Clock, Share2, ArrowLeft, MessageCircle, Facebook, Twitter, Linkedin } from 'lucide-react'
@@ -101,22 +101,18 @@ export async function generateStaticParams() {
   }))
 }
 
-export default function BlogPostPage({ params }) {
-  const { slug } = params
-  const post = allBlogPosts[slug]
+export default async function BlogPostPage({ params }) 
+{ 
+const { slug } = await params // ✅ await the params const post = allBlogPosts[slug] if (!post) { notFound() }
+const post = allBlogPosts[slug] 
+if (!post) { notFound() }
 
-  
-  if (!post) {
-    notFound()
-  }
+const relatedPosts = getRelatedPosts(slug, post.category)
+ const shareUrl = `http://localhost:3000/blog/${slug}`
+ const shareText = encodeURIComponent(`Check out: ${post.title}`)
 
-  const relatedPosts = getRelatedPosts(slug, post.category)
 
- 
-  const shareUrl = typeof window !== 'undefined' ? window.location.href : ''
-  const shareText = encodeURIComponent(`Check out: ${post.title}`)
-
-  return (
+ return (
     <div className="min-h-screen bg-white">
       {/* Navigation Header */}
       <div className="border-b border-gray-200 bg-white sticky top-0 z-10">
@@ -207,6 +203,7 @@ export default function BlogPostPage({ params }) {
               <div className="text-center">
                 <h3 className="text-2xl font-bold mb-2">SafeTap Water Purification</h3>
                 <p>Advanced technology for clean, healthy water</p>
+
               </div>
             </div>
           </div>
@@ -325,19 +322,24 @@ export default function BlogPostPage({ params }) {
       </article>
     </div>
   )
+
 }
+
+
+
 
 // SEO Metadata
 export async function generateMetadata({ params }) {
-  const post = allBlogPosts[params.slug]
-  
+  const { slug } = await params   // ✅ unwrap params
+  const post = allBlogPosts[slug]
+
   if (!post) {
     return {
       title: 'Post Not Found | SafeTap Blog',
       description: 'The requested blog post could not be found.',
     }
   }
-  
+
   return {
     title: `${post.title} | SafeTap Blog`,
     description: post.excerpt,

@@ -14,7 +14,7 @@ const blogPosts = [
         author: 'SafeTap',
         category: 'Water Purifier',
         readTime: '5 min read',
-        image: '/images/blog1.jpg'
+        image: 'https://i.ibb.co.com/w3mTx5s/51d30f5c-df0d-454c-b5ab-3024eaa819d0-Io-T-Enabled-Smart-Water-Purifiers-Clean-Healthy-Drinking-Wat.avif'
     },
     {
         id: 2,
@@ -25,7 +25,7 @@ const blogPosts = [
         author: 'SafeTap',
         category: 'Water Purifier',
         readTime: '4 min read',
-        image: '/images/blog2.jpg'
+        image: 'https://i.ibb.co.com/9mDj3nJy/emerging-trends-in-home-filtration-systems-768x439.jpg'
     },
     {
         id: 3,
@@ -36,7 +36,7 @@ const blogPosts = [
         author: 'SafeTap',
         category: 'Water Purifier',
         readTime: '6 min read',
-        image: '/images/blog3.jpg'
+        image: 'https://i.ibb.co.com/fzFF6qjH/AA1x-Z2wm.jpg'
     },
     {
         id: 4,
@@ -47,7 +47,7 @@ const blogPosts = [
         author: 'SafeTap',
         category: 'Water Purifier',
         readTime: '5 min read',
-        image: '/images/blog4.jpg'
+        image: 'https://i.ibb.co.com/w3mTx5s/51d30f5c-df0d-454c-b5ab-3024eaa819d0-Io-T-Enabled-Smart-Water-Purifiers-Clean-Healthy-Drinking-Wat.avif'
     },
     {
         id: 5,
@@ -58,7 +58,7 @@ const blogPosts = [
         author: 'SafeTap',
         category: 'Water Purifier',
         readTime: '7 min read',
-        image: '/images/blog5.jpg'
+        image: 'https://i.ibb.co.com/fzFF6qjH/AA1x-Z2wm.jpg'
     },
     {
         id: 6,
@@ -69,7 +69,7 @@ const blogPosts = [
         author: 'SafeTap',
         category: 'Water Purifier',
         readTime: '8 min read',
-        image: '/images/blog6.jpg'
+        image: 'https://i.ibb.co.com/HDH2vM3C/03-f3869205-8f50-4c23-a9a4-b2af98183f78-1200x1200.webp'
     },
     {
         id: 7,
@@ -80,7 +80,7 @@ const blogPosts = [
         author: 'SafeTap',
         category: 'Water Purifier',
         readTime: '6 min read',
-        image: '/images/blog7.jpg'
+        image: 'https://i.ibb.co.com/9mDj3nJy/emerging-trends-in-home-filtration-systems-768x439.jpg'
     },
     {
         id: 8,
@@ -91,7 +91,7 @@ const blogPosts = [
         author: 'SafeTap',
         category: 'Water Purifier',
         readTime: '5 min read',
-        image: '/images/blog8.jpg'
+        image: 'https://i.ibb.co.com/fzFF6qjH/AA1x-Z2wm.jpg'
     },
     {
         id: 9,
@@ -102,7 +102,7 @@ const blogPosts = [
         author: 'SafeTap',
         category: 'Health',
         readTime: '6 min read',
-        image: '/images/blog9.jpg'
+        image: 'https://i.ibb.co.com/9mDj3nJy/emerging-trends-in-home-filtration-systems-768x439.jpg'
     },
     {
         id: 10,
@@ -113,7 +113,7 @@ const blogPosts = [
         author: 'SafeTap',
         category: 'Water Purifier',
         readTime: '7 min read',
-        image: '/images/blog10.jpg'
+        image: 'https://i.ibb.co.com/w3mTx5s/51d30f5c-df0d-454c-b5ab-3024eaa819d0-Io-T-Enabled-Smart-Water-Purifiers-Clean-Healthy-Drinking-Wat.avif'
     },
 ]
 
@@ -193,7 +193,16 @@ export default function BlogPage() {
                                                 {post.category}
                                             </span>
                                         </div>
+{/* image  */}
 
+
+                                        <div className="mb-4">
+                                            <img
+                                                src={post.image}
+                                                alt={post.title}
+                                                className="w-full h-72 object-cover rounded-lg"
+                                            />
+                                        </div>
                                         {/* Title */}
                                         <h2 className={`text-2xl font-bold mb-4 transition-colors ${styles.textPrimary} ${styles.hoverText}`}>
                                             <Link href={`/blog/${post.slug}`}>
