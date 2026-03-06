@@ -13,7 +13,7 @@ import { useTheme } from "../contexts/ThemeContext";
 
 // --- Data ---
 const testimonialsData = [
-  { name: "Shyamanta Baruah", designation: "IT Professional - Bangalore", quote: "It's just something that you fit and forget. You fit the device, you subscribe to a plan and that's it.", videoTitle: "DRINKPRIME IS TOO GOOD TO BE TRUE" },
+  { name: "Shyamanta Baruah", designation: "IT Professional - Bangalore", quote: "It's just something that you fit and forget. You fit the device, you subscribe to a plan and that's it.", videoTitle: "SafeTap IS TOO GOOD TO BE TRUE" },
   { name: "Varsha", designation: "IT Professional - Bangalore", quote: "We faced throat issues with corporation water, but after switching there are no health issues.", videoTitle: "DRINKING CAUVERY WATER? WATCH THIS!" },
   { name: "Bhanu Prasanna", designation: "Bangalore", quote: "In Bangalore I never felt my drinking water was safe. I started noticing like water flowing in different steps.", videoTitle: "BEST FOR B'LORE WATER!" },
   { name: "Sujit", designation: "Hyderabad", quote: "Quality is super consistent and their service is almost instant.", videoTitle: "WHY I REFER EVERYONE!" },
@@ -101,7 +101,7 @@ const [showActions, setShowActions] = useState(true);
           <p className={`mt-6 text-lg ${
             theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
           }`}>
-            1 in 3 new DrinkPrime users join us via referral. Happy customers
+            1 in 3 new SafeTap users join us via referral. Happy customers
             understand the impact of pure drinking water.
           </p>
         </div>

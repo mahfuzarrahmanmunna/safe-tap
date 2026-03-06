@@ -1,13 +1,20 @@
+<<<<<<< HEAD:src/app/blog/[slug]/page.jsx
 
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { Calendar, User, Clock, Share2, ArrowLeft, MessageCircle, Facebook, Twitter, Linkedin } from 'lucide-react'
+=======
+// src/app/pages/blogs/[slug]/page.jsx
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import BlogClientComponent from "./BlogClientComponent";
+>>>>>>> 95c7f49e87899c8ba4dc37bf56843380d47b853c:src/app/pages/blogs/[slug]/page.jsx
 
-// All blog data 
+// All blog data
 const allBlogPosts = {
-  'why-subscription-water-purifiers-work-better-in-cities': {
+  "why-subscription-water-purifiers-work-better-in-cities": {
     id: 1,
-    title: 'Why Subscription Water Purifiers Work Better in Cities',
+    title: "Why Subscription Water Purifiers Work Better in Cities",
     content: `
       <p>Life nowadays moves fast, with packed schedules, growing families, changing homes, and shifting priorities. A subscription water purifier adapts to these urban dynamics seamlessly.</p>
 
@@ -40,64 +47,72 @@ const allBlogPosts = {
       <h2>Conclusion</h2>
       <p>For urban dwellers facing space constraints, frequent moves, and busy schedules, subscription water purifiers offer the perfect balance of convenience, cost-effectiveness, and quality. They transform water purification from a capital expense and maintenance headache into a simple, manageable monthly service.</p>
     `,
-    excerpt: 'Life nowadays moves fast, with packed schedules, growing families, changing homes, and shifting priorities. A subscription water purifier adapts to these urban dynamics seamlessly.',
-    author: 'SafeTap Team',
-    authorRole: 'Water Solutions Expert',
-    date: 'January 9, 2026',
-    readTime: '5 min read',
-    category: 'Water Purifier',
-    tags: ['Subscription', 'Urban Living', 'Water Purifier', 'Maintenance', 'Cost Effective'],
-    image: '/images/blog1.jpg'
+    excerpt:
+      "Life nowadays moves fast, with packed schedules, growing families, changing homes, and shifting priorities. A subscription water purifier adapts to these urban dynamics seamlessly.",
+    author: "SafeTap Team",
+    authorRole: "Water Solutions Expert",
+    date: "January 9, 2026",
+    readTime: "5 min read",
+    category: "Water Purifier",
+    tags: [
+      "Subscription",
+      "Urban Living",
+      "Water Purifier",
+      "Maintenance",
+      "Cost Effective",
+    ],
+    image: "/images/blog1.jpg",
   },
-  'get-faster-service-from-safetap-via-chat-support': {
+  "get-faster-service-from-safetap-via-chat-support": {
     id: 2,
-    title: 'Get Faster Service from SafeTap via Chat Support',
-    excerpt: 'SafeTap has become an ideal choice for smart water purification solutions among urban households...',
-    content: '<p>Full content for second blog...</p>',
-    author: 'SafeTap Team',
-    date: 'January 9, 2026',
-    readTime: '4 min read',
-    category: 'Service',
-    tags: ['Support', 'Service', 'Chat']
+    title: "Get Faster Service from SafeTap via Chat Support",
+    excerpt:
+      "SafeTap has become an ideal choice for smart water purification solutions among urban households...",
+    content: "<p>Full content for second blog...</p>",
+    author: "SafeTap Team",
+    date: "January 9, 2026",
+    readTime: "4 min read",
+    category: "Service",
+    tags: ["Support", "Service", "Chat"],
   },
-  'water-tank-contamination-in-dhaka-apartments': {
+  "water-tank-contamination-in-dhaka-apartments": {
     id: 3,
-    title: 'Water Tank Contamination in Dhaka Apartments',
-    excerpt: 'Dhaka\'s a booming urban city with defined high-rise buildings and a heavy load on the water infrastructure...',
-    content: '<p>Full content for third blog...</p>',
-    author: 'SafeTap Team',
-    date: 'January 7, 2026',
-    readTime: '6 min read',
-    category: 'Water Quality',
-    tags: ['Dhaka', 'Contamination', 'Water Tank']
+    title: "Water Tank Contamination in Dhaka Apartments",
+    excerpt:
+      "Dhaka's a booming urban city with defined high-rise buildings and a heavy load on the water infrastructure...",
+    content: "<p>Full content for third blog...</p>",
+    author: "SafeTap Team",
+    date: "January 7, 2026",
+    readTime: "6 min read",
+    category: "Water Quality",
+    tags: ["Dhaka", "Contamination", "Water Tank"],
   },
-  
-}
+};
 
 // Related posts function
 function getRelatedPosts(currentSlug, currentCategory) {
   const posts = Object.values(allBlogPosts)
-    .filter(post => post.id !== allBlogPosts[currentSlug]?.id) 
-    .filter(post => post.category === currentCategory) 
-    .slice(0, 3) // Limit to 3
-  
+    .filter((post) => post.id !== allBlogPosts[currentSlug]?.id)
+    .filter((post) => post.category === currentCategory)
+    .slice(0, 3); // Limit to 3
+
   if (posts.length < 3) {
-    
     const otherPosts = Object.values(allBlogPosts)
-      .filter(post => post.id !== allBlogPosts[currentSlug]?.id)
-      .filter(post => post.category !== currentCategory)
-      .slice(0, 3 - posts.length)
-    
-    return [...posts, ...otherPosts]
+      .filter((post) => post.id !== allBlogPosts[currentSlug]?.id)
+      .filter((post) => post.category !== currentCategory)
+      .slice(0, 3 - posts.length);
+
+    return [...posts, ...otherPosts];
   }
-  
-  return posts
+
+  return posts;
 }
 
 // Generate static paths
 export async function generateStaticParams() {
   return Object.keys(allBlogPosts).map((slug) => ({
     slug,
+<<<<<<< HEAD:src/app/blog/[slug]/page.jsx
   }))
 }
 
@@ -323,6 +338,9 @@ const relatedPosts = getRelatedPosts(slug, post.category)
     </div>
   )
 
+=======
+  }));
+>>>>>>> 95c7f49e87899c8ba4dc37bf56843380d47b853c:src/app/pages/blogs/[slug]/page.jsx
 }
 
 
@@ -330,26 +348,52 @@ const relatedPosts = getRelatedPosts(slug, post.category)
 
 // SEO Metadata
 export async function generateMetadata({ params }) {
+<<<<<<< HEAD:src/app/blog/[slug]/page.jsx
   const { slug } = await params   // ✅ unwrap params
   const post = allBlogPosts[slug]
+=======
+  const post = allBlogPosts[params.slug];
+>>>>>>> 95c7f49e87899c8ba4dc37bf56843380d47b853c:src/app/pages/blogs/[slug]/page.jsx
 
   if (!post) {
     return {
-      title: 'Post Not Found | SafeTap Blog',
-      description: 'The requested blog post could not be found.',
-    }
+      title: "Post Not Found | SafeTap Blog",
+      description: "The requested blog post could not be found.",
+    };
   }
 
   return {
     title: `${post.title} | SafeTap Blog`,
     description: post.excerpt,
-    keywords: post.tags.join(', '),
+    keywords: post.tags.join(", "),
     openGraph: {
       title: post.title,
       description: post.excerpt,
-      type: 'article',
+      type: "article",
       publishedTime: post.date,
       authors: [post.author],
     },
+  };
+}
+
+export default function BlogPostPage({ params }) {
+  const { slug } = params;
+  const post = allBlogPosts[slug];
+
+  if (!post) {
+    notFound();
   }
+<<<<<<< HEAD:src/app/blog/[slug]/page.jsx
+=======
+
+  const relatedPosts = getRelatedPosts(slug, post.category);
+
+  return (
+    <BlogClientComponent
+      post={post}
+      relatedPosts={relatedPosts}
+      allBlogPosts={allBlogPosts}
+    />
+  );
+>>>>>>> 95c7f49e87899c8ba4dc37bf56843380d47b853c:src/app/pages/blogs/[slug]/page.jsx
 }

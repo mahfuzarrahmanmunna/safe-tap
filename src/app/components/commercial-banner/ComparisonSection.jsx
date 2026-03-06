@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
 import { useTheme } from '@/app/contexts/ThemeContext';
 
-const drinkPrimePoints = [
+const SafeTapPoints = [
   'FREE Delivery & Installation',
   'Ensures contaminant-free drinking water',
   'No extra cost',
@@ -50,7 +50,7 @@ export default function ComparisonSection() {
       {/* Comparison Cards */}
       <div className="max-w-6xl mx-auto mt-16 grid grid-cols-1 md:grid-cols-2 gap-10">
         
-        {/* DrinkPrime Card */}
+        {/* SafeTap Card */}
         <motion.div
           initial={{ opacity: 0, x: -40 }}
           whileInView={{ opacity: 1, x: 0 }}
@@ -78,7 +78,7 @@ export default function ComparisonSection() {
           </h3>
 
           <ul className="space-y-4">
-            {drinkPrimePoints.map((point, i) => (
+            {SafeTapPoints.map((point, i) => (
               <li key={i} className={`flex items-start gap-3 ${
                 theme === 'dark' ? 'text-gray-200' : 'text-gray-700'
               }`}>

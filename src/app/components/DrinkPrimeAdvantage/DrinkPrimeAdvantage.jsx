@@ -28,6 +28,7 @@ import {
     ThumbsDown,
     DollarSign,
 } from 'lucide-react';
+import Link from 'next/link';
 
 // Animation variants
 const containerVariants = {
@@ -75,9 +76,9 @@ const comparisonData = [
     {
         category: 'AFFORDABLE Prices',
         options: [
-            { name: 'water can', status: 'negative', description: '₹2 - ₹4/litre' },
-            { name: 'other purifier', status: 'negative', description: '₹20,000 to purchase ₹5,000/year to maintain' },
-            { name: 'SafeTap', status: 'positive', description: 'Starts at ₹1/litre<br/>FREE maintenance<br/>ZERO upfront cost<br/>Lifetime FREE maintenance' },
+            { name: 'water can', status: 'negative', description: '৳2 - ৳4/litre' },
+            { name: 'other purifier', status: 'negative', description: '৳20,000 to purchase ৳5,000/year to maintain' },
+            { name: 'SafeTap', status: 'positive', description: 'Starts at ৳1/litre<br/>FREE maintenance<br/>ZERO upfront cost<br/>Lifetime FREE maintenance' },
         ],
     },
     {
@@ -110,7 +111,7 @@ export default function SafeTapAdvantage({ title }) {
         <section ref={ref} className="relative overflow-hidden py-16 lg:py-24">
             
 
-            <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="relative max-w-8xl mx-auto px-4 sm:px-6 lg:px-8">
                 {/* Section Header */}
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
@@ -307,7 +308,7 @@ export default function SafeTapAdvantage({ title }) {
                             Cost Effective
                         </h3>
                         <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                            Zero upfront cost with affordable monthly plans starting at ₹1/litre
+                            Zero upfront cost with affordable monthly plans starting at ৳1/litre
                         </p>
                     </motion.div>
                 </motion.div>

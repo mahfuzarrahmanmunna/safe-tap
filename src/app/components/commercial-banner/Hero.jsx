@@ -216,7 +216,7 @@ export default function Hero() {
                       >
                         <Image
                           src={slides[currentSlide].src}
-                          alt="DrinkPrime App Showcase"
+                          alt="SafeTap App Showcase"
                           fill
                           className="object-cover"
                         />

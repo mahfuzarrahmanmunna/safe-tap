@@ -1,22 +1,22 @@
-'use client';
+"use client";
 
 import { useRef, useState, useEffect } from "react";
-import { Swiper, SwiperSlide } from 'swiper/react';
-import { Navigation, Autoplay } from 'swiper/modules';
-import 'swiper/css';
-import 'swiper/css/navigation';
-import Image from 'next/image';
-import { 
-  FaHandPointer, 
-  FaCalendarCheck, 
-  FaUserCheck, 
-  FaRupeeSign, 
-  FaTools, 
-  FaMobileAlt, 
-  FaChevronLeft, 
-  FaChevronRight 
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation, Autoplay } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/navigation";
+import Image from "next/image";
+import {
+  FaHandPointer,
+  FaCalendarCheck,
+  FaUserCheck,
+  FaRupeeSign,
+  FaTools,
+  FaMobileAlt,
+  FaChevronLeft,
+  FaChevronRight,
 } from "react-icons/fa";
-import { useTheme } from '../contexts/ThemeContext';
+import { useTheme } from "../contexts/ThemeContext";
 
 export default function HowItWorks() {
   const { theme } = useTheme();
@@ -43,12 +43,36 @@ export default function HowItWorks() {
   }, []);
 
   const steps = [
+<<<<<<< HEAD
     { icon: <FaHandPointer className="text-xl md:text-2xl" />, title: "Choose the product that suits you the best" },
     { icon: <FaCalendarCheck className="text-xl md:text-2xl" />, title: "Book the Perfect Plan for You" },
     { icon: <FaUserCheck className="text-xl md:text-2xl" />, title: "Submit your details" },
     { icon: <FaRupeeSign className="text-xl md:text-2xl" />, title: "Make the Payment" },
     { icon: <FaTools className="text-xl md:text-2xl" />, title: "Get SafeTap Installed in 48 hours!" },
     { icon: <FaMobileAlt className="text-xl md:text-2xl" />, title: "Connect your device to SafeTap app" },
+=======
+    {
+      icon: <FaHandPointer className="text-2xl" />,
+      title: "Choose the product that suits you the best",
+    },
+    {
+      icon: <FaCalendarCheck className="text-2xl" />,
+      title: "Book the Perfect Plan for You",
+    },
+    {
+      icon: <FaUserCheck className="text-2xl" />,
+      title: "Submit your details",
+    },
+    { icon: <FaRupeeSign className="text-2xl" />, title: "Make the Payment" },
+    {
+      icon: <FaTools className="text-2xl" />,
+      title: "Get SafeTap Installed in 48 hours!",
+    },
+    {
+      icon: <FaMobileAlt className="text-2xl" />,
+      title: "Connect your device to SafeTap app",
+    },
+>>>>>>> 95c7f49e87899c8ba4dc37bf56843380d47b853c
   ];
 
   const phoneSlides = [
@@ -59,10 +83,11 @@ export default function HowItWorks() {
     {
       title: "Monitor",
       subtitle: "Track Your Consumption",
-    }
+    },
   ];
 
   return (
+<<<<<<< HEAD
     <div className={`w-full px-4 sm:px-6 lg:px-8 py-12 md:py-16 lg:py-20 ${
       theme === 'dark' ? 'bg-gray-900' : 'bg-white'
     }`}>
@@ -88,11 +113,38 @@ export default function HowItWorks() {
           <h3 className={`text-2xl md:text-3xl font-bold mb-6 md:mb-8 lg:mb-10 ${
             theme === 'dark' ? 'text-gray-100' : 'text-gray-800'
           }`}>
+=======
+    <div
+      className={`max-w-8xl mx-auto px-6 py-20 ${theme === "dark" ? "bg-gray-900" : "bg-white"}`}
+    >
+      <div className="text-center mb-16">
+        <h2
+          className={`text-3xl md:text-5xl font-black ${theme === "dark" ? "text-gray-100" : "text-gray-900"}`}
+        >
+          <span className="text-cyan-500">The SafeTap App:</span> Behold The
+          Future
+        </h2>
+      </div>
+
+      <div className="grid lg:grid-cols-2 gap-16 items-center">
+        {/* LEFT SIDE */}
+        <div
+          className={`rounded-3xl mt-6 p-8 lg:p-12 shadow-xl border ${
+            theme === "dark"
+              ? "bg-gray-800 border-gray-700"
+              : "bg-white border-gray-300"
+          }`}
+        >
+          <h3
+            className={`text-3xl font-bold mb-10 ${theme === "dark" ? "text-gray-100" : "text-gray-800"}`}
+          >
+>>>>>>> 95c7f49e87899c8ba4dc37bf56843380d47b853c
             How it works
           </h3>
 
           <div className="space-y-6 md:space-y-8 lg:space-y-10">
             {steps.map((step, index) => (
+<<<<<<< HEAD
               <div key={index} className="flex items-start gap-4 sm:gap-5 md:gap-6 relative">
                 {/* Step Icon */}
                 <div className={`w-12 h-12 sm:w-14 sm:h-14 rounded-full flex items-center justify-center flex-shrink-0 z-10 ${
@@ -101,10 +153,26 @@ export default function HowItWorks() {
                   <div className={`w-9 h-9 sm:w-11 sm:h-11 rounded-full flex items-center justify-center shadow-md ${
                     theme === 'dark' ? 'bg-gray-800 text-cyan-400' : 'bg-white text-cyan-700'
                   }`}>
+=======
+              <div key={index} className="flex items-start gap-6 relative">
+                <div
+                  className={`w-14 h-14 rounded-full flex items-center justify-center flex-shrink-0 z-10 ${
+                    theme === "dark" ? "bg-cyan-900/50" : "bg-cyan-100"
+                  }`}
+                >
+                  <div
+                    className={`w-11 h-11 rounded-full flex items-center justify-center shadow-md ${
+                      theme === "dark"
+                        ? "bg-gray-800 text-cyan-400"
+                        : "bg-white text-cyan-700"
+                    }`}
+                  >
+>>>>>>> 95c7f49e87899c8ba4dc37bf56843380d47b853c
                     {step.icon}
                   </div>
                 </div>
 
+<<<<<<< HEAD
                 {/* Step Text */}
                 <div className="pt-0.5 sm:pt-1 flex-1">
                   <p className={`text-sm sm:text-base md:text-lg ${
@@ -124,25 +192,61 @@ export default function HowItWorks() {
                   <div className={`absolute left-6 sm:left-7 top-12 sm:top-14 w-0.5 h-16 sm:h-20 md:h-24 ${
                     theme === 'dark' ? 'bg-cyan-900/50' : 'bg-cyan-200'
                   }`} />
+=======
+                <div className="pt-1">
+                  <p
+                    className={`text-lg ${theme === "dark" ? "text-gray-300" : "text-gray-700"}`}
+                  >
+                    <span
+                      className={`font-bold ${theme === "dark" ? "text-cyan-400" : "text-cyan-700"}`}
+                    >
+                      Step {index + 1}:
+                    </span>{" "}
+                    {step.title}
+                  </p>
+                </div>
+
+                {index < steps.length - 1 && (
+                  <div
+                    className={`absolute left-7 top-16 w-0.5 h-24 ${
+                      theme === "dark" ? "bg-cyan-900/50" : "bg-cyan-200"
+                    }`}
+                  />
+>>>>>>> 95c7f49e87899c8ba4dc37bf56843380d47b853c
                 )}
               </div>
             ))}
           </div>
 
+<<<<<<< HEAD
           {/* CTA Button */}
           <button className={`w-full mt-8 md:mt-10 lg:mt-12 font-bold text-base sm:text-lg md:text-xl py-3 sm:py-4 md:py-5 rounded-full transition shadow-lg ${
             theme === 'dark'
               ? 'bg-cyan-600 hover:bg-cyan-500 text-white'
               : 'bg-cyan-700 hover:bg-cyan-800 text-white'
           }`}>
+=======
+          <button
+            className={`mt-12 w-full font-bold text-xl py-5 rounded-full transition shadow-lg ${
+              theme === "dark"
+                ? "bg-cyan-600 hover:bg-cyan-500 text-white"
+                : "bg-cyan-700 hover:bg-cyan-800 text-white"
+            }`}
+          >
+>>>>>>> 95c7f49e87899c8ba4dc37bf56843380d47b853c
             Subscribe Now
           </button>
         </div>
 
+<<<<<<< HEAD
         {/* RIGHT SIDE - Slider */}
         <div className="order-1 lg:order-2 relative group px-4 sm:px-8 md:px-10 lg:px-12">
           
           {/* Phone Slider */}
+=======
+        {/* RIGHT SLIDER */}
+        <div className="relative group px-12">
+>>>>>>> 95c7f49e87899c8ba4dc37bf56843380d47b853c
           {mounted && (
             <Swiper
               modules={[Navigation, Autoplay]}
@@ -153,7 +257,14 @@ export default function HowItWorks() {
                 swiperRef.current = swiper;
 
                 setTimeout(() => {
-                  if (prevRef.current && nextRef.current) {
+                  if (
+                    swiper &&
+                    swiper.params &&
+                    swiper.params.navigation &&
+                    swiper.navigation &&
+                    prevRef.current &&
+                    nextRef.current
+                  ) {
                     swiper.params.navigation.prevEl = prevRef.current;
                     swiper.params.navigation.nextEl = nextRef.current;
 
@@ -180,6 +291,7 @@ export default function HowItWorks() {
                       {/* Dynamic Island */}
                       <div className="w-8 sm:w-10 md:w-12 h-1 bg-slate-200 rounded-full mx-auto mb-4 sm:mb-5 md:mb-6" />
 
+<<<<<<< HEAD
                       {/* Menu Items */}
                       <div className="space-y-3 sm:space-y-4 md:space-y-6 text-slate-800">
                         <div className="flex justify-between border-b pb-2 sm:pb-3 md:pb-4">
@@ -193,6 +305,20 @@ export default function HowItWorks() {
                         <div className="flex justify-between border-b pb-2 sm:pb-3 md:pb-4">
                           <span className="font-bold text-xs sm:text-sm md:text-base">FAQ</span>
                           <span className="text-sm md:text-base">›</span>
+=======
+                      <div className="space-y-6 text-slate-800">
+                        <div className="flex justify-between border-b pb-4">
+                          <span className="font-bold">Report an Issue</span>
+                          <span>›</span>
+                        </div>
+                        <div className="flex justify-between border-b pb-4">
+                          <span className="font-bold">Track My Tickets</span>
+                          <span>›</span>
+                        </div>
+                        <div className="flex justify-between border-b pb-4">
+                          <span className="font-bold">FAQ</span>
+                          <span>›</span>
+>>>>>>> 95c7f49e87899c8ba4dc37bf56843380d47b853c
                         </div>
                       </div>
                     </div>
@@ -216,6 +342,7 @@ export default function HowItWorks() {
           >
             <FaChevronRight size={isMobile ? 16 : 20} />
           </button>
+<<<<<<< HEAD
 
           {/* Pagination Dots (Mobile) */}
           {/* <div className="flex sm:hidden justify-center gap-2 mt-6">
@@ -250,6 +377,8 @@ export default function HowItWorks() {
             />
           </div> */}
 
+=======
+>>>>>>> 95c7f49e87899c8ba4dc37bf56843380d47b853c
         </div>
       </div>
     </div>

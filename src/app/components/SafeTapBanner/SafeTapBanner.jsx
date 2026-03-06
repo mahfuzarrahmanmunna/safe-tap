@@ -135,7 +135,7 @@ export default function SafeTapBanner() {
                 transition={{ duration: 7, repeat: Infinity, repeatType: 'reverse' }}
             />
 
-            <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24">
+            <div className="relative max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24">
                 <div className="grid lg:grid-cols-2 gap-12 items-center">
                     {/* Text Content */}
                     <motion.div
@@ -348,7 +348,7 @@ export default function SafeTapBanner() {
                                 ? 'bg-cyan-900/70 border-cyan-700/50 text-cyan-100'
                                 : 'bg-white/70 border-cyan-200/50 text-cyan-800'
                                 }`}>
-                                <span className="text-sm font-semibold">Starting at ₹299/month</span>
+                                <span className="text-sm font-semibold">Starting at ৳299/month</span>
                             </div>
                         </motion.div>
 
